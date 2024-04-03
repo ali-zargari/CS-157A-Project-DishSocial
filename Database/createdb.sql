@@ -1,4 +1,4 @@
--- CREATE SCHEMA CS_157A_Project;
+CREATE SCHEMA CS_157A_Project;
 
 USE CS_157A_Project;
 
@@ -24,6 +24,8 @@ CREATE TABLE Users
 CREATE TABLE Wall
 (
     UserID      INT UNIQUE,
+    WallID      INT UNIQUE,
+    PRIMARY KEY (UserID, WallID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
     -- enforces the dependency of Wall on Users
 );
