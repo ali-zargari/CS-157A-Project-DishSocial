@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa5ba50c-9a7a-4110-8c85-d14e0f0573a6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../.idea/dataSources.xml" beforeDir="false" />
+    <list default="true" id="fa5ba50c-9a7a-4110-8c85-d14e0f0573a6" name="Changes" comment="Create commands completed and functional. All commands based on ER diagram.">
+      <change afterPath="$PROJECT_DIR$/db_info" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/createdb.sql" beforeDir="false" afterPath="$PROJECT_DIR$/createdb.sql" afterDir="false" />
     </list>
@@ -48,6 +48,7 @@
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="VcsManagerConfiguration">
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="Create commands completed and functional. All commands based on ER diagram." />
+    <option name="LAST_COMMIT_MESSAGE" value="Create commands completed and functional. All commands based on ER diagram." />
   </component>
 </project>

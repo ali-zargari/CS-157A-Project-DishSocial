@@ -123,6 +123,15 @@ CREATE TABLE User_Leaves_Review
     FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID)
 );
 
+CREATE TABLE User_Gives_Vote
+(
+    UserID INT,
+    VoteID INT,
+    PRIMARY KEY (UserID, VoteID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID)
+);
+
 CREATE TABLE Wall_Displays_Review
 (
     UserID INT,
