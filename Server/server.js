@@ -1,9 +1,10 @@
 const express = require('express');
-const mysql = require('mysql2/promise'); // import mysql2
+const mysql = require('mysql2/promise');
+const {readFileSync} = require("node:fs");
 
 
 const app = express();
-const port = process.env.PORT || 3000; // It's important to use process.env.PORT for deployment.
+const port = process.env.PORT || 3002;
 
 
 const pool = mysql.createPool({
@@ -14,7 +15,10 @@ const pool = mysql.createPool({
     password: 'AVNS_KPqKJ44iZGhPb5xCUgA',
     port: 19243,
     ssl: {
-        rejectUnauthorized: false // Set to false only if necessary and you understand the implications
+        // Do not reject when not authorized, set to true in production
+        rejectUnauthorized: true,
+        // The path to your CA certificate
+        ca: readFileSync('./ca.crt'),
     }
 });
 
