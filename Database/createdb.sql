@@ -26,7 +26,7 @@ CREATE TABLE Wall
     UserID      INT UNIQUE,
     WallID      INT UNIQUE,
     PRIMARY KEY (UserID, WallID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
     -- enforces the dependency of Wall on Users
 );
 
@@ -65,19 +65,19 @@ CREATE TABLE Vote
     VoteID INT AUTO_INCREMENT,
     UserID INT,
     PRIMARY KEY (VoteID, UserID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Useful_Vote
 (
     VoteID INT PRIMARY KEY,
-    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID)
+    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Not_Useful_Vote
 (
     VoteID INT PRIMARY KEY,
-    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID)
+    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -90,8 +90,8 @@ CREATE TABLE Friends_With
     UserID1 INT,
     UserID2 INT,
     PRIMARY KEY (UserID1, UserID2),
-    FOREIGN KEY (UserID1) REFERENCES Users(UserID),
-    FOREIGN KEY (UserID2) REFERENCES Users(UserID)
+    FOREIGN KEY (UserID1) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (UserID2) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- User_Uploads_Recipe
@@ -101,8 +101,8 @@ CREATE TABLE User_Uploads_Recipe
     RecipeID INT,
     UploadDate DATE NOT NULL,
     PRIMARY KEY (UserID, RecipeID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- User_Likes_Recipe
@@ -111,8 +111,8 @@ CREATE TABLE User_Likes_Recipe
     UserID INT,
     RecipeID INT,
     PRIMARY KEY (UserID, RecipeID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- User_Leaves_Review
@@ -121,8 +121,8 @@ CREATE TABLE User_Leaves_Review
     UserID INT,
     ReviewID INT,
     PRIMARY KEY (UserID, ReviewID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE User_Gives_Vote
@@ -130,8 +130,8 @@ CREATE TABLE User_Gives_Vote
     UserID INT,
     VoteID INT,
     PRIMARY KEY (UserID, VoteID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Wall_Displays_Review
@@ -139,8 +139,8 @@ CREATE TABLE Wall_Displays_Review
     UserID INT,
     ReviewID INT,
     PRIMARY KEY (UserID, ReviewID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Recipe_Has_Review
@@ -148,8 +148,8 @@ CREATE TABLE Recipe_Has_Review
     RecipeID INT,
     ReviewID INT,
     PRIMARY KEY (RecipeID, ReviewID),
-    FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID),
-    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID)
+    FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Recipe_Contains_Ingredient
@@ -157,8 +157,8 @@ CREATE TABLE Recipe_Contains_Ingredient
     RecipeID INT,
     IngredientID INT,
     PRIMARY KEY (RecipeID, IngredientID),
-    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID),
-    FOREIGN KEY (IngredientID) REFERENCES Ingredient(IngredientID)
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (IngredientID) REFERENCES Ingredient(IngredientID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -171,26 +171,26 @@ CREATE TABLE Custom_List_Recipes (
     UserID INT,
     RecipeID INT,
     PRIMARY KEY (UserID, RecipeID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Liked_By_Friends_Recipes ( -- Junction table for Liked_by_Friend relationship
     RecipeID INT,
     FriendID INT,
     PRIMARY KEY (FriendID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES User_Likes_Recipe(UserID),
-    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2),
-    FOREIGN KEY (RecipeID) REFERENCES User_Likes_Recipe(RecipeID)
+    FOREIGN KEY (FriendID) REFERENCES User_Likes_Recipe(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (RecipeID) REFERENCES User_Likes_Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Uploaded_By_Friends_Recipes (
     RecipeID INT,
     FriendID INT,
     PRIMARY KEY (FriendID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES User_Uploads_Recipe(UserID),
-    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2),
-    FOREIGN KEY (RecipeID) REFERENCES User_Uploads_Recipe(RecipeID)
+    FOREIGN KEY (FriendID) REFERENCES User_Uploads_Recipe(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (RecipeID) REFERENCES User_Uploads_Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Reviewed_By_Friends_Recipes(
@@ -198,10 +198,10 @@ CREATE TABLE Reviewed_By_Friends_Recipes(
     ReviewID INT,
     FriendID INT,
     PRIMARY KEY (FriendID, ReviewID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES User_Leaves_Review(UserID),
-    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2), -- To make sure the friend is actually a friend
-    FOREIGN KEY (ReviewID) REFERENCES User_Leaves_Review(ReviewID),
-    FOREIGN KEY (RecipeID) REFERENCES Recipe_Has_Review(RecipeID)
+    FOREIGN KEY (FriendID) REFERENCES User_Leaves_Review(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE, -- To make sure the friend is actually a friend
+    FOREIGN KEY (ReviewID) REFERENCES User_Leaves_Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (RecipeID) REFERENCES Recipe_Has_Review(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 
 );
 
@@ -216,11 +216,9 @@ FOR EACH ROW
 BEGIN
     INSERT INTO Wall (UserID, WallID) VALUES (NEW.UserID, NEW.UserID);
 END;
-//
-DELIMITER ;
+
 
 -- Trigger to add reviews to a user's wall when a review is added
-DELIMITER //
 CREATE TRIGGER After_Review_Added
 AFTER INSERT ON User_Leaves_Review
 FOR EACH ROW
@@ -228,12 +226,9 @@ BEGIN
     INSERT INTO Wall_Displays_Review (UserID, ReviewID)
     VALUES (NEW.UserID, NEW.ReviewID);
 END;
-//
-DELIMITER ;
 
 
 -- Trigger to add recipe to Liked_By_Friends_Recipes when a friend likes a recipe
-DELIMITER //
 CREATE TRIGGER After_Friend_Likes_Recipe
 AFTER INSERT ON User_Likes_Recipe
 FOR EACH ROW
@@ -244,12 +239,9 @@ BEGIN
     WHERE fw.UserID1 = NEW.UserID
     OR fw.UserID2 = NEW.UserID;
 END;
-//
-DELIMITER ;
 
 
 -- Trigger to add recipe to Uploaded_By_Friends_Recipes when a friend uploads a recipe
-DELIMITER //
 CREATE TRIGGER After_Friend_Uploads_Recipe
 AFTER INSERT ON User_Uploads_Recipe
 FOR EACH ROW
@@ -263,7 +255,6 @@ END;
 
 
 -- Trigger to add recipe to Reviewed_By_Friends_Recipes when a friend reviews a recipe
-DELIMITER //
 CREATE TRIGGER After_Friend_Reviews_Recipe
 AFTER INSERT ON User_Leaves_Review
 FOR EACH ROW
@@ -274,13 +265,10 @@ BEGIN
     JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
     WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
 END;
-//
-DELIMITER ;
 
 
 
 -- Trigger to update the number of votes when a vote is added
-DELIMITER //
 CREATE TRIGGER Update_NumVotes
 AFTER INSERT ON Vote
 FOR EACH ROW
@@ -289,13 +277,12 @@ BEGIN
     SET NumVotes = NumVotes + 1
     WHERE ReviewID = NEW.VoteID;
 END;
-//
-DELIMITER ;
+
+
 
 
 
 -- Trigger to update the number of votes when a vote is removed
-DELIMITER //
 CREATE TRIGGER Update_NumVotes_Remove
 AFTER DELETE ON Vote
 FOR EACH ROW
@@ -433,7 +420,6 @@ BEGIN
 END;
 
 -- Trigger to add the new Friends to the Liked_By_Friends_Recipes table when a new friend is added
-DELIMITER //
 CREATE TRIGGER Add_Friends_Liked_Recipes
 AFTER INSERT ON Friends_With
 FOR EACH ROW
