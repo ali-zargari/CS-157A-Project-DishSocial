@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa5ba50c-9a7a-4110-8c85-d14e0f0573a6" name="Changes" comment="Create commands completed and functional. All commands based on ER diagram.">
-      <change beforePath="$PROJECT_DIR$/../.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/dbnavigator.xml" afterDir="false" />
+    <list default="true" id="fa5ba50c-9a7a-4110-8c85-d14e0f0573a6" name="Changes" comment="Create Triggers. &#10;&#10;Rename Some Entities. &#10;&#10;TODO: Add on delete and on update cascade">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/createdb.sql" beforeDir="false" afterPath="$PROJECT_DIR$/createdb.sql" afterDir="false" />
     </list>
@@ -66,8 +65,20 @@
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Create commands completed and functional. All commands based on ER diagram." />
-    <option name="LAST_COMMIT_MESSAGE" value="Create commands completed and functional. All commands based on ER diagram." />
+    <MESSAGE value="Create Triggers. &#10;&#10;Rename Some Entities. &#10;&#10;TODO: Add on delete and on update cascade" />
+    <option name="LAST_COMMIT_MESSAGE" value="Create Triggers. &#10;&#10;Rename Some Entities. &#10;&#10;TODO: Add on delete and on update cascade" />
   </component>
 </project>
