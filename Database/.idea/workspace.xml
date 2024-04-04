@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fa5ba50c-9a7a-4110-8c85-d14e0f0573a6" name="Changes" comment="Create commands completed and functional. All commands based on ER diagram.">
-      <change afterPath="$PROJECT_DIR$/db_info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/dbnavigator.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/createdb.sql" beforeDir="false" afterPath="$PROJECT_DIR$/createdb.sql" afterDir="false" />
     </list>
@@ -22,9 +22,28 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "ali-zargari"
+  }
 }]]></component>
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="master" />
+      </list>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/ali-zargari/CS_157A_Project.git",
+    "accountId": "df90b5f6-0ccf-42b3-8883-13632fb0972f"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2ebEBLdVJaxKobRGsrbGWS1ChSE" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -34,7 +53,7 @@
   "keyToString": {
     "RunOnceActivity.OpenDatabaseViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Create-Tables",
+    "git-widget-placeholder": "Triggers/Other-Constraints",
     "last_opened_file_path": "C:/Users/aliza/WebstormProjects/CS 157A Project/Database"
   },
   "keyToStringList": {
