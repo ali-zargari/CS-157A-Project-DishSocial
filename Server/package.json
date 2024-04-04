@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ali-zargari/CS_157A_Project#readme",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mysql2": "^3.9.3"
   }
 }
