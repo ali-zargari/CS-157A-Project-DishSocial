@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server side code for Dish Social App. An App for recipes.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ali-zargari/CS_157A_Project.git"
+  },
+  "author": "Ali Zargari",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/ali-zargari/CS_157A_Project/issues"
+  },
+  "homepage": "https://github.com/ali-zargari/CS_157A_Project#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.9.3"
+  }
+}
