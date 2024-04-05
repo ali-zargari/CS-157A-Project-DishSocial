@@ -6,11 +6,13 @@
     <show-object-properties value="true" />
     <loaded-nodes />
   </component>
+
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="d6741f33-57b4-4563-8800-0323cec3546e">
       <console name="Connection" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
+
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
