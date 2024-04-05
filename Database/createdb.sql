@@ -235,11 +235,21 @@ CREATE TRIGGER After_Friend_Likes_Recipe
 AFTER INSERT ON User_Likes_Recipe
 FOR EACH ROW
 BEGIN
-    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
-    SELECT NEW.RecipeID, fw.UserID2, NEW.UserID
-    FROM Friends_With fw
-    WHERE fw.UserID1 = NEW.UserID
-    OR fw.UserID2 = NEW.UserID;
+    DECLARE fwUser INT;
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE cur CURSOR FOR SELECT DISTINCT UserID2 FROM Friends_With WHERE UserID1 = NEW.UserID UNION ALL SELECT DISTINCT UserID1 FROM Friends_With WHERE UserID2 = NEW.UserID;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    OPEN cur;
+    read_loop: LOOP
+        FETCH cur INTO fwUser;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
+        SELECT NEW.RecipeID, fwUser, NEW.UserID
+        WHERE NOT EXISTS (SELECT * FROM Liked_By_Friends_Recipes WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser);
+    END LOOP;
+    CLOSE cur;
 END;
 
 
@@ -248,11 +258,21 @@ CREATE TRIGGER After_Friend_Uploads_Recipe
 AFTER INSERT ON User_Uploads_Recipe
 FOR EACH ROW
 BEGIN
-    INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT NEW.RecipeID, fw.UserID2
-    FROM Friends_With fw
-    WHERE fw.UserID1 = NEW.UserID
-    OR fw.UserID2 = NEW.UserID;
+    DECLARE fwUser INT;
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE cur CURSOR FOR SELECT UserID2 FROM Friends_With WHERE UserID1 = NEW.UserID UNION ALL SELECT UserID1 FROM Friends_With WHERE UserID2 = NEW.UserID;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    OPEN cur;
+    read_loop: LOOP
+        FETCH cur INTO fwUser;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
+        SELECT NEW.RecipeID, fwUser
+        WHERE NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser);
+    END LOOP;
+    CLOSE cur;
 END;
 
 
@@ -405,20 +425,19 @@ END;
 
 
 
--- Trigger to add the new Friends to the Uploaded_By_Friends_Recipes table when a new friend is added
 CREATE TRIGGER Add_Friends_Recipes
 AFTER INSERT ON Friends_With
 FOR EACH ROW
 BEGIN
     INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT RecipeID, NEW.UserID1 AS FriendID
+    SELECT RecipeID, NEW.UserID1
     FROM User_Uploads_Recipe
-    WHERE UserID = NEW.UserID2;
+    WHERE UserID = NEW.UserID2 AND NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = RecipeID AND FriendID = NEW.UserID1);
 
     INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT RecipeID, NEW.UserID2 AS FriendID
+    SELECT RecipeID, NEW.UserID2
     FROM User_Uploads_Recipe
-    WHERE UserID = NEW.UserID1;
+    WHERE UserID = NEW.UserID1 AND NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = RecipeID AND FriendID = NEW.UserID2);
 END;
 
 -- Trigger to add the new Friends to the Liked_By_Friends_Recipes table when a new friend is added

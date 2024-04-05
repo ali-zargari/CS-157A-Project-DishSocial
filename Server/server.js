@@ -35,7 +35,7 @@ app.get('/test', async (req, res) => { // You can now use async function
         );
         connection.release();
 
-        res.send("TEST WAS SUCCESSFUL!");
+        res.send(rows);
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
