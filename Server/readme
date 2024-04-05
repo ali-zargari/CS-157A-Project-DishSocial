@@ -1,0 +1,11 @@
+Deploying app to Google Cloud Platform:
+
+install gcloud CLI:
+
+  https://cloud.google.com/sdk/docs/install
+
+then run:
+
+  gcloud app deploy
+
+
