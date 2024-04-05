@@ -27,11 +27,23 @@ const pool = mysql.createPool({
 app.get('/', (req, res) => res.send('Hello World!'));
 app.use(express.json());
 
-app.post('/test', async (req, res) => { // You can now use async function
-    console.log(req.body);
+app.get('/test', async (req, res) => { // You can now use async function
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute(
+            'SELECT * FROM Users'
+        );
+        connection.release();
+
+        res.send("TEST WAS SUCCESSFUL!");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
 
 
-
+app.get('/users', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         const [rows] = await connection.execute(
@@ -44,6 +56,11 @@ app.post('/test', async (req, res) => { // You can now use async function
         console.log(error);
         res.status(500).send(error);
     }
+}, (req, res) => {
+    console.log('This is the second callback');
 });
+
+
+
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
