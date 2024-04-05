@@ -175,22 +175,24 @@ CREATE TABLE Custom_List_Recipes (
     FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE Liked_By_Friends_Recipes ( -- Junction table for Liked_by_Friend relationship
+CREATE TABLE Liked_By_Friends_Recipes
+(
     RecipeID INT,
     FriendID INT,
+    UploaderID INT,
     PRIMARY KEY (FriendID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES User_Likes_Recipe(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (RecipeID) REFERENCES User_Likes_Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (UploaderID, RecipeID) REFERENCES User_Likes_Recipe(UserID, RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE Uploaded_By_Friends_Recipes (
+CREATE TABLE Uploaded_By_Friends_Recipes
+(
     RecipeID INT,
     FriendID INT,
+    UploaderID INT,
     PRIMARY KEY (FriendID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES User_Uploads_Recipe(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (RecipeID) REFERENCES User_Uploads_Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (UploaderID, RecipeID) REFERENCES User_Uploads_Recipe(UserID, RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Reviewed_By_Friends_Recipes(
@@ -233,8 +235,8 @@ CREATE TRIGGER After_Friend_Likes_Recipe
 AFTER INSERT ON User_Likes_Recipe
 FOR EACH ROW
 BEGIN
-    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT NEW.RecipeID, fw.UserID2
+    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
+    SELECT NEW.RecipeID, fw.UserID2, NEW.UserID
     FROM Friends_With fw
     WHERE fw.UserID1 = NEW.UserID
     OR fw.UserID2 = NEW.UserID;
