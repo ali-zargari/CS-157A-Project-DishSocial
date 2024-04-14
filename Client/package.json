@@ -1,0 +1,25 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "Front_end",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "build": "npm run build:webpack",
+    "preview": "vite preview",
+    "build:webpack": "webpack",
+    "watch:webpack": "webpack --watch",
+    "start:webpack": "webpack serve --open"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "html-webpack-plugin": "^5.6.0",
+    "webpack": "^5.91.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
+  }
+}

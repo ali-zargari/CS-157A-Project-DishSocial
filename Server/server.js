@@ -2,10 +2,15 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const {readFileSync} = require("node:fs");
 
-
 const app = express();
 const port = process.env.PORT || 3002;
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 
 const pool = mysql.createPool({
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',
@@ -60,6 +65,23 @@ app.get('/users', async (req, res) => {
     console.log('This is the second callback');
 });
 
+app.delete('/users/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        console.log(userId);
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'DELETE FROM Users WHERE UserID = ?',
+            [userId]
+        );
+        connection.release();
+
+        res.send(`User with ID ${userId} has been deleted`);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
 
 
 
