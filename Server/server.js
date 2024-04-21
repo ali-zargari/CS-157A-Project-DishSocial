@@ -69,7 +69,7 @@ app.get('/users', async (req, res) => {
 app.delete('/users/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
-        console.log(userId);
+        console.log(userId);//debug statement
         const connection = await pool.getConnection();
         await connection.execute(
             'DELETE FROM Users WHERE UserID = ?',
@@ -102,5 +102,22 @@ app.post('/users', async (req, res) => {
     }
 });
 
+//delete user
+app.delete('/recipe/:recipeID', async (req, res) => {
+    const recipeId = req.params.recipeID;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'DELETE FROM Recipe WHERE RecipeID = ?',
+            [recipeId]
+        );
+        connection.release();
+
+        res.send(`Recipe with ID ${recipeId} has been deleted`);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
