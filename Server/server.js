@@ -65,6 +65,7 @@ app.get('/users', async (req, res) => {
     console.log('This is the second callback');
 });
 
+//delete user
 app.delete('/users/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
@@ -83,6 +84,23 @@ app.delete('/users/:userId', async (req, res) => {
     }
 });
 
+//add user
+app.post('/users', async (req, res) => {
+    const {FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'INSERT INTO Users (FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password]
+        );
+        connection.release();
+
+        res.send(`User ${FirstName} has been added`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
 
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
