@@ -8,6 +8,7 @@ const port = process.env.PORT || 3002;
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
@@ -164,4 +165,34 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
         res.status(500).send(error);
     }
 });
+
+
+app.post('/login', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+
+        const [rows] = await connection.execute(
+            'SELECT UserID, Password FROM Users WHERE UserID = ?', [req.body.username]
+        );
+
+        if (rows.length > 0) {
+            // Direct comparison of passwords
+            if(req.body.password === rows[0].Password){
+                res.cookie('userID', rows[0].UserID, { maxAge: 900000, httpOnly: true });
+                res.send({status: "Logged in"});
+            }  else {
+                res.send({ status: "Incorrect username or password"});
+            }
+        } else {
+            res.send({ status: "User does not exist"});
+        }
+
+        connection.release();
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

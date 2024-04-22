@@ -1,8 +1,11 @@
 import axios from 'axios';
 
+
+console.log("HERE")
+
 //example function for deleting user with useridToDelete
 function app(useridToDelete){
-    axios.delete(`http://localhost:3002/users/${useridToDelete}`)
+    axios.delete(`http://localhost:3002/users/6`)
         .then(response => {
             console.log(response.data); // Log the response from the server
         })
@@ -65,6 +68,23 @@ function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalor
             console.error('There was a problem with your axios operation: user upload recipe', error);
         });
 }
+
+function loginUser(username, password) {
+    axios.post('http://localhost:3002/login', { username, password }, { withCredentials: true })
+        .then(response => {
+            console.log(response.data); // Log the response from the server
+            if (response.data.status === 'Logged in') {
+                console.log('Login was successful');
+            } else {
+                console.log('Login failed');
+            }
+        })
+        .catch(error => {
+            console.error('There was an error trying to log in:', error);
+        });
+}
+// Use loginUser function like this
+loginUser('1', 'johnsPassword123');
 //addUser('John','Doe', 'M', 'johndoe@gmail.com', 'st.pittsburg', '1990-10-23', 'johnpassword123')
 //deleteRecipe(6)//test delete on recipeid 6, test result: successfull delete
-userUploadRecipe('TestingAdd checking insert id', '0 min', '0 min', 'low', 'yadas', 200, 0, 6)
+//userUploadRecipe('TestingAdd checking insert id', '0 min', '0 min', 'low', 'yadas', 200, 0, 6)
