@@ -102,7 +102,7 @@ app.post('/users', async (req, res) => {
     }
 });
 
-//delete user
+//delete recipe
 app.delete('/recipe/:recipeID', async (req, res) => {
     const recipeId = req.params.recipeID;
     try {
@@ -120,4 +120,48 @@ app.delete('/recipe/:recipeID', async (req, res) => {
     }
 });
 
+//add recipe
+app.post('/recipe', async (req, res) => {
+    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+        );
+        connection.release();
+
+        res.send(`Recipe ${Title} has been added`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
+
+//add recipe by user upload
+app.post('/recipe/userUploadRecipe', async (req, res) => {
+    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        const result = await connection.execute(
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+        );
+
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1;
+        const day = currentDate.getDate();
+        await connection.execute(
+            'INSERT INTO User_Uploads_Recipe(UserID,RecipeID, UploadDate) VALUES (?, ?, ?)',
+            [userID,result[0].insertId,`${year}-${month}-${day}`]
+        );
+        connection.release();
+
+        res.send(`Recipe ${Title} has been added`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

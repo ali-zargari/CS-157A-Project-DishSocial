@@ -34,5 +34,37 @@ function deleteRecipe(recipeID){
         });
 }
 
+function showAllUser() {
+    axios.get('http://localhost:3002/users')
+        .then(response => {
+            console.log(response.data); // Log the response from the server
+        })
+        .catch(error => {
+            console.error('There was a problem with your axios operation:', error);
+        });
+}
+
+function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) {
+    axios.post('http://localhost:3002/recipe', { Title, CookTime, PrepTime, CookTemp,
+        Steps, TotalCalories, NumIngredients })
+        .then(response => {
+            console.log(response.data); // Log the response from the server
+        })
+        .catch(error => {
+            console.error('There was a problem with your axios operation: add recipe', error);
+        });
+}
+
+function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID) {
+    axios.post('http://localhost:3002/recipe/userUploadRecipe', { Title, CookTime, PrepTime, CookTemp,
+        Steps, TotalCalories, NumIngredients, userID })
+        .then(response => {
+            console.log(response.data); // Log the response from the server
+        })
+        .catch(error => {
+            console.error('There was a problem with your axios operation: user upload recipe', error);
+        });
+}
 //addUser('John','Doe', 'M', 'johndoe@gmail.com', 'st.pittsburg', '1990-10-23', 'johnpassword123')
-deleteRecipe(6)//test delete on recipeid 6, test result: successfull delete
+//deleteRecipe(6)//test delete on recipeid 6, test result: successfull delete
+userUploadRecipe('TestingAdd checking insert id', '0 min', '0 min', 'low', 'yadas', 200, 0, 6)
