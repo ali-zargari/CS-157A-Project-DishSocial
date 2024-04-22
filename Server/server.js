@@ -65,10 +65,11 @@ app.get('/users', async (req, res) => {
     console.log('This is the second callback');
 });
 
+//delete user
 app.delete('/users/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
-        console.log(userId);
+        console.log(userId);//debug statement
         const connection = await pool.getConnection();
         await connection.execute(
             'DELETE FROM Users WHERE UserID = ?',
@@ -83,6 +84,84 @@ app.delete('/users/:userId', async (req, res) => {
     }
 });
 
+//add user
+app.post('/users', async (req, res) => {
+    const {FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'INSERT INTO Users (FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password]
+        );
+        connection.release();
 
+        res.send(`User ${FirstName} has been added`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
 
+//delete recipe
+app.delete('/recipe/:recipeID', async (req, res) => {
+    const recipeId = req.params.recipeID;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'DELETE FROM Recipe WHERE RecipeID = ?',
+            [recipeId]
+        );
+        connection.release();
+
+        res.send(`Recipe with ID ${recipeId} has been deleted`);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
+//add recipe
+app.post('/recipe', async (req, res) => {
+    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+        );
+        connection.release();
+
+        res.send(`Recipe ${Title} has been added`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
+
+//add recipe by user upload
+app.post('/recipe/userUploadRecipe', async (req, res) => {
+    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        const result = await connection.execute(
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+        );
+
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1;
+        const day = currentDate.getDate();
+        await connection.execute(
+            'INSERT INTO User_Uploads_Recipe(UserID,RecipeID, UploadDate) VALUES (?, ?, ?)',
+            [userID,result[0].insertId,`${year}-${month}-${day}`]
+        );
+        connection.release();
+
+        res.send(`Recipe ${Title} has been added`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
