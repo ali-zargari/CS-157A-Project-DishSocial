@@ -1,3 +1,5 @@
+import axios from "axios";
+import {addUser} from "./controller";
 
 document.getElementById('userForm').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent the form from submitting via the browser
@@ -12,6 +14,7 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
         Password: document.getElementById('Password').value
     };
 
+    addUser(user);
     console.log(user)
 
 });

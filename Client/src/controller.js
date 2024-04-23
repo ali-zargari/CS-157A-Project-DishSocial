@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 
-console.log("HERE")
+//console.log("HERE")
 
 
 //example function for deleting user with useridToDelete
-function app(useridToDelete){
+export function app(useridToDelete){
     axios.delete(`http://localhost:3002/users/6`)
         .then(response => {
             console.log(response.data); // Log the response from the server
@@ -16,9 +16,10 @@ function app(useridToDelete){
 }
 
 //add a user based on userid
-function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
+export function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
 
 
+    console.log(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth);
 
     axios.post('http://localhost:3002/users', { FirstName, LastName, Gender, Email,
                                                         Birthplace, DateOfBirth, Password })
@@ -31,7 +32,7 @@ function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Pa
 }
 
 //delete a recipe based on recipeid
-function deleteRecipe(recipeID){
+export function deleteRecipe(recipeID){
     axios.delete(`http://localhost:3002/recipe/${recipeID}`)
         .then(response => {
             console.log(response.data); // Log the response from the server
@@ -41,7 +42,7 @@ function deleteRecipe(recipeID){
         });
 }
 
-function showAllUser() {
+export function showAllUser() {
     axios.get('http://localhost:3002/users')
         .then(response => {
             console.log(response.data); // Log the response from the server
@@ -51,7 +52,7 @@ function showAllUser() {
         });
 }
 
-function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) {
+export function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) {
     axios.post('http://localhost:3002/recipe', { Title, CookTime, PrepTime, CookTemp,
         Steps, TotalCalories, NumIngredients })
         .then(response => {
@@ -62,7 +63,7 @@ function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, Nu
         });
 }
 
-function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID) {
+export function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID) {
     axios.post('http://localhost:3002/recipe/userUploadRecipe', { Title, CookTime, PrepTime, CookTemp,
         Steps, TotalCalories, NumIngredients, userID })
         .then(response => {
@@ -73,7 +74,7 @@ function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalor
         });
 }
 
-function loginUser(username, password) {
+export function loginUser(username, password) {
     axios.post('http://localhost:3002/login', { username, password }, { withCredentials: true })
         .then(response => {
             console.log(response.data); // Log the response from the server
@@ -92,3 +93,4 @@ function loginUser(username, password) {
 //addUser('John','Doe', 'M', 'johndoe@gmail.com', 'st.pittsburg', '1990-10-23', 'johnpassword123')
 //deleteRecipe(6)//test delete on recipeid 6, test result: successfull delete
 //userUploadRecipe('TestingAdd checking insert id', '0 min', '0 min', 'low', 'yadas', 200, 0, 6)
+
