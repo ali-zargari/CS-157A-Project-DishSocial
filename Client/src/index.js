@@ -17,7 +17,7 @@ function app(useridToDelete){
 //add a user based on userid
 function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
     axios.post('http://localhost:3002/users', { FirstName, LastName, Gender, Email,
-                                                        Birthplace, DateOfBirth, Password })
+        Birthplace, DateOfBirth, Password })
         .then(response => {
             console.log(response.data); // Log the response from the server
         })
