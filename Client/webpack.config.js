@@ -10,9 +10,15 @@ module.exports = {
         static: './dist',
     },
     plugins: [
+
         new HtmlWebpackPlugin({
-            title: 'Output Management',
+            template: './index.html', // Source template file
+            filename: 'index.html', // Output file
+            chunks: ['index'] // Include only the index bundle
         }),
+        //new HtmlWebpackPlugin({
+        //    title: 'Output Management',
+        //}),
     ],
     output: {
         filename: '[name].bundle.js',
