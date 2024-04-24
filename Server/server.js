@@ -194,5 +194,40 @@ app.post('/login', async (req, res) => {
     }
 });
 
+//add review
+app.post('/review', async (req, res) => {
+    const {PublishDate, NumVotes, Rating, ReviewText} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'INSERT INTO Review(PublishDate, NumVotes, Rating, ReviewText) VALUES (?, ?, ?, ?)',
+            [PublishDate, NumVotes, Rating, ReviewText]
+        );
+        connection.release();
+
+        res.send(`Review has been added`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
+
+//delete review
+app.delete('/review/:reviewID', async (req, res) => {
+    const reviewID = req.params.reviewID;
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(
+            'DELETE FROM Review WHERE ReviewID = ?',
+            [reviewID]
+        );
+        connection.release();
+
+        res.send(`ReviewID with ID ${reviewID} has been deleted`);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

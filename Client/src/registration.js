@@ -14,7 +14,10 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
         Password: document.getElementById('Password').value
     };
 
-    addUser(user);
-    console.log(user)
+    // Destructure the user object into individual variables
+    const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = user;
 
+    // Pass individual variables as parameters
+    addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password);
+    console.log(user);
 });
