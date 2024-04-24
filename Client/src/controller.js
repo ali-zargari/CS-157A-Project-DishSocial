@@ -74,9 +74,10 @@ export function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, Tot
         });
 }
 
-export async function loginUser(username, password) {
+export async function loginUser(email, password) {
     try {
-        const response = await axios.post('http://localhost:3002/login', { username, password }, { withCredentials: true });
+        const response = await axios.post('http://localhost:3002/login',
+            { email, password }, { withCredentials: true });
         console.log(response.data); // Log the response from the server
         if (response.data.status === 'Logged in') {
             console.log('Login was successful');
