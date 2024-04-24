@@ -96,7 +96,8 @@ app.post('/users', async (req, res) => {
         );
         connection.release();
 
-        res.send(`User ${FirstName} has been added`);
+        res.send({status: "success"});
+        //res.send(`User ${FirstName} has been added`);
     } catch (error) {
         console.error(error);
         res.status(500).send(error);
