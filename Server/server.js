@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:8081',
+    origin: 'http://localhost:8080',
     credentials: true
 }));
 
@@ -225,7 +225,7 @@ app.post('/login', async (req, res) => {
             // Direct comparison of passwords
             if(req.body.password === rows[0].Password){
                 res.cookie('userID', rows[0].UserID, { maxAge: 900000, httpOnly: true });
-                res.send({status: "Logged in"});
+                res.send({ status: "Logged in", userID: rows[0].UserID }); // Include userID in the response
             }  else {
                 res.send({ status: "Incorrect email or password"});
             }

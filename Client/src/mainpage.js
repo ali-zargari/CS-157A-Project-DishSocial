@@ -1,5 +1,8 @@
 import './mainpage.css';
-import {logoutUser, showAllUser, showFriends} from './controller';
+import {getUserIdFromCookie, logoutUser, showAllUser, showFriends} from './controller';
+
+
+console.log(getUserIdFromCookie());
 
 document.getElementById('logoutButton').addEventListener('click', async function (event) {
     event.preventDefault();
