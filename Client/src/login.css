@@ -1,0 +1,65 @@
+/* Set the background color and font for the whole page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* This will center the login box vertically */
+    height: 100vh;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 340px; /* Ensures enough space for all form elements */
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px; /* Space below the heading */
+}
+
+/* Style the form to center all its contents */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    color: #666;
+    width: 100%; /* Ensures labels take full width */
+    text-align: left; /* Aligns text to the left */
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 90%; /* Adjusts width relative to parent */
+    padding: 8px;
+    margin-bottom: 20px; /* Space between input fields */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the submit button */
+button {
+    width: 90%; /* Matches input field width */
+    padding: 10px;
+    border: none;
+    background-color: #5c67f2;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px; /* Adds some space above the button */
+}
+
+button:hover {
+    background-color: #5058e5;
+}
