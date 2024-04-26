@@ -239,4 +239,41 @@ app.delete('/review/:reviewID', async (req, res) => {
     }
 });
 
+//add ingredient, IngredientIDs can be an array of IngredientID
+app.post('/recipe/addIngredient', async (req, res) => {
+    const {RecipeID,IngredientIDs} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        // Loop through each IngredientID and insert it into the database
+        for (const IngredientID of IngredientIDs) {
+            await connection.execute(
+                'INSERT INTO Recipe_Contains_Ingredient(RecipeID, IngredientID) VALUES (?, ?)',
+                [RecipeID, IngredientID]
+            );
+        }
+        connection.release();
+
+        res.send(`Recipe ${RecipeID} now has ingredients`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
+
+//list all ingredients
+app.get('/ingredients', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute(
+            'SELECT * FROM Ingredients'
+        );
+        connection.release();
+
+        res.send(rows);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
