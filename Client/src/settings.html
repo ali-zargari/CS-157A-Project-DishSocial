@@ -2,9 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Layout styling */
+        .form-container {
+            display: flex;
+            justify-content: start;
+            gap: 50px;
+        }
+
+        form, .user-info {
+            flex: 1;
+        }
+    </style>
+    <title>Settings</title>
 </head>
 <body>
+<h1>User Settings</h1>
+<div class="form-container">
+    <form id="settingsForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required><br>
 
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="birthplace">Birthplace:</label>
+        <input type="text" id="birthplace" name="birthplace" required><br>
+
+        <label for="birthdate">Birthdate:</label>
+        <input type="date" id="birthdate" name="birthdate" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+    <div class="user-info" id="user-info-wrapper">
+        <h2>User Information</h2>
+    </div>
+</div>
 </body>
 </html>

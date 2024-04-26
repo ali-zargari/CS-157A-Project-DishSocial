@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+export async function getUserById(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}`);
+        console.log(response.data); // You can also manipulate or directly return this data
+        return response.data; // Returning the data for further use
+    } catch (error) {
+        console.error('There was a problem fetching the user data:', error);
+    }
+}
+
 export async function app(useridToDelete) {
     try {
         const response = await axios.delete(`http://localhost:3002/users/${useridToDelete}`);
@@ -131,5 +141,21 @@ export async function addIngredientToRecipe(RecipeID,IngredientIDs) {
 
     } catch (error) {
         console.error('There was a problem with your axios operation: addIngredientToRecipe', error);
+    }
+}
+
+export async function updateUserById(userId, userData) {
+    try {
+        const response = await axios.put(`http://localhost:3002/users/${userId}`, userData);
+
+        // Check if the request was successful
+        if(response.status === 200){
+            console.log(`User with ID ${userId} successfully updated.`);
+            return response.data;
+        } else {
+            console.error(`Error occurred: Status code ${response.status}`);
+        }
+    } catch (error) {
+        console.error('There was a problem updating the user data:', error);
     }
 }
