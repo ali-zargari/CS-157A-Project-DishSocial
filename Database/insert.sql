@@ -53,6 +53,7 @@ VALUES
 (1),
 (2),
 (3),
+
 (4),
 (5);
 
@@ -76,15 +77,15 @@ VALUES
 (1, 2),
 (2, 1),
 (1, 3),
-(2, 4),
-(3, 5),
-(4, 1),
-(5, 2),
-(1, 4),
-(2, 5),
 (3, 1),
+(2, 4),
 (4, 2),
-(5, 3);
+(3, 5),
+(5, 3),
+(4, 1),
+(1, 4),
+(5, 2),
+(2, 5);
 
 -- User_Uploads_Recipe
 INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate)
@@ -149,8 +150,7 @@ INSERT INTO Recipe_Contains_Ingredient (RecipeID, IngredientID) VALUES
 (7, 10),
 (7, 7);
 
--- Custom_List_Recipes, Liked_By_Friends_Recipes, Uploaded_By_Friends_Recipes, Reviewed_By_Friends_Recipes
--- These are more complex relationships and would likely not have triggers, so manual insertion is needed
+-- Recipes added to list by user.
 INSERT INTO Custom_List_Recipes (UserID, RecipeID) VALUES
 (1, 3),
 (2, 4),
@@ -172,6 +172,7 @@ INSERT INTO Custom_List_Recipes (UserID, RecipeID) VALUES
 -- (1, 2),
 -- (2, 1);
 
+-- USING TRIGGER FOR THIS.
 -- INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
 -- VALUES
 -- (1, 2, 1),

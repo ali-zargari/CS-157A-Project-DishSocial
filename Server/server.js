@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const {readFileSync} = require("node:fs");
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -12,6 +13,11 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
+
+app.use(cors({
+    origin: 'http://localhost:8081',
+    credentials: true
+}));
 
 const pool = mysql.createPool({
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',

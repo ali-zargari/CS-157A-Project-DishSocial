@@ -2,10 +2,6 @@
 
 USE CS_157A_Project;
 
-
--- TODO: Add Constraints
-
-
 -- Entities
 
 CREATE TABLE Users
@@ -253,6 +249,8 @@ BEGIN
 END;
 
 
+
+
 -- Trigger to add recipe to Uploaded_By_Friends_Recipes when a friend uploads a recipe
 CREATE TRIGGER After_Friend_Uploads_Recipe
 AFTER INSERT ON User_Uploads_Recipe
@@ -276,6 +274,8 @@ BEGIN
 END;
 
 
+
+
 -- Trigger to add recipe to Reviewed_By_Friends_Recipes when a friend reviews a recipe
 CREATE TRIGGER After_Friend_Reviews_Recipe
 AFTER INSERT ON User_Leaves_Review
@@ -287,6 +287,8 @@ BEGIN
     JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
     WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
 END;
+
+
 
 
 
@@ -304,6 +306,7 @@ END;
 
 
 
+
 -- Trigger to update the number of votes when a vote is removed
 CREATE TRIGGER Update_NumVotes_Remove
 AFTER DELETE ON Vote
@@ -313,6 +316,9 @@ BEGIN
     SET NumVotes = NumVotes - 1
     WHERE ReviewID = OLD.VoteID;
 END;
+
+
+
 
 
 
@@ -327,6 +333,9 @@ BEGIN
 END;
 
 
+
+
+
 -- Trigger to update the total calories of a recipe when an ingredient is removed
 CREATE TRIGGER Update_TotalCalories_Remove
 AFTER DELETE ON Recipe_Contains_Ingredient
@@ -336,6 +345,9 @@ BEGIN
     SET TotalCalories = TotalCalories - (SELECT Calories FROM Ingredient WHERE IngredientID = OLD.IngredientID)
     WHERE RecipeID = OLD.RecipeID;
 END;
+
+
+
 
 
 -- Trigger to update the number of ingredients in a recipe when an ingredient is added
@@ -349,6 +361,8 @@ BEGIN
 END;
 
 
+
+
 -- Trigger to update the number of ingredients in a recipe when an ingredient is removed
 CREATE TRIGGER Update_NumIngredients_Remove
 AFTER DELETE ON Recipe_Contains_Ingredient
@@ -360,8 +374,10 @@ BEGIN
 END;
 
 
--- Trigger to prevent a user from voting on the same review twice
 
+
+
+-- Trigger to prevent a user from voting on the same review twice
 CREATE TRIGGER Check_Vote_Duplication
 BEFORE INSERT ON Vote
 FOR EACH ROW
@@ -374,8 +390,11 @@ BEGIN
     END IF;
 END;
 
--- Trigger to prevent a user from liking the same recipe twice
 
+
+
+
+-- Trigger to prevent a user from liking the same recipe twice
 CREATE TRIGGER Check_Like_Duplication
 BEFORE INSERT ON User_Likes_Recipe
 FOR EACH ROW
@@ -389,8 +408,10 @@ BEGIN
 END;
 
 
--- Trigger to prevent a user from uploading the same recipe twice
 
+
+
+-- Trigger to prevent a user from uploading the same recipe twice
 CREATE TRIGGER Check_Upload_Duplication
 BEFORE INSERT ON User_Uploads_Recipe
 FOR EACH ROW
@@ -402,6 +423,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User has already uploaded this recipe';
     END IF;
 END;
+
 
 
 
@@ -425,6 +447,7 @@ END;
 
 
 
+
 CREATE TRIGGER Add_Friends_Recipes
 AFTER INSERT ON Friends_With
 FOR EACH ROW
@@ -439,6 +462,9 @@ BEGIN
     FROM User_Uploads_Recipe
     WHERE UserID = NEW.UserID1 AND NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = RecipeID AND FriendID = NEW.UserID2);
 END;
+
+
+
 
 -- Trigger to add the new Friends to the Liked_By_Friends_Recipes table when a new friend is added
 CREATE TRIGGER Add_Friends_Liked_Recipes
@@ -455,6 +481,7 @@ BEGIN
     FROM User_Likes_Recipe
     WHERE UserID = NEW.UserID1;
 END;
+
 
 
 
