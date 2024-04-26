@@ -154,6 +154,33 @@ export async function addIngredientToRecipe(RecipeID,IngredientIDs) {
     }
 }
 
+export async function getAllRecipes() {
+    try {
+        const response = await axios.get('http://localhost:3001/all-recipes');
+        return response.data;
+    } catch (error) {
+        console.error("Error getting all recipes: ", error);
+    }
+}
+
+export async function getRecipesByUser(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3001/users/${userId}/recipes`);
+        return response.data;
+    } catch (error) {
+        console.error("Error getting recipes of specific user with ID: ", userId, "\nError: ", error);
+    }
+}
+
+export async function getFriendsRecipes(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3001/users/${userId}/friends-recipes`);
+        return response.data;
+    } catch (error) {
+        console.error("Error getting recipes from user's friends. User ID: ", userId, "\nError: ", error);
+    }
+}
+
 export async function updateUserById(userId, userData) {
     try {
         const response = await axios.put(`http://localhost:3002/users/${userId}`, userData);

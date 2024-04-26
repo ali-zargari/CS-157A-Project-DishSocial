@@ -1,5 +1,9 @@
 import './mainpage.css';
 import {logoutUser, showAllUser, showFriends} from './controller';
+import { getAllRecipes, getRecipesByUser, getFriendsRecipes } from './controller';
+
+const userId = sessionStorage.getItem('userId');
+
 
 document.getElementById('logoutButton').addEventListener('click', async function (event) {
     event.preventDefault();
