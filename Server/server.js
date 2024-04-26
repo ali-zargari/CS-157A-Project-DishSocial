@@ -195,6 +195,19 @@ app.post('/login', async (req, res) => {
     }
 });
 
+//logs out the user
+app.post('/logout', async (req, res) => {
+    try {
+        //console.log(req.cookies[0]);
+        res.clearCookie('userID', { httpOnly: true });
+        res.send({status: "Logged out"});
+
+    } catch (error) {
+        console.error('Logout Error: ', error);
+        res.status(500).send(error);
+    }
+});
+
 //add review
 app.post('/review/addReview', async (req, res) => {
     const {UserID, RecipeID, PublishDate, NumVotes, Rating, ReviewText} = req.body;
