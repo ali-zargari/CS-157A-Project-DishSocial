@@ -5,7 +5,7 @@ document.getElementById('logoutButton').addEventListener('click', async function
     event.preventDefault();
     console.log("Log out clicked");
     if (await logoutUser()){
-        //window.location.href = 'login.html';
+        window.location.href = 'login.html';
     }
 
 });
