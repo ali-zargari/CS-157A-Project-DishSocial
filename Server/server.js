@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:8081',
+    origin: 'http://localhost:8083',
     credentials: true
 }));
 
@@ -288,7 +288,7 @@ app.get('/ingredients', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         const [rows] = await connection.execute(
-            'SELECT * FROM Ingredients'
+            'SELECT * FROM Ingredient'
         );
         connection.release();
 
