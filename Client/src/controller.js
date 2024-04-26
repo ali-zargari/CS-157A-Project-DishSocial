@@ -40,6 +40,16 @@ export async function showAllUser() {
     }
 }
 
+export async function showFriends() {
+    try {
+        const response = await axios.get('http://localhost:3002/users/friends', {withCredentials : true});
+        console.log(response.data); // Log the response from the server
+        return response.data;
+    } catch (error) {
+        console.error('There was a problem with your axios showFriends operation:', error);
+    }
+}
+
 export async function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories) {
     try {
         const response = await axios.post('http://localhost:3002/recipe', {

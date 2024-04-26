@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:8080',
+    origin: 'http://localhost:8081',
     credentials: true
 }));
 
@@ -74,6 +74,41 @@ app.get('/users', async (req, res) => {
     }
 }, (req, res) => {
     console.log('This is the second callback');
+});
+
+//get list of friends user has
+app.get('/users/friends', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const userID = req.cookies.userID;
+
+        const [friendResult] = await connection.execute(
+            'SELECT UserID2 FROM Friends_With WHERE UserID1 = ?',
+                [userID]
+        );
+
+        // Extracting user IDs from the friendResult
+        const friendIds = friendResult.map(friend => friend.UserID2);
+
+        // Check if there are friend IDs to query
+        if (friendIds.length > 0) {
+            // Query to get names of friends
+            const [rows] = await connection.execute(
+                'SELECT FirstName, LastName FROM Users WHERE UserID IN (?)',
+                [`(${friendIds.join(',')})`]
+            );
+
+            console.log(rows)
+            res.send(rows);
+            console.log(`(${friendIds.join(',')})`);
+        } else {
+            res.send([]); // No friends found
+        }
+        connection.release();
+    } catch (error) {
+        console.error("Failed to retrieve friends: ", error);
+        res.status(500).send(error);
+    }
 });
 
 //delete user

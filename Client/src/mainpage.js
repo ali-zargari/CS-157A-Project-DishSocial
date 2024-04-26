@@ -1,5 +1,5 @@
 import './mainpage.css';
-import { logoutUser, showAllUser } from './controller';
+import {logoutUser, showAllUser, showFriends} from './controller';
 
 document.getElementById('logoutButton').addEventListener('click', async function (event) {
     event.preventDefault();
@@ -12,7 +12,7 @@ document.getElementById('logoutButton').addEventListener('click', async function
 
 async function loadFriends() {
     try {
-        const friends = await showAllUser(); // Assuming showAllUser returns the list of friends
+        const friends = await showFriends(); // returns list of friends
         const friendsListContainer = document.querySelector('.friend-list');
         friendsListContainer.innerHTML = ''; // Clear the container
         friends.forEach(friend => {
