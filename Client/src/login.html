@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <link rel="stylesheet" type="text/css" href="login.css"> <!-- Make sure the CSS file is linked here -->
 </head>
 <body>
-<h2>Login Form</h2>
-<form id="login-form">
-    <label for="email">Email:</label>
-    <input type="text" id="email" name="email" required><br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
-    <button type="submit">Login</button>
-</form>
-
-
+<div class="login-container">
+    <h2>Login</h2>
+    <form id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
+</div>
 </body>
 </html>

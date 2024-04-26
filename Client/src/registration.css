@@ -1,0 +1,58 @@
+/* Set the background color and font for the whole page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centers the form vertically and horizontally */
+    height: 100vh;
+}
+
+/* Style the container for the form */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 340px; /* Set a fixed width */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Ensures all form elements are centered */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px; /* Space below the heading */
+}
+
+/* Style inputs and select box */
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="password"],
+select {
+    width: calc(100% - 20px); /* Full width minus padding for true 100% appearance */
+    padding: 10px;
+    margin-bottom: 10px; /* Space between each field */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the submit button */
+button {
+    width: calc(100% - 20px); /* Matches the width of input fields */
+    padding: 10px;
+    border: none;
+    background-color: #5c67f2;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #5058e5;
+}
