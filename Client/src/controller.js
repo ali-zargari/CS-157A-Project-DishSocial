@@ -72,6 +72,22 @@ export async function loginUser(email, password) {
     }
 }
 
+export async function logoutUser(email, password) {
+    try {
+        const response = await axios.post('http://localhost:3002/logout');
+
+        if (response.data.status === 'Logged out') {
+            console.log('You are logged out');
+            return true;
+        } else {
+            console.log('Logged out failed');
+            return false;
+        }
+    } catch (error) {
+        console.error('There was an error trying to log out:', error);
+        return false;
+    }
+}
 export async function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
     try {
         const response = await axios.post('http://localhost:3002/users', {
