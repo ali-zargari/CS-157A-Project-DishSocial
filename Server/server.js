@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:8083',
+    origin: 'http://localhost:8081',
     credentials: true
 }));
 
@@ -74,6 +74,41 @@ app.get('/users', async (req, res) => {
     }
 }, (req, res) => {
     console.log('This is the second callback');
+});
+
+//get list of friends user has
+app.get('/users/friends', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const userID = req.cookies.userID;
+
+        const [friendResult] = await connection.execute(
+            'SELECT UserID2 FROM Friends_With WHERE UserID1 = ?',
+                [userID]
+        );
+
+        // Extracting user IDs from the friendResult
+        const friendIds = friendResult.map(friend => friend.UserID2);
+
+        // Check if there are friend IDs to query
+        if (friendIds.length > 0) {
+            // Query to get names of friends
+            const [rows] = await connection.execute(
+                'SELECT FirstName, LastName FROM Users WHERE UserID IN (?)',
+                [`(${friendIds.join(',')})`]
+            );
+
+            console.log(rows)
+            res.send(rows);
+            console.log(`(${friendIds.join(',')})`);
+        } else {
+            res.send([]); // No friends found
+        }
+        connection.release();
+    } catch (error) {
+        console.error("Failed to retrieve friends: ", error);
+        res.status(500).send(error);
+    }
 });
 
 //delete user
@@ -288,7 +323,7 @@ app.get('/ingredients', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         const [rows] = await connection.execute(
-            'SELECT * FROM Ingredient'
+            'SELECT * FROM Ingredients'
         );
         connection.release();
 
@@ -296,54 +331,6 @@ app.get('/ingredients', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
-    }
-});
-
-app.get('/users/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    try {
-        const connection = await pool.getConnection();
-        const [rows] = await connection.execute(
-            'SELECT * FROM Users WHERE UserID = ?',
-            [userId]
-        );
-        connection.release();
-
-        if (rows.length > 0) {
-            res.json(rows[0]);  // Send back the user data
-        } else {
-            res.status(404).send('User not found');
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-    }
-});
-
-app.put('/users/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = req.body;
-
-    console.log(req.body);
-
-    try {
-        const connection = await pool.getConnection();
-        const [rows] = await connection.execute(
-            'UPDATE Users SET FirstName = ?, LastName = ?, Gender = ?, Email = ?, Birthplace = ?, DateOfBirth = ?, Password = ? WHERE UserID = ?',
-            [FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password, userId]
-        );
-
-        if (rows.affectedRows === 0) {
-            res.status(404).send(`User with ID ${userId} not found`);
-        } else {
-            res.send(`User with ID ${userId} has been successfully updated`);
-        }
-
-        connection.release();
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send(`User with ID ${userId} update failed: ${error}`);
     }
 });
 
