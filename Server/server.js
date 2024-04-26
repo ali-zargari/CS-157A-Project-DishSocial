@@ -196,13 +196,21 @@ app.post('/login', async (req, res) => {
 });
 
 //add review
-app.post('/review', async (req, res) => {
-    const {PublishDate, NumVotes, Rating, ReviewText} = req.body;
+app.post('/review/addReview', async (req, res) => {
+    const {UserID, RecipeID, PublishDate, NumVotes, Rating, ReviewText} = req.body;
     try {
         const connection = await pool.getConnection();
-        await connection.execute(
+        const reviewResult = await connection.execute(
             'INSERT INTO Review(PublishDate, NumVotes, Rating, ReviewText) VALUES (?, ?, ?, ?)',
             [PublishDate, NumVotes, Rating, ReviewText]
+        );
+
+        await connection.execute(
+            'INSERT INTO Recipe_Has_Review(RecipeID, ReviewID) VAlUES (?,?)',[RecipeID, reviewResult[0].insertId]
+        );
+
+        await connection.execute(
+            'INSERT INTO User_Leaves_Review(UserID, ReviewID) VALUES (?,?)',[UserID, reviewResult[0].insertId]
         );
         connection.release();
 

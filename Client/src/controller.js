@@ -88,3 +88,16 @@ export async function addUser(FirstName, LastName, Gender, Email, Birthplace, Da
         return false;
     }
 }
+
+//add review to a recipe
+export async function userReviewsRecipe(UserID, RecipeID, PublishDate, NumVotes, Rating, ReviewText) {
+    try {
+        const response = await axios.post('http://localhost:3002/review/addReview', {
+            UserID, RecipeID, PublishDate, NumVotes, Rating, ReviewText
+        });
+        console.log(response.data); // Log the response from the server
+
+    } catch (error) {
+        console.error('There was a problem with your axios operation: userReviewsRecipe', error);
+    }
+}
