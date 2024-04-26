@@ -2,9 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<button id = "logoutButton">Logout</button>
+<header>
+    <h1>Welcome, [User]!</h1>
+    <button id="logoutButton">Log out</button>
+</header>
+<div class="content">
+    <div class="friends">
+        <h2>Friends</h2>
+        <div class="options">
+            <input type="text" placeholder="Search friends...">
+            <button>Filter</button>
+        </div>
+        <div class="friend-list">
+            <!-- Friends will be loaded here -->
+        </div>
+    </div>
+    <div class="reviews">
+        <h2>Friends' Reviews</h2>
+        <div class="options">
+            <input type="text" placeholder="Search reviews...">
+            <button>Filter</button>
+        </div>
+        <div class="review-wall">
+            <!-- Reviews will be loaded here -->
+        </div>
+    </div>
+    <div class="recipes">
+        <h2>Global Recipes</h2>
+        <div class="options">
+            <input type="text" placeholder="Search recipes...">
+            <button>Filter</button>
+        </div>
+        <div class="recipe-list">
+            <!-- Recipes will be loaded here -->
+        </div>
+    </div>
+</div>
+<script src="mainpage.js"></script>
 </body>
 </html>
