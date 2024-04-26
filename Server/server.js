@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:8081',
+    origin: 'http://localhost:8080',
     credentials: true
 }));
 
@@ -87,20 +87,25 @@ app.get('/users/friends', async (req, res) => {
                 [userID]
         );
 
+        //console.log(friendResult);
+
         // Extracting user IDs from the friendResult
         const friendIds = friendResult.map(friend => friend.UserID2);
 
+        //console.log(friendIds);
         // Check if there are friend IDs to query
         if (friendIds.length > 0) {
             // Query to get names of friends
+            const friendIdsPlaceHolders = friendIds.map(() => '?').join(',');
+
             const [rows] = await connection.execute(
-                'SELECT FirstName, LastName FROM Users WHERE UserID IN (?)',
-                [`(${friendIds.join(',')})`]
+               `SELECT FirstName, LastName FROM Users WHERE UserID IN (${friendIdsPlaceHolders})`,
+                friendIds
             );
 
-            console.log(rows)
+            //console.log(rows)
             res.send(rows);
-            console.log(`(${friendIds.join(',')})`);
+            //console.log(`(${friendIds.join(',')})`);
         } else {
             res.send([]); // No friends found
         }
