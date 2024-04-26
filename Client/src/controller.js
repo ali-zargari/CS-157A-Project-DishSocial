@@ -78,17 +78,18 @@ export async function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Step
 export async function loginUser(email, password) {
     try {
         const response = await axios.post('http://localhost:3002/login', { email, password }, { withCredentials: true });
-        //console.log(response.data); // Log the response from the server
+
         if (response.data.status === 'Logged in') {
             console.log('Login was successful');
-            return true;
+            document.cookie = `userID=${response.data.userID}; path=/`; // Save the userID in a cookie
+            return response.data.userID;
         } else {
             console.log('Login failed');
-            return false;
+            return null;
         }
     } catch (error) {
         console.error('There was an error trying to log in:', error);
-        return false;
+        return null;
     }
 }
 
@@ -100,6 +101,7 @@ export async function logoutUser(email, password) {
 
         if (response.data.status === 'Logged out') {
             console.log('You are logged out');
+            document.cookie = "userID= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
             return true;
         } else {
             console.log('Logged out failed');
@@ -110,6 +112,7 @@ export async function logoutUser(email, password) {
         return false;
     }
 }
+
 export async function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
     try {
         const response = await axios.post('http://localhost:3002/users', {
@@ -168,4 +171,21 @@ export async function updateUserById(userId, userData) {
     } catch (error) {
         console.error('There was a problem updating the user data:', error);
     }
+}
+
+
+
+export function getUserIdFromCookie() {
+    let cookieArray = document.cookie.split('; ');
+
+    for(let i = 0; i < cookieArray.length; i++){
+        let cookiePair = cookieArray[i].split('=');
+
+        if(cookiePair[0] === 'userID'){
+            // Return the value of 'userID' cookie
+            return cookiePair[1];
+        }
+    }
+
+    return null;
 }
