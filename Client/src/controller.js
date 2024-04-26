@@ -30,7 +30,7 @@ export async function showAllUser() {
     }
 }
 
-export async function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) {
+export async function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories) {
     try {
         const response = await axios.post('http://localhost:3002/recipe', {
             Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients
@@ -42,8 +42,9 @@ export async function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, Tota
     }
 }
 
-export async function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID) {
+export async function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, userID) {
     try {
+        const NumIngredients = 0; //number of ingredients should be incremented from populating Recipe_Contains_Ingredients
         const response = await axios.post('http://localhost:3002/recipe/userUploadRecipe', {
             Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID
         });
@@ -99,5 +100,18 @@ export async function userReviewsRecipe(UserID, RecipeID, PublishDate, NumVotes,
 
     } catch (error) {
         console.error('There was a problem with your axios operation: userReviewsRecipe', error);
+    }
+}
+
+//add ingredients, pass ingredients as array even if it is only one
+export async function addIngredientToRecipe(RecipeID,IngredientIDs) {
+    try {
+        const response = await axios.post('http://localhost:3002/recipe/addIngredient', {
+            RecipeID,IngredientIDs
+        });
+        console.log(response.data); // Log the response from the server
+
+    } catch (error) {
+        console.error('There was a problem with your axios operation: addIngredientToRecipe', error);
     }
 }
