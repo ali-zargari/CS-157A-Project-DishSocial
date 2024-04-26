@@ -74,7 +74,9 @@ export async function loginUser(email, password) {
 
 export async function logoutUser(email, password) {
     try {
-        const response = await axios.post('http://localhost:3002/logout');
+        const response = await axios.post('http://localhost:3002/logout', {}, {
+            withCredentials: true  // This ensures cookies are included in the request
+        });
 
         if (response.data.status === 'Logged out') {
             console.log('You are logged out');

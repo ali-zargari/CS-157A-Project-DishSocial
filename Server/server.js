@@ -2,6 +2,8 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const {readFileSync} = require("node:fs");
 
+const cookieParser = require('cookie-parser');
+
 const app = express();
 const port = process.env.PORT || 3002;
 
@@ -12,7 +14,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
-
+app.use(cookieParser());
 const pool = mysql.createPool({
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',
     user: 'avnadmin',
@@ -198,7 +200,7 @@ app.post('/login', async (req, res) => {
 //logs out the user
 app.post('/logout', async (req, res) => {
     try {
-        //console.log(req.cookies[0]);
+        console.log(req.cookies);
         res.clearCookie('userID', { httpOnly: true });
         res.send({status: "Logged out"});
 
