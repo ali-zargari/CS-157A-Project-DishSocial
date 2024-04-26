@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+export async function getUserById(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}`);
+        console.log(response.data); // You can also manipulate or directly return this data
+        return response.data; // Returning the data for further use
+    } catch (error) {
+        console.error('There was a problem fetching the user data:', error);
+    }
+}
+
 export async function app(useridToDelete) {
     try {
         const response = await axios.delete(`http://localhost:3002/users/${useridToDelete}`);
