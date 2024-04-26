@@ -10,7 +10,7 @@ CREATE TABLE Users
     FirstName   VARCHAR(55) NOT NULL,
     LastName    VARCHAR(55) NOT NULL,
     Gender      VARCHAR(55) NOT NULL,
-    Email       VARCHAR(55) NOT NULL,
+    Email       VARCHAR(55) NOT NULL UNIQUE,
     Birthplace  VARCHAR(55) NOT NULL,
     DateOfBirth DATE        NOT NULL,
     Age         INT         AS (TIMESTAMPDIFF(YEAR, DateOfBirth, '2024-01-01')),

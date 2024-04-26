@@ -213,6 +213,54 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
 });
 
 
+// get all recipes
+app.get('/all-recipes', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute('SELECT * FROM Recipe');
+        res.send(rows);
+        connection.release();
+    } catch (error) {
+        console.error("Failed to retrieve all recipes: ", error);
+        res.status(500).send(error);
+    }
+});
+
+
+// get recipes of a user.
+app.get('/users/:userId/recipes', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute(
+            'SELECT Recipe.* FROM User_Uploads_Recipe JOIN Recipe ON User_Uploads_Recipe.RecipeID = Recipe.RecipeID WHERE User_Uploads_Recipe.UserID = ?',
+            [req.params.userId]
+        );
+        res.send(rows);
+        connection.release();
+    } catch (error) {
+        console.error("Failed to retrieve recipes by specific user: ", error);
+        res.status(500).send(error);
+    }
+});
+
+
+//recipes uploaded by a users friend
+app.get('/users/:userId/friends-recipes', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute(
+            `SELECT Recipe.* FROM User_Uploads_Recipe JOIN Recipe ON User_Uploads_Recipe.RecipeID = Recipe.RecipeID WHERE User_Uploads_Recipe.UserID IN (SELECT UserID2 FROM Friends_With WHERE UserID1 = ?)`,
+            [req.params.userId]
+        );
+        res.send(rows);
+        connection.release();
+    } catch (error) {
+        console.error("Failed to retrieve recipes uploaded by user's friend: ", error);
+        res.status(500).send(error);
+    }
+});
+
+
 app.post('/login', async (req, res) => {
     try {
         const connection = await pool.getConnection();
