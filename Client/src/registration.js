@@ -1,7 +1,6 @@
-import axios from "axios";
 import {addUser} from "./controller";
 
-document.getElementById('userForm').addEventListener('submit', function(event) {
+document.getElementById('userForm').addEventListener('submit',async function(event) {
     event.preventDefault(); // Prevent the form from submitting via the browser
 
     const user = {
@@ -17,7 +16,23 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
     // Destructure the user object into individual variables
     const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = user;
 
-    // Pass individual variables as parameters
-    addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password);
-    console.log(user);
+    if(await addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password)) {
+        console.log('User Added Successfully');
+    } else {
+        console.log('User NOT ADDED.');
+        // Create an error message element if the user already exists
+        let errorMsg = document.createElement('p');
+        errorMsg.textContent = "Email already exists!";
+        errorMsg.style.color = "red"; // Style the message with red color
+
+        // Append the error message to the form
+        document.getElementById('userForm').appendChild(errorMsg);
+
+        setTimeout(() => {
+            // Remove the error message after 5 seconds
+            errorMsg.remove();
+        }, 5000);
+    }
+
 });
+

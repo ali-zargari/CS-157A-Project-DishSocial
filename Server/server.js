@@ -96,7 +96,8 @@ app.post('/users', async (req, res) => {
         );
         connection.release();
 
-        res.send(`User ${FirstName} has been added`);
+        res.send({status: "success"});
+        //res.send(`User ${FirstName} has been added`);
     } catch (error) {
         console.error(error);
         res.status(500).send(error);
@@ -172,7 +173,7 @@ app.post('/login', async (req, res) => {
         const connection = await pool.getConnection();
 
         const [rows] = await connection.execute(
-            'SELECT UserID, Password FROM Users WHERE UserID = ?', [req.body.username]
+            'SELECT UserID, Password FROM Users WHERE Email = ?', [req.body.email]
         );
 
         if (rows.length > 0) {
@@ -181,7 +182,7 @@ app.post('/login', async (req, res) => {
                 res.cookie('userID', rows[0].UserID, { maxAge: 900000, httpOnly: true });
                 res.send({status: "Logged in"});
             }  else {
-                res.send({ status: "Incorrect username or password"});
+                res.send({ status: "Incorrect email or password"});
             }
         } else {
             res.send({ status: "User does not exist"});
