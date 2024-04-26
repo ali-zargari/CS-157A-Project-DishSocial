@@ -4,7 +4,8 @@ import { logoutUser, showAllUser } from './controller';
 document.getElementById('logoutButton').addEventListener('click', async function (event) {
     event.preventDefault();
     console.log("Log out clicked");
-    if (await logoutUser()) {
+
+    if (await logoutUser()){
         window.location.href = 'login.html';
     }
 });
