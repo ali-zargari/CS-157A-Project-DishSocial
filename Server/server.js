@@ -320,5 +320,31 @@ app.get('/users/:userId', async (req, res) => {
     }
 });
 
+app.put('/users/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = req.body;
+
+    console.log(req.body);
+
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute(
+            'UPDATE Users SET FirstName = ?, LastName = ?, Gender = ?, Email = ?, Birthplace = ?, DateOfBirth = ?, Password = ? WHERE UserID = ?',
+            [FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password, userId]
+        );
+
+        if (rows.affectedRows === 0) {
+            res.status(404).send(`User with ID ${userId} not found`);
+        } else {
+            res.send(`User with ID ${userId} has been successfully updated`);
+        }
+
+        connection.release();
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(`User with ID ${userId} update failed: ${error}`);
+    }
+});
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

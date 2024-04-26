@@ -143,3 +143,19 @@ export async function addIngredientToRecipe(RecipeID,IngredientIDs) {
         console.error('There was a problem with your axios operation: addIngredientToRecipe', error);
     }
 }
+
+export async function updateUserById(userId, userData) {
+    try {
+        const response = await axios.put(`http://localhost:3002/users/${userId}`, userData);
+
+        // Check if the request was successful
+        if(response.status === 200){
+            console.log(`User with ID ${userId} successfully updated.`);
+            return response.data;
+        } else {
+            console.error(`Error occurred: Status code ${response.status}`);
+        }
+    } catch (error) {
+        console.error('There was a problem updating the user data:', error);
+    }
+}
