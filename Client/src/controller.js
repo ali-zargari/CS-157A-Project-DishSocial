@@ -101,6 +101,7 @@ export async function logoutUser(email, password) {
 
         if (response.data.status === 'Logged out') {
             console.log('You are logged out');
+            document.cookie = "userID= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
             return true;
         } else {
             console.log('Logged out failed');
@@ -111,6 +112,7 @@ export async function logoutUser(email, password) {
         return false;
     }
 }
+
 export async function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
     try {
         const response = await axios.post('http://localhost:3002/users', {
