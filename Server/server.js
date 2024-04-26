@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-    origin: 'http://localhost:8083',
+    origin: 'http://localhost:8080',
     credentials: true
 }));
 
@@ -288,7 +288,7 @@ app.get('/ingredients', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         const [rows] = await connection.execute(
-            'SELECT * FROM Ingredient'
+            'SELECT * FROM Ingredients'
         );
         connection.release();
 
@@ -296,54 +296,6 @@ app.get('/ingredients', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
-    }
-});
-
-app.get('/users/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    try {
-        const connection = await pool.getConnection();
-        const [rows] = await connection.execute(
-            'SELECT * FROM Users WHERE UserID = ?',
-            [userId]
-        );
-        connection.release();
-
-        if (rows.length > 0) {
-            res.json(rows[0]);  // Send back the user data
-        } else {
-            res.status(404).send('User not found');
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-    }
-});
-
-app.put('/users/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = req.body;
-
-    console.log(req.body);
-
-    try {
-        const connection = await pool.getConnection();
-        const [rows] = await connection.execute(
-            'UPDATE Users SET FirstName = ?, LastName = ?, Gender = ?, Email = ?, Birthplace = ?, DateOfBirth = ?, Password = ? WHERE UserID = ?',
-            [FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password, userId]
-        );
-
-        if (rows.affectedRows === 0) {
-            res.status(404).send(`User with ID ${userId} not found`);
-        } else {
-            res.send(`User with ID ${userId} has been successfully updated`);
-        }
-
-        connection.release();
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send(`User with ID ${userId} update failed: ${error}`);
     }
 });
 
