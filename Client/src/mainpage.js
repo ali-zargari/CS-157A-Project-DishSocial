@@ -7,7 +7,8 @@ import {
     getAllRecipes,
     getSelectedRecipeInfo,
     getUserFriendReviews,
-    generalSearchRecipes
+    generalSearchRecipes,
+    performAdvancedRecipeSearch
 } from './controller';
 
 let selectedRecipeId = null;
@@ -30,9 +31,24 @@ document.getElementById('logoutButton').addEventListener('click', async function
 
 document.querySelector('.filter-button').addEventListener('click', async function() {
     console.log("search clicked");
-    await performGeneralRecipeSearch();
+    await performAdvancedRecipeSearch();
 });
 
+
+
+// Placeholder function to render recipe info to the DOM
+function renderRecipeInfo(recipeInfo) {
+    const recipeInfoContainer = document.getElementById('recipe-info');
+    recipeInfoContainer.innerHTML = `
+        <h3>${recipeInfo.Title}</h3>
+        <p>Cook Time: ${recipeInfo.CookTime}</p>
+        <p>Prep Time: ${recipeInfo.PrepTime}</p>
+        <p>Total Calories: ${recipeInfo.TotalCalories}</p>
+        <p>Ingredients: ${recipeInfo.Ingredients}</p>
+        <p>Steps: ${recipeInfo.Steps}</p>
+    `;
+    // You might want to add more details depending on your recipe structure
+}
 
 async function performGeneralRecipeSearch() {
     const searchTerm = document.getElementById('general-search').value;

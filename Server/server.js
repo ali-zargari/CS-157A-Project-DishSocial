@@ -374,29 +374,75 @@ app.get('/recipes', async (req, res) => {
 });
 
 
+// Endpoint to search and filter recipes
 app.get('/recipes/search', async (req, res) => {
-    const searchTerm = req.query.term;
+    const { searchTerm, filter, userID } = req.query; // userID should be obtained from session or token
+
+    let baseQuery = `SELECT DISTINCT Recipe.* FROM Recipe `;
+    let whereConditions = [];
+    let parameters = [];
+
+    if (searchTerm) {
+        whereConditions.push(`(Recipe.Title LIKE CONCAT('%', ?, '%') OR Recipe.Ingredients LIKE CONCAT('%', ?, '%'))`);
+        parameters.push(searchTerm, searchTerm);
+    }
+
+    switch (filter) {
+        case 'reviewedByMe':
+            baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
+                   INNER JOIN Review ON Recipe_Has_Review.ReviewID = Review.ReviewID
+                   INNER JOIN User_Leaves_Review ON Review.ReviewID = User_Leaves_Review.ReviewID `;
+            whereConditions.push(`User_Leaves_Review.UserID = ?`);
+            parameters.push(userID);
+            break;
+        case 'likedByMe':
+            baseQuery += `JOIN User_Likes_Recipe ON Recipe.RecipeID = User_Likes_Recipe.RecipeID `;
+            whereConditions.push(`User_Likes_Recipe.UserID = ?`);
+            parameters.push(userID);
+            break;
+        case 'uploadedByMe':
+            baseQuery += `JOIN User_Uploads_Recipe ON Recipe.RecipeID = User_Uploads_Recipe.RecipeID `;
+            whereConditions.push(`User_Uploads_Recipe.UserID = ?`);
+            parameters.push(userID);
+            break;
+        case 'reviewedByFriends':
+            baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
+                   INNER JOIN Review ON Recipe_Has_Review.ReviewID = Review.ReviewID 
+                   INNER JOIN User_Leaves_Review ON Review.ReviewID = User_Leaves_Review.ReviewID 
+                   INNER JOIN Friends_With ON User_Leaves_Review.UserID = Friends_With.UserID2 OR User_Leaves_Review.UserID = Friends_With.UserID1`;
+            whereConditions.push(`(Friends_With.UserID1 = ? OR Friends_With.UserID2 = ?)`);
+            parameters.push(userID, userID);
+            break;
+        case 'likedByFriends':
+            baseQuery += `JOIN User_Likes_Recipe ON Recipe.RecipeID = User_Likes_Recipe.RecipeID 
+                           JOIN Friends_With ON User_Likes_Recipe.UserID = Friends_With.UserID2 `;
+            whereConditions.push(`Friends_With.UserID1 = ?`);
+            parameters.push(userID);
+            break;
+        case 'uploadedByFriends':
+            baseQuery += `JOIN User_Uploads_Recipe ON Recipe.RecipeID = User_Uploads_Recipe.RecipeID 
+                           JOIN Friends_With ON User_Uploads_Recipe.UserID = Friends_With.UserID2 `;
+            whereConditions.push(`Friends_With.UserID1 = ?`);
+            parameters.push(userID);
+            break;
+        // You can add more cases if needed
+    }
+
+    if (whereConditions.length > 0) {
+        baseQuery += ` WHERE ${whereConditions.join(' AND ')}`;
+    }
+
     try {
         const connection = await pool.getConnection();
-        // A SQL query that uses OR conditions to search across multiple columns.
-        const query = `
-            SELECT * FROM Recipe
-            WHERE Title LIKE CONCAT('%', ?, '%')
-            OR CookTime LIKE CONCAT('%', ?, '%')
-            OR PrepTime LIKE CONCAT('%', ?, '%')
-            OR Steps LIKE CONCAT('%', ?, '%')
-            OR TotalCalories LIKE CONCAT('%', ?, '%')
-            OR Ingredients LIKE CONCAT('%', ?, '%')`;
-
-        const [rows] = await connection.execute(query, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm]);
+        const [rows] = await connection.query(baseQuery, parameters);
         connection.release();
-
-        res.send(rows);
+        res.json(rows);
     } catch (error) {
-        console.error('Search failed:', error);
-        res.status(500).send(error);
+        console.error('Error performing search:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
+
 
 
 

@@ -227,3 +227,74 @@ export async function generalSearchRecipes(searchTerm) {
         console.error('Failed to perform general search:', error);
     }
 }
+
+
+export async function performAdvancedRecipeSearch() {
+    const searchTerm = document.getElementById('general-search').value;
+    const filter = document.getElementById('recipeFilter').value;
+    const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
+
+    try {
+        const response = await axios.get(`http://localhost:3002/recipes/search`, {
+            params: {
+                searchTerm: searchTerm,
+                filter: filter,
+                userID: userID
+            }
+        });
+
+        // Clear the current recipe list
+        const recipeListContainer = document.querySelector('.recipe-list');
+        recipeListContainer.innerHTML = '';
+
+        // Populate with new results
+        response.data.forEach(recipe => {
+            const recipeElement = document.createElement('div');
+            recipeElement.className = 'recipe';
+            recipeElement.innerHTML = `
+                <h2>${recipe.Title}</h2>
+                <p>${recipe.Ingredients}</p>  
+                <button onclick="loadRecipeInfo(${recipe.RecipeID})">View Recipe</button> 
+            `;
+
+            // Append the new element to the container
+            recipeListContainer.appendChild(recipeElement);
+        });
+
+        // If no recipes found, display a message
+        if(response.data.length === 0) {
+            recipeListContainer.innerHTML = '<p>No recipes found.</p>';
+        }
+
+    } catch (error) {
+        console.error('Error performing advanced search:', error);
+    }
+}
+
+// Function to load the recipe info when a recipe is clicked
+async function loadRecipeInfo(recipeID) {
+    try {
+        const response = await axios.get(`http://localhost:3002/recipe/${recipeID}`);
+        const recipeInfo = response.data;
+
+        // Assuming you have a function to render recipe info
+        renderRecipeInfo(recipeInfo);
+    } catch (error) {
+        console.error('Failed to load recipe info:', error);
+    }
+}
+
+
+// Placeholder function to render recipe info to the DOM
+function renderRecipeInfo(recipeInfo) {
+    const recipeInfoContainer = document.getElementById('recipe-info');
+    recipeInfoContainer.innerHTML = `
+        <h3>${recipeInfo.Title}</h3>
+        <p>Cook Time: ${recipeInfo.CookTime}</p>
+        <p>Prep Time: ${recipeInfo.PrepTime}</p>
+        <p>Total Calories: ${recipeInfo.TotalCalories}</p>
+        <p>Ingredients: ${recipeInfo.Ingredients}</p>
+        <p>Steps: ${recipeInfo.Steps}</p>
+    `;
+    // You might want to add more details depending on your recipe structure
+}
