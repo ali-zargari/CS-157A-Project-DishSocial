@@ -207,12 +207,10 @@ input[type='checkbox'] {
 
 .recipe-upload {
     background-color: #fff; /* changed to white to match your theme */
-    padding: 20px;
     border-radius: 8px; /* Adjusted to match your other elements */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Adding shadow for consistency */
     color: #333; /* Dark grey text for readability */
     font-family: 'Arial', sans-serif;
-    margin: 0 10px; /* Consistent margin with other sections */
 }
 
 h2 {
