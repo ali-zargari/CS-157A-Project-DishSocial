@@ -64,39 +64,70 @@ button {
     overflow: auto; /* Add scroll for overflow content */
 }
 
+.recipe-upload {
+    background-color: #fff; /* changed to white to match your theme */
+    padding: 20px;
+    border-radius: 8px; /* Adjusted to match your other elements */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Adding shadow for consistency */
+    color: #333; /* Dark grey text for readability */
+    font-family: 'Arial', sans-serif;
+    margin: 0 10px; /* Consistent margin with other sections */
+}
+
+h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #fff; /* Using the header color from your theme */
+}
+
 #uploadRecipeForm {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Aligns the form items to the start of the container */
-    padding: 20px; /* Adds padding inside the form */
-    gap: 10px; /* Space between the form elements */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: end;
 }
 
 #uploadRecipeForm input[type="text"],
-#uploadRecipeForm input[type="number"] {
-    width: auto; /* Only takes as much space as needed */
-    margin: 0; /* Remove margin to use gap for spacing */
+#uploadRecipeForm input[type="number"],
+#uploadRecipeForm textarea {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ced4da; /* Border color like other inputs */
+    color: #495057; /* Input text color */
+    background-color: #fff; /* Input background */
 }
 
 #uploadRecipeForm textarea {
-    width: 100%; /* Textarea takes full width */
-    resize: vertical; /* Allows the textarea to be resized only vertically */
+    grid-column: 1 / span 2;
+    min-height: 100px;
+    resize: vertical;
 }
 
-#uploadRecipeForm button {
+#uploadButton {
+    grid-column: 1 / span 2;
     padding: 10px 20px;
-    margin-top: 10px; /* Space above the button */
-    align-self: stretch; /* Stretch the button to match the form width */
-    background-color: #007bff;
-    color: white;
     border: none;
     border-radius: 4px;
+    background-color: #28a745; /* Consistent button color with your theme */
+    color: white;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-#uploadRecipeForm button:hover {
-    background-color: #0056b3;
+#uploadButton:hover {
+    background-color: #218838; /* Darken button on hover for a nice effect */
 }
+
+@media (max-width: 768px) {
+    #uploadRecipeForm {
+        grid-template-columns: 1fr;
+    }
+    #uploadButton {
+        padding: 10px 20px;
+    }
+}
+
 
 /* Ensure the recipe list does not overflow the .recipe-search section */
 .recipe-list {
