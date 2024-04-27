@@ -217,3 +217,13 @@ export async function getAllRecipes() {
         console.error('Failed to get all recipes:', error);
     }
 }
+
+export async function generalSearchRecipes(searchTerm) {
+    try {
+        const response = await axios.get(`http://localhost:3002/recipes/search?term=${encodeURIComponent(searchTerm)}`);
+        console.log(response.data); // Log the response from the server
+        return response.data;
+    } catch (error) {
+        console.error('Failed to perform general search:', error);
+    }
+}

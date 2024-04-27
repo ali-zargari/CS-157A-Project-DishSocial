@@ -373,4 +373,31 @@ app.get('/recipes', async (req, res) => {
     }
 });
 
+
+app.get('/recipes/search', async (req, res) => {
+    const searchTerm = req.query.term;
+    try {
+        const connection = await pool.getConnection();
+        // A SQL query that uses OR conditions to search across multiple columns.
+        const query = `
+            SELECT * FROM Recipe
+            WHERE Title LIKE CONCAT('%', ?, '%')
+            OR CookTime LIKE CONCAT('%', ?, '%')
+            OR PrepTime LIKE CONCAT('%', ?, '%')
+            OR Steps LIKE CONCAT('%', ?, '%')
+            OR TotalCalories LIKE CONCAT('%', ?, '%')
+            OR Ingredients LIKE CONCAT('%', ?, '%')`;
+
+        const [rows] = await connection.execute(query, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm]);
+        connection.release();
+
+        res.send(rows);
+    } catch (error) {
+        console.error('Search failed:', error);
+        res.status(500).send(error);
+    }
+});
+
+
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

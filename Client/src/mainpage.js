@@ -6,7 +6,8 @@ import {
     showFriends,
     getAllRecipes,
     getSelectedRecipeInfo,
-    getUserFriendReviews
+    getUserFriendReviews,
+    generalSearchRecipes
 } from './controller';
 
 let selectedRecipeId = null;
@@ -19,32 +20,107 @@ document.getElementById('logoutButton').addEventListener('click', async function
 
     if (await logoutUser()){
         window.location.href = 'login.html';
+        console.log("search clicked");
+
+
+
     }
 });
 
+
+document.querySelector('.filter-button').addEventListener('click', async function() {
+    console.log("search clicked");
+    await performGeneralRecipeSearch();
+});
+
+
+async function performGeneralRecipeSearch() {
+    const searchTerm = document.getElementById('general-search').value;
+    if (!searchTerm.trim()) {
+        // Fetch all recipes if search term is empty
+        try {
+            const recipes = await getAllRecipes(); // Assume this function fetches all recipes
+            updateDOMWithRecipes(recipes);
+        } catch (error) {
+            console.error('Error fetching all recipes:', error);
+        }
+    } else {
+        try {
+            console.log('Search Term:', searchTerm);
+            const recipes = await generalSearchRecipes(searchTerm); // Function to search recipes based on term
+            updateDOMWithRecipes(recipes);
+        } catch (error) {
+            console.error('Error performing general search:', error);
+        }
+    }
+}
+
+function updateDOMWithRecipes(recipes) {
+    const recipesContainer = document.querySelector('.recipe-list');
+
+    // Clear previous results
+    recipesContainer.innerHTML = '';
+
+    // Check if recipes were found
+    if (recipes.length === 0) {
+        recipesContainer.innerHTML = '<p>No recipes found.</p>';
+    } else {
+        // Append new results to the container
+        recipes.forEach(recipe => {
+            const recipeDiv = document.createElement('div');
+            recipeDiv.className = 'recipe';
+
+            const recipeTitle = document.createElement('h3');
+            recipeTitle.textContent = recipe.Title; // Adjust if your property names differ
+
+            const recipeDescription = document.createElement('p');
+            recipeDescription.textContent = recipe.Description; // Adjust if your property names differ
+
+            recipeDiv.appendChild(recipeTitle);
+            recipeDiv.appendChild(recipeDescription);
+
+            recipesContainer.appendChild(recipeDiv);
+        });
+    }
+}
+
+
+
+
 async function loadRecipes() {
     try {
-        const recipes = await getAllRecipes();
+        const recipes = await getAllRecipes(); // This function should fetch all recipes
         const recipeListContainer = document.querySelector('.recipe-list');
-        recipeListContainer.innerHTML = '';
+        recipeListContainer.innerHTML = ''; // Clear existing content
 
         recipes.forEach(recipe => {
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
-            recipeElement.textContent = recipe.Title;
-            recipeElement.dataset.id = recipe.id;
 
+            const recipeTitle = document.createElement('h3');
+            recipeTitle.textContent = recipe.Title; // Assuming 'Title' is the attribute from your database
+
+            const recipeDescription = document.createElement('p');
+            recipeDescription.textContent = recipe.Description; // Assuming 'Description' is the attribute
+
+            // Append title and description to the recipe element
+            recipeElement.appendChild(recipeTitle);
+            recipeElement.appendChild(recipeDescription);
+
+            // Add click event listener to each recipe element
             recipeElement.addEventListener('click', function() {
-                selectedRecipeId = this.dataset.id;
-                loadRecipeInfo(selectedRecipeId);
+                const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
+                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
             });
 
+            // Append the recipe element to the container
             recipeListContainer.appendChild(recipeElement);
         });
     } catch (error) {
         console.error('Failed to load recipes:', error);
     }
 }
+
 
 async function loadFriends() {
     try {

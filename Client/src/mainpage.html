@@ -52,20 +52,29 @@
         <!-- Recipe Search -->
         <div class="recipe-search">
             <div class="options">
-                <input type="text" placeholder="Search recipes...">
+                <input id="general-search" type="text" placeholder="Search recipes...">
+                <select id="recipeFilter">
+                    <option value="all">All Recipes</option>
+                    <option value="reviewedByMe">Reviewed by Me</option>
+                    <option value="likedByMe">Liked by Me</option>
+                    <option value="uploadedByMe">Uploaded by Me</option>
+                    <option value="reviewedByFriends">Reviewed by Friends</option>
+                    <option value="likedByFriends">Liked by Friends</option>
+                    <option value="uploadedByFriends">Uploaded by Friends</option>
+                </select>
                 <button class="button filter-button">Filter</button>
             </div>
             <div class="recipe-list">
                 <div class="recipe">
-                    <h2>Chicken Curry</h2>
+                    <h3>Chicken Curry</h3>
                     <p>A delicious and spicy chicken curry recipe. Cooks in under an hour.</p>
                 </div>
                 <div class="recipe">
-                    <h2>Beef Stroganoff</h2>
+                    <h3>Beef Stroganoff</h3>
                     <p>Rich and creamy beef stroganoff. Perfect comfort food!</p>
                 </div>
                 <div class="recipe">
-                    <h2>Vegetable Stir Fry</h2>
+                    <h3>Vegetable Stir Fry</h3>
                     <p>Quick and easy vegetable stir fry. Healthy and full of flavor.</p>
                 </div>
                 <!-- more recipes can be added here -->

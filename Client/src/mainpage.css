@@ -293,3 +293,18 @@ label:hover {
     border: 1px solid #ddd;
     border-radius: 0 0 4px 4px;
 }
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.options select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background-color: white;
+    cursor: pointer;
+}
