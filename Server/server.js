@@ -58,7 +58,7 @@ app.get('/test', async (req, res) => { // You can now use async function
     }
 });
 
-
+//get user info
 app.get('/users', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -213,6 +213,49 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
 });
 
 
+//get recipe info
+app.get('/recipe/:recipeID', async (req, res) => {
+    try {
+        const { recipeID } = req.params;
+        const connection = await pool.getConnection();
+
+        // Use this SQL query to return the recipe details for a given recipeID.
+        const [rows] = await connection.execute(
+            'SELECT * FROM Recipe WHERE RecipeID = ?',
+            [recipeID]
+        );
+
+        connection.release();
+        res.send(rows[0]); // Assuming each recipeID corresponds to one recipe
+    } catch (error) {
+        console.error(`Failed to get selected recipe info: ${error}`);
+        res.status(500).send(error);
+    }
+});
+
+// Get friend reviews for a user
+app.get('/user/friendReviews/:userID', async (req, res) => {
+    try {
+        const { userID } = req.params;
+        const connection = await pool.getConnection();
+
+        // Modified SQL query based on the schema
+        // This selects reviews left by friends of the given user (match with UserID in Friends_With table)
+        const [rows] = await connection.execute(
+            'SELECT r.* FROM Review AS r INNER JOIN User_Leaves_Review ulr ON r.ReviewID = ulr.ReviewID WHERE ulr.UserID IN (SELECT UserID2 FROM Friends_With WHERE UserID1 = ? UNION SELECT UserID1 FROM Friends_With WHERE UserID2 = ?)',
+            [userID, userID]
+        );
+
+        connection.release();
+        res.send(rows);
+    } catch (error) {
+        console.error(`Failed to get user friend reviews: ${error}`);
+        res.status(500).send(error);
+    }
+});
+
+
+// log in user.
 app.post('/login', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -323,7 +366,23 @@ app.get('/ingredients', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         const [rows] = await connection.execute(
-            'SELECT * FROM Ingredients'
+            'SELECT * FROM Ingredient'
+        );
+        connection.release();
+
+        res.send(rows);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
+// give me all recipes
+app.get('/recipes', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute(
+            'SELECT * FROM Recipe'
         );
         connection.release();
 

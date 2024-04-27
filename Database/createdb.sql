@@ -41,20 +41,13 @@ CREATE TABLE Recipe
     Title       VARCHAR(55) NOT NULL,
     CookTime    VARCHAR(55) NOT NULL,
     PrepTime    VARCHAR(55) NOT NULL,
-    CookTemp    VARCHAR(55) NOT NULL,
     RecipeID    INT PRIMARY KEY AUTO_INCREMENT,
     Steps       TEXT NOT NULL,
     TotalCalories INT NOT NULL,
-    NumIngredients INT NOT NULL
+    Ingredients TEXT NOT NULL
 );
 
-CREATE TABLE Ingredient
-(
-    IngredientID INT PRIMARY KEY AUTO_INCREMENT,
-    Name         VARCHAR(55) NOT NULL,
-    Type         VARCHAR(55) NOT NULL,
-    Calories     INT NOT NULL
-);
+
 
 CREATE TABLE Vote
 (
@@ -146,15 +139,6 @@ CREATE TABLE Recipe_Has_Review
     PRIMARY KEY (RecipeID, ReviewID),
     FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Recipe_Contains_Ingredient
-(
-    RecipeID INT,
-    IngredientID INT,
-    PRIMARY KEY (RecipeID, IngredientID),
-    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (IngredientID) REFERENCES Ingredient(IngredientID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -316,64 +300,6 @@ BEGIN
     SET NumVotes = NumVotes - 1
     WHERE ReviewID = OLD.VoteID;
 END;
-
-
-
-
-
-
--- Trigger to update the total calories of a recipe when an ingredient is added
-CREATE TRIGGER Update_TotalCalories
-AFTER INSERT ON Recipe_Contains_Ingredient
-FOR EACH ROW
-BEGIN
-    UPDATE Recipe
-    SET TotalCalories = TotalCalories + (SELECT Calories FROM Ingredient WHERE IngredientID = NEW.IngredientID)
-    WHERE RecipeID = NEW.RecipeID;
-END;
-
-
-
-
-
--- Trigger to update the total calories of a recipe when an ingredient is removed
-CREATE TRIGGER Update_TotalCalories_Remove
-AFTER DELETE ON Recipe_Contains_Ingredient
-FOR EACH ROW
-BEGIN
-    UPDATE Recipe
-    SET TotalCalories = TotalCalories - (SELECT Calories FROM Ingredient WHERE IngredientID = OLD.IngredientID)
-    WHERE RecipeID = OLD.RecipeID;
-END;
-
-
-
-
-
--- Trigger to update the number of ingredients in a recipe when an ingredient is added
-CREATE TRIGGER Update_NumIngredients
-AFTER INSERT ON Recipe_Contains_Ingredient
-FOR EACH ROW
-BEGIN
-    UPDATE Recipe
-    SET NumIngredients = NumIngredients + 1
-    WHERE RecipeID = NEW.RecipeID;
-END;
-
-
-
-
--- Trigger to update the number of ingredients in a recipe when an ingredient is removed
-CREATE TRIGGER Update_NumIngredients_Remove
-AFTER DELETE ON Recipe_Contains_Ingredient
-FOR EACH ROW
-BEGIN
-    UPDATE Recipe
-    SET NumIngredients = NumIngredients - 1
-    WHERE RecipeID = OLD.RecipeID;
-END;
-
-
 
 
 

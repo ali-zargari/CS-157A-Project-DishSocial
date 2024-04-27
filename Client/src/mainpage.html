@@ -9,38 +9,90 @@
 <header>
     <h1>Welcome, [User]!</h1>
     <button id="logoutButton">Log out</button>
+    <button id="profileButton">Profile</button>
+
 </header>
 <div class="content">
-    <div class="friends">
-        <h2>Friends</h2>
-        <div class="options">
-            <input type="text" placeholder="Search friends...">
-            <button>Filter</button>
+    <!-- Friends list section -->
+    <div>
+        <input type="radio" name="tabs" id="all-users-tab" checked />
+        <label for="all-users-tab">All Users</label>
+
+        <input type="radio" name="tabs" id="friends-tab" />
+        <label for="friends-tab">Friends</label>
+
+        <div id="all-users">
+            <h2>All Users</h2>
+            <div class="options">
+                <input type="text" placeholder="Search All...">
+                <button>Filter</button>
+            </div>
+            <div class="friend-list">
+                <!-- Friends will be loaded here -->
+            </div>
         </div>
-        <div class="friend-list">
-            <!-- Friends will be loaded here -->
+
+        <div id="friends">
+
+            <h2>Friends</h2>
+            <div class="options">
+                <input type="text" placeholder="Search friends...">
+                <button>Filter</button>
+            </div>
+            <div class="friend-list">
+                <!-- Friends will be loaded here -->
+            </div>
         </div>
     </div>
-    <div class="reviews">
-        <h2>Friends' Reviews</h2>
-        <div class="options">
-            <input type="text" placeholder="Search reviews...">
-            <button>Filter</button>
-        </div>
-        <div class="review-wall">
-            <!-- Reviews will be loaded here -->
-        </div>
-    </div>
+
+    <!-- Recipes list -->
     <div class="recipes">
-        <h2>Global Recipes</h2>
-        <div class="options">
-            <input type="text" placeholder="Search recipes...">
-            <button>Filter</button>
+        <h2>Recipes</h2>
+
+        <!-- Recipe Search -->
+        <div class="recipe-search">
+            <div class="options">
+                <input type="text" placeholder="Search recipes...">
+                <button class="button filter-button">Filter</button>
+            </div>
+            <div class="recipe-list">
+                <!-- Search results will be displayed here -->
+            </div>
         </div>
-        <div class="recipe-list">
-            <!-- Recipes will be loaded here -->
+
+        <!-- Recipe Upload -->
+        <div class="recipe-upload">
+            <h2>Upload Your Recipe</h2>
+            <form id="uploadRecipeForm">
+                <input type="text" name="title" placeholder="Title" required>
+                <input type="text" name="cooktime" placeholder="Cook Time" required>
+                <input type="text" name="preptime" placeholder="Prep Time" required>
+                <input type="text" name="ingredients" placeholder="ingredients" required>
+                <input type="number" name="totalcalories" placeholder="Total Calories" required>
+                <textarea name="steps" placeholder="Cooking Steps" required></textarea>
+                <button type="submit" class="button upload-button">Upload</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Friends' reviews section -->
+    <div class="recipe-info">
+        <h2>Recipe Info</h2>
+
+        <div class="recipe-info-wall">
+            <!-- top half is the description, steps. Bottom half is reviews, and other info maybe -->
+        </div>
+    </div>
+
+    <!-- Extra Info Section with Tabs -->
+    <div class="wall">
+        <h2>Wall</h2>
+        <div class="wall-content">
+            <!-- Wall entries go here -->
         </div>
     </div>
 </div>
+
 </body>
 </html>

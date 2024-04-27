@@ -189,3 +189,31 @@ export function getUserIdFromCookie() {
 
     return null;
 }
+
+export async function getSelectedRecipeInfo(recipeID) {
+    try {
+        const response = await axios.get(`http://localhost:3002/recipe/${recipeID}`);
+        return response.data; // Returning the data for further use
+    } catch (error) {
+        console.error(`Failed to get selected recipe info: ${error}`);
+    }
+}
+
+export async function getUserFriendReviews(userID) {
+    try {
+        const response = await axios.get(`http://localhost:3002/user/friendReviews/${userID}`);
+        return response.data; // Returning the data for further use
+    } catch (error) {
+        console.error(`Failed to get user friend reviews: ${error}`);
+    }
+}
+
+// give me function to get all recipes
+export async function getAllRecipes() {
+    try {
+        const response = await axios.get('http://localhost:3002/recipe');
+        return response.data; // Returning the data for further use
+    } catch (error) {
+        console.error('Failed to get all recipes:', error);
+    }
+}
