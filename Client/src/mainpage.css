@@ -3,6 +3,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-size: 94%;
 }
 
 body, html {
@@ -45,6 +46,7 @@ button {
     margin: 0 10px;
     display: flex;
     flex-direction: column;
+    min-width: 400px;
 }
 
 .recipes{
@@ -63,6 +65,145 @@ button {
     flex: 1;  /* Each section takes half of the .recipes height */
     overflow: auto; /* Add scroll for overflow content */
 }
+
+.recipe-search {
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px; /* Spacing between search and list */
+}
+
+/* Recipe Search Layout */
+.recipe-search .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background-color: #343a40; /* Your dark theme color */
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.search-input {
+    flex: 1 0 50%; /* Grow and shrink with a basis of 50% */
+    margin-right: 10px; /* Spacing between elements */
+}
+
+.min-calories-input {
+    flex: 0 1 15%; /* Grow and shrink with a basis of 25% */
+    max-width: 80px;
+
+}
+
+.max-calories-input {
+    flex: 0 1 15%; /* Grow and shrink with a basis of 25% */
+    max-width: 80px;
+}
+
+/* Bottom row styles */
+.bottom-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 20px;
+}
+
+.recipe-dropdown {
+    flex: 1 1 70%; /* Adjusted for dropdown to take more space */
+    margin-right: 10px; /* Spacing between elements */
+}
+
+.vegan-label {
+    display: flex;
+    align-items: center;
+    flex: 1 1 20%; /* Adjusted for checkbox label */
+}
+
+.filter-button {
+    flex: 0 0 auto; /* Do not grow or shrink */
+    white-space: nowrap; /* Keep text in one line */
+    padding: 8px 16px; /* Padding inside the button */
+    background-color: #28a745; /* Your theme button color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+}
+
+.filter-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Input and button styling */
+input[type='text'],
+input[type='number'],
+select,
+button {
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #495057;
+}
+
+input[type='checkbox'] {
+    margin-right: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .search-input,
+    .min-calories-input,
+    .max-calories-input,
+    .recipe-dropdown,
+    .vegan-label,
+    .filter-button {
+        flex-basis: 100%;
+        margin-right: 0;
+        margin-bottom: 10px; /* Space between elements on wrap */
+    }
+
+    .filter-button {
+        width: 100%; /* Full width on small screens */
+    }
+}
+
+
+.recipe-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.recipe {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+
+/* Media Query for smaller screens */
+@media (max-width: 768px) {
+    .top-row, .bottom-row {
+        flex-direction: column;
+    }
+
+    .search-input,
+    .min-calories-input,
+    .max-calories-input,
+    .recipe-dropdown,
+    .vegan-label,
+    .filter-button {
+        flex: 1 1 100%;
+    }
+}
+
 
 .recipe-upload {
     background-color: #fff; /* changed to white to match your theme */
@@ -139,6 +280,10 @@ h2 {
     width: auto; /* Auto-width based on content, or set to a fixed width */
 }
 
+#social{
+    min-width: 200px;
+}
+
 .friends{
     background-color: #fff;
     border-radius: 8px;
@@ -147,6 +292,7 @@ h2 {
     margin: 0 10px;
     display: flex;
     flex-direction: column;
+    min-width: 400px;
 
 }
 
@@ -230,6 +376,7 @@ button:hover {
     margin: 0 10px;
     display: flex;
     flex-direction: column;
+    min-width: 200px;
 }
 
 /* Header within the wall section */
