@@ -12,6 +12,7 @@ module.exports = {
     },
     devServer: {
         static: './dist',
+        port: 8080,
     },
     plugins: [
 

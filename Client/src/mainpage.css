@@ -1,74 +1,310 @@
-body {
-    font-family: Arial, sans-serif;
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
 }
 
 header {
-    background-color: #007BFF;
+    background-color: #007bff;
     color: white;
-    padding: 20px;
-    text-align: center;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
+header h1 {
+    margin: 0;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* Layout styles */
 .content {
     display: flex;
     justify-content: space-around;
     padding: 20px;
+    height: calc(100% - 60px); /* Adjust height based on header/footer size */
 }
 
-.reviews, .recipes {
-    background-color: white;
-    padding: 15px;
-    width: 45%;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.recipe-info {
+    background-color: #fff;
     border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-grow: 0.5;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
 }
 
-.options {
-    margin-bottom: 10px;
+.recipes{
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-grow: 0.15;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+
+
+}
+/* Within .recipes, we create two sections for search and upload */
+.recipe-search, .recipe-upload {
+    flex: 1;  /* Each section takes half of the .recipes height */
+    overflow: auto; /* Add scroll for overflow content */
 }
 
-.options input {
-    padding: 8px;
-    margin-right: 10px;
-    width: 80%;
-    border: 2px solid #ccc;
-    border-radius: 4px;
+#uploadRecipeForm {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligns the form items to the start of the container */
+    padding: 20px; /* Adds padding inside the form */
+    gap: 10px; /* Space between the form elements */
 }
 
-.options button {
+#uploadRecipeForm input[type="text"],
+#uploadRecipeForm input[type="number"] {
+    width: auto; /* Only takes as much space as needed */
+    margin: 0; /* Remove margin to use gap for spacing */
+}
+
+#uploadRecipeForm textarea {
+    width: 100%; /* Textarea takes full width */
+    resize: vertical; /* Allows the textarea to be resized only vertically */
+}
+
+#uploadRecipeForm button {
     padding: 10px 20px;
-    background-color: #007BFF;
+    margin-top: 10px; /* Space above the button */
+    align-self: stretch; /* Stretch the button to match the form width */
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.review-wall, .recipe-list {
-    height: 300px; /* Adjust based on content */
-    overflow-y: auto;
+#uploadRecipeForm button:hover {
+    background-color: #0056b3;
 }
 
-.friends, .reviews, .recipes {
-    background-color: white;
-    padding: 15px;
-    margin: 10px;
-    width: 30%;  /* Adjusted width to fit three columns */
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+/* Ensure the recipe list does not overflow the .recipe-search section */
+.recipe-list {
+    overflow: auto; /* Add scroll to the recipe list if content overflows */
+}
+
+/* Ensure button doesn't stretch beyond form width */
+.button {
+    width: auto; /* Auto-width based on content, or set to a fixed width */
+}
+
+.friends{
+    background-color: #fff;
     border-radius: 8px;
-    float: left;  /* Enables side-by-side layout */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-grow: 0;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+
 }
 
-.friend-list, .review-wall, .recipe-list {
-    height: 300px;
+h2 {
+    background-color: #343a40;
+    color: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+}
+
+.options {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+input[type="text"] {
+    width: 50%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+
+button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    background-color: #28a745;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* Tab styles */
+.tabs {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10px;
+    background-color: #343a40;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.tab-link.current {
+    background-color: #007bff;
+}
+
+.tab-content {
+    display: none;
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.tab-content.current {
+    display: block;
+}
+
+.friend-list, .recipe-list, .recipe-info-wall {
+    flex-grow: 1;
     overflow-y: auto;
 }
 
-.friend {
+
+/* Base styles for the wall section */
+.wall {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-grow: 0.6;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header within the wall section */
+.wall h2 {
+    margin-bottom: 20px; /* Spacing under the header */
+}
+
+/* Wall content styles */
+.wall-content {
+    overflow-y: auto; /* Enable scroll if content overflows */
+    height: calc(100% - 40px); /* Adjust height accounting for header and padding */
+    border-top: 2px solid #eee; /* Separator for the top content */
+    padding-top: 20px; /* Spacing at the top of the content */
+}
+
+
+
+
+/* Media Query for smaller screens */
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+
+    .friends, .recipes, .recipe-info {
+        margin: 10px 0;
+        width: 100%;
+        height: auto;
+    }
+
+    .options input[type="text"] {
+        width: calc(100% - 90px); /* Input field less button width */
+    }
+}
+
+
+input[name="tabs"] {
+    display: none;
+}
+label {
+    margin-right: 10px;
+    cursor: pointer;
+}
+#all-users, #friends {
+    display: none;
+}
+input#all-users-tab:checked ~ #all-users,
+input#friends-tab:checked ~ #friends {
+    display: block;
+}
+
+input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* RADIO MAGIC */
+input[type="radio"]:checked + label {
+    background-color: #fff;
+    border-bottom: 2px solid #fff;
+    z-index: 2;
+}
+
+/* Toggle Options */
+label {
+    display: inline-block;
+    background-color: #f1f1f1;
+    padding: 10px 15px;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 14px;
+    color: #333;
+    margin-right: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    top: 1px;
+    z-index: 1;
+    cursor: pointer;
+}
+
+/* The container */
+label:hover {
+    background-color: #ddd;
+}
+
+/* Add some padding and set a background color when content is revealed  */
+#all-users, #friends {
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 0 0 4px 4px;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
     padding: 10px;
-    margin-bottom: 5px;
-    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.options select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background-color: white;
+    cursor: pointer;
 }

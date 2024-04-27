@@ -18,32 +18,16 @@ INSERT INTO Review (PublishDate, NumVotes, Rating, ReviewText) VALUES
 ('2023-12-03', 18, 2, 'Not what I expected, needs more flavor.');
 
 -- Inserting dummy data into Recipe
-INSERT INTO Recipe (Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients)
+INSERT INTO Recipe (Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients)
 VALUES
-('Spaghetti Bolognese', '30 min', '15 min', 'Medium', '1. Boil pasta...\n2. Cook sauce...', 850, 10),
-('Classic Cheeseburger', '10 min', '5 min', 'High', '1. Grill patties...\n2. Assemble burger...', 650, 7),
-('Vegetarian Pizza', '20 min', '10 min', 'High', '1. Prepare dough...\n2. Add toppings...', 750, 8),
-('Chicken Caesar Salad', '15 min', '10 min', 'None', '1. Grill chicken...\n2. Toss salad...', 550, 7),
-('Beef Stroganoff', '40 min', '15 min', 'Medium', '1. Sauté beef...\n2. Prepare sauce...', 900, 12),
-('Quinoa Salad', '25 min', '5 min', 'None', '1. Cook quinoa...\n2. Mix ingredients...', 400, 5),
-('Chocolate Chip Cookies', '10 min', '15 min', 'High', '1. Mix dough...\n2. Bake cookies...', 300, 6);
+('Spaghetti Bolognese', '30 min', '15 min',  '1. Boil pasta...\n2. Cook sauce...', 850, 10),
+('Classic Cheeseburger', '10 min', '5 min', '1. Grill patties...\n2. Assemble burger...', 650, 7),
+('Vegetarian Pizza', '20 min', '10 min',  '1. Prepare dough...\n2. Add toppings...', 750, 8),
+('Chicken Caesar Salad', '15 min', '10 min',  '1. Grill chicken...\n2. Toss salad...', 550, 7),
+('Beef Stroganoff', '40 min', '15 min',  '1. Sauté beef...\n2. Prepare sauce...', 900, 12),
+('Quinoa Salad', '25 min', '5 min',  '1. Cook quinoa...\n2. Mix ingredients...', 400, 5),
+('Chocolate Chip Cookies', '10 min', '15 min',  '1. Mix dough...\n2. Bake cookies...', 300, 6);
 
-
--- Inserting dummy data into Ingredient
-INSERT INTO Ingredient (Name, Type, Calories)
-VALUES
-('Spaghetti', 'Pasta', 300),
-('Ground Beef', 'Meat', 250),
-('Carrots', 'Vegetable', 41),
-('Eggs', 'Protein', 70),
-('Chicken Breast', 'Protein', 165),
-('Quinoa', 'Grain', 120),
-('Beef', 'Protein', 250),
-('Mozzarella Cheese', 'Dairy', 280),
-('Chocolate Chips', 'Confectionery', 50),
-('Lettuce', 'Vegetable', 5),
-('Tomato Sauce', 'Condiment', 20),
-('All-purpose Flour', 'Baking', 364);
 
 
 -- Inserting dummy data into Vote and its subtypes
@@ -53,7 +37,6 @@ VALUES
 (1),
 (2),
 (3),
-
 (4),
 (5);
 
@@ -138,17 +121,7 @@ VALUES
 (4, 4),
 (5, 5);
 
-INSERT INTO Recipe_Contains_Ingredient (RecipeID, IngredientID) VALUES
-(3, 6),
-(3, 9),
-(4, 3),
-(4, 8),
-(5, 5),
-(5, 1),
-(6, 4),
-(6, 8),
-(7, 10),
-(7, 7);
+
 
 -- Recipes added to list by user.
 INSERT INTO Custom_List_Recipes (UserID, RecipeID) VALUES
@@ -157,7 +130,6 @@ INSERT INTO Custom_List_Recipes (UserID, RecipeID) VALUES
 (3, 5),
 (4, 1),
 (5, 2);
-
 
 
 -- USING TRIGGER FOR THIS.

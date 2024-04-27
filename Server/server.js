@@ -58,7 +58,7 @@ app.get('/test', async (req, res) => { // You can now use async function
     }
 });
 
-
+//get user info
 app.get('/users', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -169,12 +169,12 @@ app.delete('/recipe/:recipeID', async (req, res) => {
 
 //add recipe
 app.post('/recipe', async (req, res) => {
-    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients} = req.body;
+    const {Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients} = req.body;
     try {
         const connection = await pool.getConnection();
         await connection.execute(
-            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
         );
         connection.release();
 
@@ -187,12 +187,12 @@ app.post('/recipe', async (req, res) => {
 
 //add recipe by user upload
 app.post('/recipe/userUploadRecipe', async (req, res) => {
-    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID} = req.body;
+    const {Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients, userID} = req.body;
     try {
         const connection = await pool.getConnection();
         const result = await connection.execute(
-            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
         );
 
         const currentDate = new Date();
@@ -212,7 +212,64 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
     }
 });
 
+// Get recipe details
+app.get('/recipe', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        // Replace 'SELECT * FROM Recipes' with your query
+        const [rows] = await connection.execute('SELECT * FROM Recipe');
+        connection.release();
 
+        res.send(rows);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
+//get recipe info
+app.get('/recipe/:recipeID', async (req, res) => {
+    try {
+        const { recipeID } = req.params;
+        const connection = await pool.getConnection();
+
+        // Use this SQL query to return the recipe details for a given recipeID.
+        const [rows] = await connection.execute(
+            'SELECT * FROM Recipe WHERE RecipeID = ?',
+            [recipeID]
+        );
+
+        connection.release();
+        res.send(rows[0]); // Assuming each recipeID corresponds to one recipe
+    } catch (error) {
+        console.error(`Failed to get selected recipe info: ${error}`);
+        res.status(500).send(error);
+    }
+});
+
+// Get friend reviews for a user
+app.get('/user/friendReviews/:userID', async (req, res) => {
+    try {
+        const { userID } = req.params;
+        const connection = await pool.getConnection();
+
+        // Modified SQL query based on the schema
+        // This selects reviews left by friends of the given user (match with UserID in Friends_With table)
+        const [rows] = await connection.execute(
+            'SELECT r.* FROM Review AS r INNER JOIN User_Leaves_Review ulr ON r.ReviewID = ulr.ReviewID WHERE ulr.UserID IN (SELECT UserID2 FROM Friends_With WHERE UserID1 = ? UNION SELECT UserID1 FROM Friends_With WHERE UserID2 = ?)',
+            [userID, userID]
+        );
+
+        connection.release();
+        res.send(rows);
+    } catch (error) {
+        console.error(`Failed to get user friend reviews: ${error}`);
+        res.status(500).send(error);
+    }
+});
+
+
+// log in user.
 app.post('/login', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -297,33 +354,15 @@ app.delete('/review/:reviewID', async (req, res) => {
     }
 });
 
-//add ingredient, IngredientIDs can be an array of IngredientID
-app.post('/recipe/addIngredient', async (req, res) => {
-    const {RecipeID,IngredientIDs} = req.body;
-    try {
-        const connection = await pool.getConnection();
-        // Loop through each IngredientID and insert it into the database
-        for (const IngredientID of IngredientIDs) {
-            await connection.execute(
-                'INSERT INTO Recipe_Contains_Ingredient(RecipeID, IngredientID) VALUES (?, ?)',
-                [RecipeID, IngredientID]
-            );
-        }
-        connection.release();
 
-        res.send(`Recipe ${RecipeID} now has ingredients`);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send(error);
-    }
-});
 
-//list all ingredients
-app.get('/ingredients', async (req, res) => {
+
+// give me all recipes
+app.get('/recipes', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         const [rows] = await connection.execute(
-            'SELECT * FROM Ingredients'
+            'SELECT * FROM Recipe'
         );
         connection.release();
 
@@ -333,5 +372,78 @@ app.get('/ingredients', async (req, res) => {
         res.status(500).send(error);
     }
 });
+
+
+// Endpoint to search and filter recipes
+app.get('/recipes/search', async (req, res) => {
+    const { searchTerm, filter, userID } = req.query; // userID should be obtained from session or token
+
+    let baseQuery = `SELECT DISTINCT Recipe.* FROM Recipe `;
+    let whereConditions = [];
+    let parameters = [];
+
+    if (searchTerm) {
+        whereConditions.push(`(Recipe.Title LIKE CONCAT('%', ?, '%') OR Recipe.Ingredients LIKE CONCAT('%', ?, '%'))`);
+        parameters.push(searchTerm, searchTerm);
+    }
+
+    switch (filter) {
+        case 'reviewedByMe':
+            baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
+                   INNER JOIN Review ON Recipe_Has_Review.ReviewID = Review.ReviewID
+                   INNER JOIN User_Leaves_Review ON Review.ReviewID = User_Leaves_Review.ReviewID `;
+            whereConditions.push(`User_Leaves_Review.UserID = ?`);
+            parameters.push(userID);
+            break;
+        case 'likedByMe':
+            baseQuery += `JOIN User_Likes_Recipe ON Recipe.RecipeID = User_Likes_Recipe.RecipeID `;
+            whereConditions.push(`User_Likes_Recipe.UserID = ?`);
+            parameters.push(userID);
+            break;
+        case 'uploadedByMe':
+            baseQuery += `JOIN User_Uploads_Recipe ON Recipe.RecipeID = User_Uploads_Recipe.RecipeID `;
+            whereConditions.push(`User_Uploads_Recipe.UserID = ?`);
+            parameters.push(userID);
+            break;
+        case 'reviewedByFriends':
+            baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
+                   INNER JOIN Review ON Recipe_Has_Review.ReviewID = Review.ReviewID 
+                   INNER JOIN User_Leaves_Review ON Review.ReviewID = User_Leaves_Review.ReviewID 
+                   INNER JOIN Friends_With ON User_Leaves_Review.UserID = Friends_With.UserID2 OR User_Leaves_Review.UserID = Friends_With.UserID1`;
+            whereConditions.push(`(Friends_With.UserID1 = ? OR Friends_With.UserID2 = ?)`);
+            parameters.push(userID, userID);
+            break;
+        case 'likedByFriends':
+            baseQuery += `JOIN User_Likes_Recipe ON Recipe.RecipeID = User_Likes_Recipe.RecipeID 
+                           JOIN Friends_With ON User_Likes_Recipe.UserID = Friends_With.UserID2 `;
+            whereConditions.push(`Friends_With.UserID1 = ?`);
+            parameters.push(userID);
+            break;
+        case 'uploadedByFriends':
+            baseQuery += `JOIN User_Uploads_Recipe ON Recipe.RecipeID = User_Uploads_Recipe.RecipeID 
+                           JOIN Friends_With ON User_Uploads_Recipe.UserID = Friends_With.UserID2 `;
+            whereConditions.push(`Friends_With.UserID1 = ?`);
+            parameters.push(userID);
+            break;
+        // You can add more cases if needed
+    }
+
+    if (whereConditions.length > 0) {
+        baseQuery += ` WHERE ${whereConditions.join(' AND ')}`;
+    }
+
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.query(baseQuery, parameters);
+        connection.release();
+        res.json(rows);
+    } catch (error) {
+        console.error('Error performing search:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
