@@ -169,12 +169,12 @@ app.delete('/recipe/:recipeID', async (req, res) => {
 
 //add recipe
 app.post('/recipe', async (req, res) => {
-    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients} = req.body;
+    const {Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients} = req.body;
     try {
         const connection = await pool.getConnection();
         await connection.execute(
-            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
         );
         connection.release();
 
@@ -187,12 +187,12 @@ app.post('/recipe', async (req, res) => {
 
 //add recipe by user upload
 app.post('/recipe/userUploadRecipe', async (req, res) => {
-    const {Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID} = req.body;
+    const {Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients, userID} = req.body;
     try {
         const connection = await pool.getConnection();
         const result = await connection.execute(
-            'INSERT INTO Recipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients]
+            'INSERT INTO Recipe(Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+            [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
         );
 
         const currentDate = new Date();
@@ -212,6 +212,20 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
     }
 });
 
+// Get recipe details
+app.get('/recipe', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        // Replace 'SELECT * FROM Recipes' with your query
+        const [rows] = await connection.execute('SELECT * FROM Recipe');
+        connection.release();
+
+        res.send(rows);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
 
 //get recipe info
 app.get('/recipe/:recipeID', async (req, res) => {
@@ -340,42 +354,8 @@ app.delete('/review/:reviewID', async (req, res) => {
     }
 });
 
-//add ingredient, IngredientIDs can be an array of IngredientID
-app.post('/recipe/addIngredient', async (req, res) => {
-    const {RecipeID,IngredientIDs} = req.body;
-    try {
-        const connection = await pool.getConnection();
-        // Loop through each IngredientID and insert it into the database
-        for (const IngredientID of IngredientIDs) {
-            await connection.execute(
-                'INSERT INTO Recipe_Contains_Ingredient(RecipeID, IngredientID) VALUES (?, ?)',
-                [RecipeID, IngredientID]
-            );
-        }
-        connection.release();
 
-        res.send(`Recipe ${RecipeID} now has ingredients`);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send(error);
-    }
-});
 
-//list all ingredients
-app.get('/ingredients', async (req, res) => {
-    try {
-        const connection = await pool.getConnection();
-        const [rows] = await connection.execute(
-            'SELECT * FROM Ingredient'
-        );
-        connection.release();
-
-        res.send(rows);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send(error);
-    }
-});
 
 // give me all recipes
 app.get('/recipes', async (req, res) => {

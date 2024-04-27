@@ -31,7 +31,7 @@ async function loadRecipes() {
         recipes.forEach(recipe => {
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
-            recipeElement.textContent = recipe.title;
+            recipeElement.textContent = recipe.Title;
             recipeElement.dataset.id = recipe.id;
 
             recipeElement.addEventListener('click', function() {
@@ -64,18 +64,29 @@ async function loadFriends() {
 
 async function loadRecipeInfo(recipeId) {
     try {
-        const recipeInfo = await getSelectedRecipeInfo(recipeId);
-        const recipeInfoContainer = document.getElementById('tab-recipe-info');
+        const recipeInfo = await getSelectedRecipeInfo(recipeId); // Make sure this function is defined and returns the recipe data
+        const recipeInfoContainer = document.querySelector('.recipe-info-wall'); // Adjust the selector to target where you want to load the recipe info
+
+        // Clear out any existing content in the recipe info container
         recipeInfoContainer.innerHTML = '';
 
+        // Create and append the recipe title
         const recipeTitle = document.createElement('h3');
-        recipeTitle.textContent = recipeInfo.title;
+        recipeTitle.textContent = recipeInfo.Title; // Assuming recipeInfo contains a Title property
         recipeInfoContainer.appendChild(recipeTitle);
 
+        // Add more elements for the rest of the recipe information like cook time, prep time, etc.
+        // Example for Cook Time:
+        const cookTime = document.createElement('p');
+        cookTime.textContent = `Cook Time: ${recipeInfo.CookTime}`;
+        recipeInfoContainer.appendChild(cookTime);
+
+        // Continue adding other elements from recipeInfo...
     } catch (error) {
         console.error('Failed to load recipe info:', error);
     }
 }
+
 
 async function loadWall() {
     try {
