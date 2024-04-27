@@ -179,7 +179,8 @@ export async function updateUserById(userId, userData) {
 
 export function getUserIdFromCookie() {
     let cookieArray = document.cookie.split('; ');
-
+    console.log(cookieArray);
+    console.log(document.cookie);
     for(let i = 0; i < cookieArray.length; i++){
         let cookiePair = cookieArray[i].split('=');
 

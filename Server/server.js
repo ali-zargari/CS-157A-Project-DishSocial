@@ -283,7 +283,7 @@ app.post('/login', async (req, res) => {
         if (rows.length > 0) {
             // Direct comparison of passwords
             if(req.body.password === rows[0].Password){
-                res.cookie('userID', rows[0].UserID, { maxAge: 900000, httpOnly: true });
+                res.cookie('userID', rows[0].UserID, { maxAge: 900000});
                 res.send({ status: "Logged in", userID: rows[0].UserID }); // Include userID in the response
             }  else {
                 res.send({ status: "Incorrect email or password"});
@@ -303,7 +303,7 @@ app.post('/login', async (req, res) => {
 app.post('/logout', async (req, res) => {
     try {
         console.log(req.cookies);
-        res.clearCookie('userID', { httpOnly: true });
+        res.clearCookie('userID');
         res.send({status: "Logged out"});
 
     } catch (error) {
