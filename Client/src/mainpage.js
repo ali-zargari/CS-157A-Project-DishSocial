@@ -76,6 +76,11 @@ function updateDOMWithRecipes(recipes) {
             const recipeDescription = document.createElement('p');
             recipeDescription.textContent = recipe.Description; // Adjust if your property names differ
 
+            recipeDiv.addEventListener('click', function() {
+                const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
+                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
+            });
+
             recipeDiv.appendChild(recipeTitle);
             recipeDiv.appendChild(recipeDescription);
 
