@@ -33,8 +33,9 @@ export async function deleteRecipe(recipeID) {
 export async function showAllUser() {
     try {
         const response = await axios.get('http://localhost:3002/users');
+        console.log("All users: ");
         console.log(response.data); // Log the response from the server
-
+        return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation:', error);
     }
@@ -43,6 +44,7 @@ export async function showAllUser() {
 export async function showFriends() {
     try {
         const response = await axios.get('http://localhost:3002/users/friends', {withCredentials : true});
+        console.log("All friends: ");
         console.log(response.data); // Log the response from the server
         return response.data;
     } catch (error) {

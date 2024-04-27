@@ -93,14 +93,16 @@ app.get('/users/friends', async (req, res) => {
         // Check if there are friend IDs to query
         if (friendIds.length > 0) {
             // Query to get names of friends
+            const friendIdsPlaceHolders = friendIds.map(() => '?').join(',');
+
             const [rows] = await connection.execute(
-                'SELECT FirstName, LastName FROM Users WHERE UserID IN (?)',
-                [`(${friendIds.join(',')})`]
+                `SELECT FirstName, LastName FROM Users WHERE UserID IN (${friendIdsPlaceHolders})`,
+                friendIds
             );
 
-            console.log(rows)
+            //console.log(rows)
             res.send(rows);
-            console.log(`(${friendIds.join(',')})`);
+            //console.log(`(${friendIds.join(',')})`);
         } else {
             res.send([]); // No friends found
         }
