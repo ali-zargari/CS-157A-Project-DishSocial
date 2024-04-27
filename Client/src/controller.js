@@ -229,47 +229,7 @@ export async function generalSearchRecipes(searchTerm) {
 }
 
 
-export async function performAdvancedRecipeSearch() {
-    const searchTerm = document.getElementById('general-search').value;
-    const filter = document.getElementById('recipeFilter').value;
-    const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
 
-    try {
-        const response = await axios.get(`http://localhost:3002/recipes/search`, {
-            params: {
-                searchTerm: searchTerm,
-                filter: filter,
-                userID: userID
-            }
-        });
-
-        // Clear the current recipe list
-        const recipeListContainer = document.querySelector('.recipe-list');
-        recipeListContainer.innerHTML = '';
-
-        // Populate with new results
-        response.data.forEach(recipe => {
-            const recipeElement = document.createElement('div');
-            recipeElement.className = 'recipe';
-            recipeElement.innerHTML = `
-                <h2>${recipe.Title}</h2>
-                <p>${recipe.Ingredients}</p>  
-                <button onclick="loadRecipeInfo(${recipe.RecipeID})">View Recipe</button> 
-            `;
-
-            // Append the new element to the container
-            recipeListContainer.appendChild(recipeElement);
-        });
-
-        // If no recipes found, display a message
-        if(response.data.length === 0) {
-            recipeListContainer.innerHTML = '<p>No recipes found.</p>';
-        }
-
-    } catch (error) {
-        console.error('Error performing advanced search:', error);
-    }
-}
 
 // Function to load the recipe info when a recipe is clicked
 async function loadRecipeInfo(recipeID) {

@@ -7,9 +7,9 @@ import {
     getAllRecipes,
     getSelectedRecipeInfo,
     getUserFriendReviews,
-    generalSearchRecipes,
-    performAdvancedRecipeSearch
+    generalSearchRecipes
 } from './controller';
+import axios from "axios";
 
 let selectedRecipeId = null;
 
@@ -223,3 +223,50 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+async function performAdvancedRecipeSearch() {
+    const searchTerm = document.getElementById('general-search').value;
+    const filter = document.getElementById('recipeFilter').value;
+    const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
+
+    try {
+        const response = await axios.get(`http://localhost:3002/recipes/search`, {
+            params: {
+                searchTerm: searchTerm,
+                filter: filter,
+                userID: userID
+            }
+        });
+
+        // Clear the current recipe list
+        const recipeListContainer = document.querySelector('.recipe-list');
+        recipeListContainer.innerHTML = '';
+
+        // Populate with new results
+        response.data.forEach(recipe => {
+            const recipeElement = document.createElement('div');
+            recipeElement.className = 'recipe';
+            recipeElement.innerHTML = `
+                <h3>${recipe.Title}</h3>
+                <p>${recipe.Ingredients}</p>  
+            `;
+
+            // Add click event listener to each recipe element
+            recipeElement.addEventListener('click', function() {
+                const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
+                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
+            });
+
+            // Append the new element to the container
+            recipeListContainer.appendChild(recipeElement);
+        });
+
+        // If no recipes found, display a message
+        if(response.data.length === 0) {
+            recipeListContainer.innerHTML = '<p>No recipes found.</p>';
+        }
+
+    } catch (error) {
+        console.error('Error performing advanced search:', error);
+    }
+}
