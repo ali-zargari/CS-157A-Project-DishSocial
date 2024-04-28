@@ -187,11 +187,22 @@ async function loadRecipeInfo(recipeId) {
 
         // Add more elements for the rest of the recipe information like cook time, prep time, etc.
         // Example for Cook Time:
-        const cookTime = document.createElement('p');
-        cookTime.textContent = `Cook Time: ${recipeInfo.CookTime}`;
-        recipeInfoContainer.appendChild(cookTime);
+        const prepTime = document.createElement('p');
+        prepTime.textContent = `Prep Time: ${recipeInfo.PrepTime}`;
+        recipeInfoContainer.appendChild(prepTime);
 
-        // Continue adding other elements from recipeInfo...
+        const steps = document.createElement('p');
+        steps.textContent = `Steps: ${recipeInfo.Steps}`;
+        recipeInfoContainer.appendChild(steps);
+
+        const totalCalories = document.createElement('p');
+        totalCalories.textContent = `Total Calories: ${recipeInfo.TotalCalories}`;
+        recipeInfoContainer.appendChild(totalCalories);
+
+        const ingredients = document.createElement('p');
+        ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
+        recipeInfoContainer.appendChild(ingredients);
+
     } catch (error) {
         console.error('Failed to load recipe info:', error);
     }
