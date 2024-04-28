@@ -13,6 +13,7 @@ import axios from "axios";
 
 let selectedRecipeId = null;
 
+console.log("Current UserID: ");
 console.log(getUserIdFromCookie());
 
 document.getElementById('logoutButton').addEventListener('click', async function (event) {
@@ -21,9 +22,6 @@ document.getElementById('logoutButton').addEventListener('click', async function
 
     if (await logoutUser()){
         window.location.href = 'login.html';
-        console.log("search clicked");
-
-
 
     }
 });
@@ -142,6 +140,21 @@ async function loadRecipes() {
     }
 }
 
+async function loadAllUsers() {
+    try {
+        const users = await showAllUser();
+        const usersListContainer = document.querySelector('.All-list');
+        usersListContainer.innerHTML = '';
+        users.forEach(user => {
+            const userElement = document.createElement('div');
+            userElement.className = 'user';
+            userElement.textContent = `${user.FirstName} ${user.LastName}`;
+            usersListContainer.appendChild(userElement);
+        });
+    } catch (error) {
+        console.error('Failed to load all users:', error);
+    }
+}
 
 async function loadFriends() {
     try {
@@ -203,6 +216,7 @@ async function loadWall() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    loadAllUsers();
     loadFriends();
     loadRecipes();
 
