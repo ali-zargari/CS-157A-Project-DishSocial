@@ -50,7 +50,6 @@
         <h2>Recipes</h2>
 
         <!-- Recipe Search -->
-        <!-- Recipe Search -->
         <div class="recipe-search">
             <div class="top-row">
                 <input id="general-search" type="text" placeholder="Search recipes..." class="search-input">
@@ -102,19 +101,47 @@
                 <button type="submit" id="uploadButton">Upload</button>
             </form>
         </div>
-
-
     </div>
 
 
     <!-- Friends' reviews section -->
+    <!-- Recipe Info Section -->
     <div class="recipe-info">
         <h2>Recipe Info</h2>
 
-        <div class="recipe-info-wall">
-            <!-- top half is the description, steps. Bottom half is reviews, and other info maybe -->
+        <!-- Recipe Description and Details -->
+        <div class="recipe-description">
+            <!-- Existing recipe info like title, prep time, etc. -->
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews-section">
+            <h3>Reviews</h3>
+            <div class="reviews-list">
+
+            </div>
+        </div>
+
+
+        <!-- Review Form Section -->
+        <div class="review-form-section">
+            <h3>Post Your Review</h3>
+            <form id="postReviewForm">
+                <textarea id="reviewText" placeholder="Write your review..."></textarea>
+                <label for="reviewRating">Rating:</label>
+                <select id="reviewRating">
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                    <!-- Add options for more stars as needed -->
+                </select>
+                <button type="submit" id="submitReviewButton">Submit Review</button>
+            </form>
         </div>
     </div>
+
 
     <!-- Extra Info Section with Tabs -->
     <div class="wall">

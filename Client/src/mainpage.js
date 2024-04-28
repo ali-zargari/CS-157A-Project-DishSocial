@@ -7,7 +7,8 @@ import {
     getAllRecipes,
     getSelectedRecipeInfo,
     getUserFriendReviews,
-    generalSearchRecipes
+    getUserNameById,
+    userUploadRecipe
 } from './controller';
 import axios from "axios";
 
@@ -48,63 +49,6 @@ function renderRecipeInfo(recipeInfo) {
     // You might want to add more details depending on your recipe structure
 }
 
-async function performGeneralRecipeSearch() {
-    const searchTerm = document.getElementById('general-search').value;
-    if (!searchTerm.trim()) {
-        // Fetch all recipes if search term is empty
-        try {
-            const recipes = await getAllRecipes(); // Assume this function fetches all recipes
-            updateDOMWithRecipes(recipes);
-        } catch (error) {
-            console.error('Error fetching all recipes:', error);
-        }
-    } else {
-        try {
-            console.log('Search Term:', searchTerm);
-            const recipes = await generalSearchRecipes(searchTerm); // Function to search recipes based on term
-            updateDOMWithRecipes(recipes);
-        } catch (error) {
-            console.error('Error performing general search:', error);
-        }
-    }
-}
-
-function updateDOMWithRecipes(recipes) {
-    const recipesContainer = document.querySelector('.recipe-list');
-
-    // Clear previous results
-    recipesContainer.innerHTML = '';
-
-    // Check if recipes were found
-    if (recipes.length === 0) {
-        recipesContainer.innerHTML = '<p>No recipes found.</p>';
-    } else {
-        // Append new results to the container
-        recipes.forEach(recipe => {
-            const recipeDiv = document.createElement('div');
-            recipeDiv.className = 'recipe';
-
-            const recipeTitle = document.createElement('h3');
-            recipeTitle.textContent = recipe.Title; // Adjust if your property names differ
-
-            const recipeDescription = document.createElement('p');
-            recipeDescription.textContent = recipe.Description; // Adjust if your property names differ
-
-            recipeDiv.addEventListener('click', function() {
-                const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
-                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
-            });
-
-            recipeDiv.appendChild(recipeTitle);
-            recipeDiv.appendChild(recipeDescription);
-
-            recipesContainer.appendChild(recipeDiv);
-        });
-    }
-}
-
-
-
 
 async function loadRecipes() {
     try {
@@ -119,16 +63,18 @@ async function loadRecipes() {
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title; // Assuming 'Title' is the attribute from your database
 
-            const recipeDescription = document.createElement('p');
-            recipeDescription.textContent = recipe.Description; // Assuming 'Description' is the attribute, no description yet
+            // Check if the recipe includes ingredients
+            const recipeIngredients = recipe.Ingredients ? `<p>${recipe.Ingredients}</p>` : '';
 
-            // Append title and description to the recipe element
-            recipeElement.appendChild(recipeTitle);
-            recipeElement.appendChild(recipeDescription);
+            // Construct the innerHTML for the recipe element including ingredients if they exist
+            recipeElement.innerHTML = `
+                <h3>${recipe.Title}</h3>
+                ${recipeIngredients}
+            `;
 
             // Add click event listener to each recipe element
             recipeElement.addEventListener('click', function() {
-                const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
+                selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
                 loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
             });
 
@@ -139,6 +85,7 @@ async function loadRecipes() {
         console.error('Failed to load recipes:', error);
     }
 }
+
 
 async function loadAllUsers() {
     try {
@@ -174,11 +121,18 @@ async function loadFriends() {
 
 async function loadRecipeInfo(recipeId) {
     try {
-        const recipeInfo = await getSelectedRecipeInfo(recipeId); // Make sure this function is defined and returns the recipe data
-        const recipeInfoContainer = document.querySelector('.recipe-info-wall'); // Adjust the selector to target where you want to load the recipe info
+        const recipeInfo = await getSelectedRecipeInfo(recipeId);
+        const recipeInfoContainer = document.querySelector('.recipe-description');
+        const reviewFormSection = document.querySelector('.review-form-section'); // Select the review form section
+
 
         // Clear out any existing content in the recipe info container
         recipeInfoContainer.innerHTML = '';
+
+        // Assuming that recipeInfo will be null or undefined if no recipe is found
+        if (recipeInfo) {
+            reviewFormSection.style.display = 'flex'; // Hide the review form on error
+        }
 
         // Create and append the recipe title
         const recipeTitle = document.createElement('h3');
@@ -203,11 +157,49 @@ async function loadRecipeInfo(recipeId) {
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
 
+
+        reviewFormSection.style.display = 'block'; // Show the review form
+
+
     } catch (error) {
         console.error('Failed to load recipe info:', error);
+        const reviewFormSection = document.querySelector('.review-form-section');
+
+
     }
+
+    // Fetch reviews for the recipe
+    await fetchAndDisplayReviews(recipeId);
+
 }
 
+async function fetchAndDisplayReviews(recipeId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
+        const reviews = response.data;
+
+        console.log(reviews);
+
+        const reviewsList = document.querySelector('.reviews-list');
+        reviewsList.innerHTML = ''; // Clear existing reviews before displaying the latest ones
+
+        reviews.forEach(review => {
+            // Create and append review items to the reviews list
+            const reviewItem = document.createElement('div');
+            reviewItem.className = 'review-item';
+            reviewItem.innerHTML = `
+                <p class="review-text">"${review.ReviewText}"</p>
+                <div class="review-details">
+                    <span class="review-author">- ${review.FirstName} ${review.LastName}</span>
+                    <span class="review-rating">Rating: ${review.Rating} Stars</span>
+                </div>
+            `;
+            reviewsList.appendChild(reviewItem);
+        });
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+    }
+}
 
 async function loadWall() {
     try {
@@ -216,6 +208,7 @@ async function loadWall() {
         reviewWallContainer.innerHTML = '';
 
         reviews.forEach(review => {
+
             const reviewContainer = document.createElement('div');
             reviewContainer.className = 'review-container';  // Add a class for styling and interaction
 
@@ -252,6 +245,7 @@ async function loadWall() {
             reviewWallContainer.appendChild(lineBreak);
 
             reviewWallContainer.appendChild(reviewContainer); // Append the review container to the wall container
+
         });
 
     } catch (error) {
@@ -264,6 +258,14 @@ document.addEventListener('DOMContentLoaded', function() {
     loadFriends();
     loadRecipes();
     loadWall();
+});
+
+document.addEventListener('DOMContentLoaded', async function() {
+
+    if (selectedRecipeId) {
+        await loadRecipeInfo(selectedRecipeId);
+    }
+
 });
 
 async function performAdvancedRecipeSearch() {
@@ -312,4 +314,129 @@ async function performAdvancedRecipeSearch() {
     } catch (error) {
         console.error('Error performing advanced search:', error);
     }
+}
+document.getElementById('postReviewForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Get the form data
+    const reviewText = document.getElementById('reviewText').value;
+    const reviewRating = document.getElementById('reviewRating').value;
+    const userID = getUserIdFromCookie(); // This function retrieves the current user's ID from a cookie
+
+    if (!selectedRecipeId) {
+        console.error('No recipe selected.');
+        alert('Please select a recipe before submitting a review.');
+        return;
+    }
+
+    try {
+        const postData = {
+            UserID: userID,
+            RecipeID: selectedRecipeId,
+            Rating: parseInt(reviewRating),
+            ReviewText: reviewText
+        };
+
+        // POST the review data to the server
+        const response = await axios.post('http://localhost:3002/review/addReview', postData);
+
+        if (response.status === 201) {
+            // Append the new review to the list on the page
+            const newReview = response.data;
+            addReviewToPage(newReview);
+
+            // Clear the form fields
+            document.getElementById('reviewText').value = '';
+            document.getElementById('reviewRating').value = '1';
+            alert('Review successfully added.');
+        } else {
+            console.error('Failed to submit review:', response.status, response.statusText);
+            alert('Failed to submit review.');
+        }
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        alert('Error submitting review. Check console for more details.');
+    }
+});
+
+async function addReviewToPage(review) {
+    const reviewsList = document.querySelector('.reviews-list');
+    const reviewItem = document.createElement('div');
+    const author = await getUserNameById(review.UserID);
+    reviewItem.className = 'review-item';
+    reviewItem.innerHTML = `
+        <p class="review-text">"${review.ReviewText}"</p>
+        <div class="review-details">
+            <span class="review-author">- ${author}</span>
+            <span class="review-rating"> ${review.Rating} Stars</span>
+        </div>
+    `;
+    console.log(await getUserNameById())
+    reviewsList.appendChild(reviewItem);
+}
+
+
+// Function to handle the upload form submission
+async function uploadRecipe(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Gather the form data
+    const title = document.getElementById('title').value;
+    const cookTime = document.getElementById('cookTime').value;
+    const prepTime = document.getElementById('prepTime').value;
+    const ingredients = document.getElementById('ingredients').value;
+    const totalCalories = document.getElementById('totalCalories').value;
+    const cookingSteps = document.getElementById('cookingSteps').value;
+
+    // Put the form data into an object
+    const recipeData = {
+        Title: title,
+        CookTime: cookTime,
+        PrepTime: prepTime,
+        Ingredients: ingredients,
+        TotalCalories: totalCalories,
+        Steps: cookingSteps
+    };
+
+    // Call the function from your controller to make the POST request
+    const newRecipe = await userUploadRecipe(recipeData);
+
+    // If the new recipe was created successfully
+    if (newRecipe) {
+        // Call a function to add the new recipe to the list of recipes in the DOM
+        addRecipeToDom(newRecipe);
+        // Optionally clear the form
+        event.target.reset();
+    } else {
+        // Handle the error case
+        alert('Failed to upload recipe.');
+    }
+}
+
+// Attach the event listener to the form
+document.getElementById('uploadRecipeForm').addEventListener('submit', uploadRecipe);
+
+// Function to add a recipe to the DOM
+function addRecipeToDom(recipe) {
+    const recipeListContainer = document.querySelector('.recipe-list');
+
+    console.log("HAHAHAHAHAHAHAHA", recipe)
+
+    // Create the new recipe element
+    const recipeElement = document.createElement('div');
+    recipeElement.className = 'recipe';
+
+    recipeElement.innerHTML = `
+        <h3>${recipe.Title}</h3>
+        <p>${recipe.Ingredients}</p>  <!-- You might want to format the ingredients differently -->
+    `;
+
+    // Add an event listener to load the recipe details when clicked
+    recipeElement.addEventListener('click', function() {
+        selectedRecipeId = recipe.RecipeID;
+        loadRecipeInfo(selectedRecipeId);
+    });
+
+    // Append the new recipe to the list
+    recipeListContainer.appendChild(recipeElement);
 }

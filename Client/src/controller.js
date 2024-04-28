@@ -64,17 +64,18 @@ export async function showFriends() {
 //     }
 // }
 
-export async function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories,Ingredients) {
-    try {
-        const response = await axios.post('http://localhost:3002/recipe/userUploadRecipe', {
-            Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, Ingredients
-        }, {withCredentials : true});
-        console.log(response.data); // Log the response from the server
+// Inside your controller
 
+export async function userUploadRecipe(recipeData) {
+    try {
+        const response = await axios.post('http://localhost:3002/recipe/userUploadRecipe', recipeData, { withCredentials : true });
+        return response.data; // You might want to return the created recipe object
     } catch (error) {
         console.error('There was a problem with your axios operation: user upload recipe', error);
+        return null;
     }
 }
+
 
 export async function loginUser(email, password) {
     try {
@@ -188,8 +189,33 @@ export function getUserIdFromCookie() {
             return cookiePair[1];
         }
     }
-
     return null;
+}
+
+export async function getUserInfo() {
+    try {
+        const userID = getUserIdFromCookie();
+        if(userID === null){
+            console.error('User ID not found in cookie');
+            return null;
+        }
+
+        const response = await axios.get(`http://localhost:3002/users/${userID}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to get user info:', error);
+    }
+}
+
+export async function getUserNameById() {
+    try {
+        const uID = getUserIdFromCookie();
+        const response = await axios.get(`http://localhost:3002/users/${uID}`);
+
+        return response.data.FirstName + ' ' + response.data.LastName;
+    } catch (error) {
+        console.error('Failed to get user name:', error);
+    }
 }
 
 export async function getSelectedRecipeInfo(recipeID) {
@@ -260,3 +286,4 @@ function renderRecipeInfo(recipeInfo) {
     `;
     // You might want to add more details depending on your recipe structure
 }
+

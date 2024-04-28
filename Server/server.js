@@ -180,6 +180,8 @@ app.post('/recipe', async (req, res) => {
         );
         connection.release();
 
+        console.log(`Recipe ${Title} has been added`);
+
         res.send(`Recipe ${Title} has been added`);
     } catch (error) {
         console.error(error);
@@ -187,32 +189,46 @@ app.post('/recipe', async (req, res) => {
     }
 });
 
-//add recipe by user upload
+// add recipe by user upload
 app.post('/recipe/userUploadRecipe', async (req, res) => {
-    const {Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients} = req.body;
+    const { Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients } = req.body;
     try {
         const connection = await pool.getConnection();
-        const result = await connection.execute(
-            'INSERT INTO Recipe(Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+        // Insert the new recipe and get the insertId
+        const [recipeResult] = await connection.execute(
+            'INSERT INTO Recipe (Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
             [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
         );
+        const newRecipeId = recipeResult.insertId;
 
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth() + 1;
-        const day = currentDate.getDate();
+        const currentDate = new Date().toISOString().slice(0, 10); // Format as 'YYYY-MM-DD'
+        // Insert into User_Uploads_Recipe table
         await connection.execute(
-            'INSERT INTO User_Uploads_Recipe(UserID,RecipeID, UploadDate) VALUES (?, ?, ?)',
-            [req.cookies.userID,result[0].insertId,`${year}-${month}-${day}`]
+            'INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (?, ?, ?)',
+            [req.cookies.userID, newRecipeId, currentDate]
         );
+
+        // Retrieve the full information of the newly added recipe
+        const [fullRecipeDetails] = await connection.execute(
+            'SELECT * FROM Recipe WHERE RecipeID = ?',
+            [newRecipeId]
+        );
+
         connection.release();
 
-        res.send(`Recipe ${Title} has been added`);
+        // If the array is not empty, send the first element (the recipe data)
+        if (fullRecipeDetails.length > 0) {
+            res.status(201).json(fullRecipeDetails[0]);
+        } else {
+            res.status(404).send('Recipe was not found after insertion.');
+        }
     } catch (error) {
         console.error(error);
-        res.status(500).send(error);
+        connection?.release();
+        res.status(500).send(error.message);
     }
 });
+
 
 // Get recipe details
 app.get('/recipe', async (req, res) => {
@@ -333,30 +349,50 @@ app.post('/logout', async (req, res) => {
 });
 
 //add review
+// POST endpoint to submit a review
 app.post('/review/addReview', async (req, res) => {
-    const {UserID, RecipeID, PublishDate, NumVotes, Rating, ReviewText} = req.body;
+    const {UserID, RecipeID, Rating, ReviewText} = req.body;
+    const PublishDate = new Date().toISOString().slice(0, 10); // Format to YYYY-MM-DD
     try {
         const connection = await pool.getConnection();
-        const reviewResult = await connection.execute(
-            'INSERT INTO Review(PublishDate, NumVotes, Rating, ReviewText) VALUES (?, ?, ?, ?)',
-            [PublishDate, NumVotes, Rating, ReviewText]
+
+        // First, insert the review into the Review table
+        const [reviewResult] = await connection.execute(
+            'INSERT INTO Review (PublishDate, NumVotes, Rating, ReviewText) VALUES (?, ?, ?, ?)',
+            [PublishDate, 0, Rating, ReviewText]
         );
 
+        // Then, link the review with the user who left it
         await connection.execute(
-            'INSERT INTO Recipe_Has_Review(RecipeID, ReviewID) VAlUES (?,?)',[RecipeID, reviewResult[0].insertId]
+            'INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (?, ?)',
+            [UserID, reviewResult.insertId]
         );
 
+        // Link the review with the recipe
         await connection.execute(
-            'INSERT INTO User_Leaves_Review(UserID, ReviewID) VALUES (?,?)',[UserID, reviewResult[0].insertId]
+            'INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (?, ?)',
+            [RecipeID, reviewResult.insertId]
         );
+
         connection.release();
 
-        res.send(`Review has been added`);
+        // Send back the ID of the new review
+        res.status(201).json({
+            ReviewID: reviewResult.insertId,
+            PublishDate,
+            NumVotes: 0,
+            Rating,
+            ReviewText
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).send(error);
+        console.error('Error submitting review:', error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
     }
 });
+
+
+//
 
 //delete review
 app.delete('/review/:reviewID', async (req, res) => {
@@ -376,6 +412,59 @@ app.delete('/review/:reviewID', async (req, res) => {
     }
 });
 
+
+app.get('/reviews/:recipeID', async (req, res) => {
+    try {
+        const { recipeID } = req.params;
+        const connection = await pool.getConnection();
+
+        // Join the Review, Recipe_Has_Review, and Users tables to get all reviews for a specific recipe
+        const [reviews] = await connection.execute(`
+            SELECT r.ReviewID, r.PublishDate, r.NumVotes, r.Rating, r.ReviewText,
+                   u.UserID, u.FirstName, u.LastName
+            FROM Review r
+            JOIN Recipe_Has_Review rhr ON r.ReviewID = rhr.ReviewID
+            JOIN User_Leaves_Review ulr ON r.ReviewID = ulr.ReviewID
+            JOIN Users u ON ulr.UserID = u.UserID
+            WHERE rhr.RecipeID = ?
+        `, [recipeID]);
+
+        connection.release();
+        res.json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        if (connection) {
+            connection.release();
+        }
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+app.get('/users/:userID', async (req, res) => {
+    const { userID } = req.params; // Extracting userID from the request URL
+
+    try {
+        const connection = await pool.getConnection(); // Assuming 'pool' is your MySQL connection pool
+
+        // SQL query to fetch user data
+        const [rows] = await connection.execute(
+            'SELECT UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Age FROM Users WHERE UserID = ?',
+            [userID]
+        );
+
+        connection.release(); // Release the connection back to the pool
+
+        if (rows.length > 0) {
+            res.json(rows[0]); // Send the first row of the results as JSON
+        } else {
+            res.status(404).send('User not found'); // Send a 404 response if no user is found
+        }
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).send('Internal Server Error'); // Send a 500 response on error
+    }
+});
 
 
 
