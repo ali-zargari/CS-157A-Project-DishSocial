@@ -47,6 +47,89 @@ button {
     display: flex;
     flex-direction: column;
     min-width: 400px;
+    overflow: scroll;
+}
+
+
+.review-form-section{
+    padding: 10px;
+    border-top: 1px solid #ddd; /* Separator between sections */
+    display: none;
+    margin-top: auto;
+
+}
+
+.reviews-section{
+    padding: 10px;
+    border-top: 1px solid #ddd; /* Separator between sections */
+    margin-top: auto;
+
+}
+
+
+.review-item {
+    background-color: #ffffff;
+    border: 1px solid #dedede;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px; /* Spacing between review items */
+}
+
+.review-text {
+    font-style: italic;
+    color: #555555;
+}
+
+.review-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px; /* Space between review text and details */
+}
+
+.review-author {
+    font-weight: bold;
+    color: #333333;
+}
+
+.review-rating {
+    background-color: #ffd700; /* Gold color for the star rating */
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.reviews-list {
+    max-height: 300px; /* Set a max-height and add scroll if content overflows */
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+#postReviewForm {
+    display: grid;
+    grid-gap: 10px;
+}
+
+#reviewText {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    min-height: 100px;
+    resize: vertical;
+}
+
+#submitReviewButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #28a745; /* Consistent button color with your theme */
+    color: white;
+    cursor: pointer;
+}
+
+#submitReviewButton:hover {
+    background-color: #218838; /* Darken button on hover for a nice effect */
 }
 
 .recipes{

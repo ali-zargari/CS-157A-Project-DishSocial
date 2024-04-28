@@ -188,8 +188,33 @@ export function getUserIdFromCookie() {
             return cookiePair[1];
         }
     }
-
     return null;
+}
+
+export async function getUserInfo() {
+    try {
+        const userID = getUserIdFromCookie();
+        if(userID === null){
+            console.error('User ID not found in cookie');
+            return null;
+        }
+
+        const response = await axios.get(`http://localhost:3002/users/${userID}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to get user info:', error);
+    }
+}
+
+export async function getUserNameById() {
+    try {
+        const uID = getUserIdFromCookie();
+        const response = await axios.get(`http://localhost:3002/users/${uID}`);
+
+        return response.data.FirstName + ' ' + response.data.LastName;
+    } catch (error) {
+        console.error('Failed to get user name:', error);
+    }
 }
 
 export async function getSelectedRecipeInfo(recipeID) {
