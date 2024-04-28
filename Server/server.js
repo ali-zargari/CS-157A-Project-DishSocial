@@ -257,7 +257,7 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
 
         const sqlQuery = `
             SELECT
-                r.Title, r.CookTime, r.PrepTime, r.Steps, r.TotalCalories, r.Ingredients,
+                r.RecipeID, r.Title, r.CookTime, r.PrepTime, r.Steps, r.TotalCalories, r.Ingredients,
                 rv.ReviewID, rv.PublishDate, rv.NumVotes, rv.Rating, rv.ReviewText,
                 friendUser.FirstName as FriendName  -- Assuming the Users table has a Name column
             FROM
