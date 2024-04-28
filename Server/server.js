@@ -180,6 +180,8 @@ app.post('/recipe', async (req, res) => {
         );
         connection.release();
 
+        console.log(`Recipe ${Title} has been added`);
+
         res.send(`Recipe ${Title} has been added`);
     } catch (error) {
         console.error(error);
@@ -187,32 +189,46 @@ app.post('/recipe', async (req, res) => {
     }
 });
 
-//add recipe by user upload
+// add recipe by user upload
 app.post('/recipe/userUploadRecipe', async (req, res) => {
-    const {Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients} = req.body;
+    const { Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients } = req.body;
     try {
         const connection = await pool.getConnection();
-        const result = await connection.execute(
-            'INSERT INTO Recipe(Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+        // Insert the new recipe and get the insertId
+        const [recipeResult] = await connection.execute(
+            'INSERT INTO Recipe (Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
             [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
         );
+        const newRecipeId = recipeResult.insertId;
 
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth() + 1;
-        const day = currentDate.getDate();
+        const currentDate = new Date().toISOString().slice(0, 10); // Format as 'YYYY-MM-DD'
+        // Insert into User_Uploads_Recipe table
         await connection.execute(
-            'INSERT INTO User_Uploads_Recipe(UserID,RecipeID, UploadDate) VALUES (?, ?, ?)',
-            [req.cookies.userID,result[0].insertId,`${year}-${month}-${day}`]
+            'INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (?, ?, ?)',
+            [req.cookies.userID, newRecipeId, currentDate]
         );
+
+        // Retrieve the full information of the newly added recipe
+        const [fullRecipeDetails] = await connection.execute(
+            'SELECT * FROM Recipe WHERE RecipeID = ?',
+            [newRecipeId]
+        );
+
         connection.release();
 
-        res.send(`Recipe ${Title} has been added`);
+        // If the array is not empty, send the first element (the recipe data)
+        if (fullRecipeDetails.length > 0) {
+            res.status(201).json(fullRecipeDetails[0]);
+        } else {
+            res.status(404).send('Recipe was not found after insertion.');
+        }
     } catch (error) {
         console.error(error);
-        res.status(500).send(error);
+        connection?.release();
+        res.status(500).send(error.message);
     }
 });
+
 
 // Get recipe details
 app.get('/recipe', async (req, res) => {

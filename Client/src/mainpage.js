@@ -7,7 +7,8 @@ import {
     getAllRecipes,
     getSelectedRecipeInfo,
     getUserFriendReviews,
-    getUserNameById
+    getUserNameById,
+    userUploadRecipe
 } from './controller';
 import axios from "axios";
 
@@ -62,20 +63,20 @@ async function loadRecipes() {
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title; // Assuming 'Title' is the attribute from your database
 
-            const recipeDescription = document.createElement('p');
-            recipeDescription.textContent = recipe.Description; // Assuming 'Description' is the attribute, no description yet
+            // Check if the recipe includes ingredients
+            const recipeIngredients = recipe.Ingredients ? `<p>${recipe.Ingredients}</p>` : '';
 
-            // Append title and description to the recipe element
-            recipeElement.appendChild(recipeTitle);
-            recipeElement.appendChild(recipeDescription);
+            // Construct the innerHTML for the recipe element including ingredients if they exist
+            recipeElement.innerHTML = `
+                <h3>${recipe.Title}</h3>
+                ${recipeIngredients}
+            `;
 
             // Add click event listener to each recipe element
             recipeElement.addEventListener('click', function() {
                 selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
                 loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
             });
-
-            //selectedRecipeId = recipe.RecipeID; // Update selectedRecipeId here
 
             // Append the recipe element to the container
             recipeListContainer.appendChild(recipeElement);
@@ -84,6 +85,7 @@ async function loadRecipes() {
         console.error('Failed to load recipes:', error);
     }
 }
+
 
 async function loadAllUsers() {
     try {
@@ -364,4 +366,70 @@ async function addReviewToPage(review) {
     `;
     console.log(await getUserNameById())
     reviewsList.appendChild(reviewItem);
+}
+
+
+// Function to handle the upload form submission
+async function uploadRecipe(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Gather the form data
+    const title = document.getElementById('title').value;
+    const cookTime = document.getElementById('cookTime').value;
+    const prepTime = document.getElementById('prepTime').value;
+    const ingredients = document.getElementById('ingredients').value;
+    const totalCalories = document.getElementById('totalCalories').value;
+    const cookingSteps = document.getElementById('cookingSteps').value;
+
+    // Put the form data into an object
+    const recipeData = {
+        Title: title,
+        CookTime: cookTime,
+        PrepTime: prepTime,
+        Ingredients: ingredients,
+        TotalCalories: totalCalories,
+        Steps: cookingSteps
+    };
+
+    // Call the function from your controller to make the POST request
+    const newRecipe = await userUploadRecipe(recipeData);
+
+    // If the new recipe was created successfully
+    if (newRecipe) {
+        // Call a function to add the new recipe to the list of recipes in the DOM
+        addRecipeToDom(newRecipe);
+        // Optionally clear the form
+        event.target.reset();
+    } else {
+        // Handle the error case
+        alert('Failed to upload recipe.');
+    }
+}
+
+// Attach the event listener to the form
+document.getElementById('uploadRecipeForm').addEventListener('submit', uploadRecipe);
+
+// Function to add a recipe to the DOM
+function addRecipeToDom(recipe) {
+    const recipeListContainer = document.querySelector('.recipe-list');
+
+    console.log("HAHAHAHAHAHAHAHA", recipe)
+
+    // Create the new recipe element
+    const recipeElement = document.createElement('div');
+    recipeElement.className = 'recipe';
+
+    recipeElement.innerHTML = `
+        <h3>${recipe.Title}</h3>
+        <p>${recipe.Ingredients}</p>  <!-- You might want to format the ingredients differently -->
+    `;
+
+    // Add an event listener to load the recipe details when clicked
+    recipeElement.addEventListener('click', function() {
+        selectedRecipeId = recipe.RecipeID;
+        loadRecipeInfo(selectedRecipeId);
+    });
+
+    // Append the new recipe to the list
+    recipeListContainer.appendChild(recipeElement);
 }
