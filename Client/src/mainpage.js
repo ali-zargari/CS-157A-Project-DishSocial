@@ -187,11 +187,22 @@ async function loadRecipeInfo(recipeId) {
 
         // Add more elements for the rest of the recipe information like cook time, prep time, etc.
         // Example for Cook Time:
-        const cookTime = document.createElement('p');
-        cookTime.textContent = `Cook Time: ${recipeInfo.CookTime}`;
-        recipeInfoContainer.appendChild(cookTime);
+        const prepTime = document.createElement('p');
+        prepTime.textContent = `Prep Time: ${recipeInfo.PrepTime}`;
+        recipeInfoContainer.appendChild(prepTime);
 
-        // Continue adding other elements from recipeInfo...
+        const steps = document.createElement('p');
+        steps.textContent = `Steps: ${recipeInfo.Steps}`;
+        recipeInfoContainer.appendChild(steps);
+
+        const totalCalories = document.createElement('p');
+        totalCalories.textContent = `Total Calories: ${recipeInfo.TotalCalories}`;
+        recipeInfoContainer.appendChild(totalCalories);
+
+        const ingredients = document.createElement('p');
+        ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
+        recipeInfoContainer.appendChild(ingredients);
+
     } catch (error) {
         console.error('Failed to load recipe info:', error);
     }
@@ -200,13 +211,13 @@ async function loadRecipeInfo(recipeId) {
 
 async function loadWall() {
     try {
-        const reviews = await getUserFriendReviews();
-        const reviewWallContainer = document.getElementById('tab-wall');
+        const reviews = await getUserFriendReviews(getUserIdFromCookie());
+        const reviewWallContainer = document.querySelector('.wall-content');
         reviewWallContainer.innerHTML = '';
 
         reviews.forEach(review => {
             const reviewElement = document.createElement('p');
-            reviewElement.textContent = review.text;
+            reviewElement.textContent = review.ReviewText;
             reviewWallContainer.appendChild(reviewElement);
         });
 
@@ -219,23 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAllUsers();
     loadFriends();
     loadRecipes();
-
-    const tabs = document.querySelectorAll('.tab-link');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabId = this.getAttribute('data-tab');
-
-            tabs.forEach(tab => tab.classList.remove('current'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('current'));
-
-            this.classList.add('current');
-            document.getElementById(tabId).classList.add('current');
-
-            if (tabId === 'tab-wall') {
-                loadWall();
-            }
-        });
-    });
+    loadWall();
 });
 
 async function performAdvancedRecipeSearch() {
@@ -269,6 +264,7 @@ async function performAdvancedRecipeSearch() {
             recipeElement.addEventListener('click', function() {
                 const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
                 loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
+
             });
 
             // Append the new element to the container
