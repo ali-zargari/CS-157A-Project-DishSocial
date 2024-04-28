@@ -208,37 +208,44 @@ async function loadWall() {
         reviewWallContainer.innerHTML = '';
 
         reviews.forEach(review => {
-            const friend = document.createElement('div');
-            friend.className = 'friend-review';
+
+            const reviewContainer = document.createElement('div');
+            reviewContainer.className = 'review-container';  // Add a class for styling and interaction
 
             const reviewFriend = document.createElement('p');
             reviewFriend.textContent = `Friend: ${review.FriendName}`;
-            friend.appendChild(reviewFriend);
+            reviewContainer.appendChild(reviewFriend);
 
             const reviewRecipe = document.createElement('p');
             reviewRecipe.textContent = `Recipe: ${review.Title}`;
-            friend.appendChild(reviewRecipe);
+            reviewContainer.appendChild(reviewRecipe);
 
             const reviewText = document.createElement('p');
             reviewText.textContent = `Review: ${review.ReviewText}`;
-            friend.appendChild(reviewText);
+            reviewContainer.appendChild(reviewText);
 
             const reviewRating = document.createElement('p');
             reviewRating.textContent = `Rating: ${review.Rating}`;
-            friend.appendChild(reviewRating);
+            reviewContainer.appendChild(reviewRating);
 
             const reviewVotes = document.createElement('p');
             reviewVotes.textContent = `Votes: ${review.NumVotes}`;
-            friend.appendChild(reviewVotes);
+            reviewContainer.appendChild(reviewVotes);
 
             const reviewDate = document.createElement('p');
             reviewDate.textContent = `Date: ${review.PublishDate}`;
-            friend.appendChild(reviewDate);
+            reviewContainer.appendChild(reviewDate);
+
+            // Add click event listener to the review container
+            reviewContainer.addEventListener('click', function() {
+                loadRecipeInfo(review.RecipeID);
+            });
 
             const lineBreak = document.createElement('br');
-            friend.appendChild(lineBreak);
+            reviewWallContainer.appendChild(lineBreak);
 
-            reviewWallContainer.appendChild(friend);
+            reviewWallContainer.appendChild(reviewContainer); // Append the review container to the wall container
+
         });
 
     } catch (error) {
