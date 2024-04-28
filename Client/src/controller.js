@@ -52,24 +52,23 @@ export async function showFriends() {
     }
 }
 
-export async function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories) {
-    try {
-        const response = await axios.post('http://localhost:3002/recipe', {
-            Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients
-        });
-        console.log(response.data); // Log the response from the server
+// export async function addRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories) {
+//     try {
+//         const response = await axios.post('http://localhost:3002/recipe', {
+//             Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, Ingredients
+//         });
+//         console.log(response.data); // Log the response from the server
+//
+//     } catch (error) {
+//         console.error('There was a problem with your axios operation: add recipe', error);
+//     }
+// }
 
-    } catch (error) {
-        console.error('There was a problem with your axios operation: add recipe', error);
-    }
-}
-
-export async function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, userID) {
+export async function userUploadRecipe(Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories,Ingredients) {
     try {
-        const NumIngredients = 0; //number of ingredients should be incremented from populating Recipe_Contains_Ingredients
         const response = await axios.post('http://localhost:3002/recipe/userUploadRecipe', {
-            Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients, userID
-        });
+            Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, Ingredients
+        }, {withCredentials : true});
         console.log(response.data); // Log the response from the server
 
     } catch (error) {
