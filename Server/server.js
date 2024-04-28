@@ -255,12 +255,30 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
         const { userID } = req.params;
         const connection = await pool.getConnection();
 
-        // Modified SQL query based on the schema
-        // This selects reviews left by friends of the given user (match with UserID in Friends_With table)
-        const [rows] = await connection.execute(
-            'SELECT r.* FROM Review AS r INNER JOIN User_Leaves_Review ulr ON r.ReviewID = ulr.ReviewID WHERE ulr.UserID IN (SELECT UserID2 FROM Friends_With WHERE UserID1 = ? UNION SELECT UserID1 FROM Friends_With WHERE UserID2 = ?)',
-            [userID, userID]
-        );
+        const sqlQuery = `
+            SELECT
+                r.Title, r.CookTime, r.PrepTime, r.Steps, r.TotalCalories, r.Ingredients,
+                rv.ReviewID, rv.PublishDate, rv.NumVotes, rv.Rating, rv.ReviewText,
+                friendUser.FirstName as FriendName  -- Assuming the Users table has a Name column
+            FROM
+                Users u
+                    JOIN
+                Friends_With fw ON u.UserID = fw.UserID1
+                    JOIN
+                Users friendUser ON fw.UserID2 = friendUser.UserID  -- Join to get the friend's name
+                    JOIN
+                User_Leaves_Review ulr ON ulr.UserID = fw.UserID2
+                    JOIN
+                Review rv ON ulr.ReviewID = rv.ReviewID
+                    JOIN
+                Recipe_Has_Review rhr ON rhr.ReviewID = rv.ReviewID
+                    JOIN
+                Recipe r ON r.RecipeID = rhr.RecipeID
+            WHERE
+                u.UserID = ?;
+        `;
+
+        const [rows] = await connection.execute(sqlQuery, [userID]);
 
         connection.release();
         console.log("Reviews:");

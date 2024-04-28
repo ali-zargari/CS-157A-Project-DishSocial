@@ -120,7 +120,7 @@ async function loadRecipes() {
             recipeTitle.textContent = recipe.Title; // Assuming 'Title' is the attribute from your database
 
             const recipeDescription = document.createElement('p');
-            recipeDescription.textContent = recipe.Description; // Assuming 'Description' is the attribute
+            recipeDescription.textContent = recipe.Description; // Assuming 'Description' is the attribute, no description yet
 
             // Append title and description to the recipe element
             recipeElement.appendChild(recipeTitle);
@@ -216,9 +216,32 @@ async function loadWall() {
         reviewWallContainer.innerHTML = '';
 
         reviews.forEach(review => {
-            const reviewElement = document.createElement('p');
-            reviewElement.textContent = review.ReviewText;
-            reviewWallContainer.appendChild(reviewElement);
+            const reviewFriend = document.createElement('p');
+            reviewFriend.textContent = `Recipe: ${review.FriendName}`;
+            reviewWallContainer.appendChild(reviewFriend);
+
+            const reviewRecipe = document.createElement('p');
+            reviewRecipe.textContent = `Recipe: ${review.Title}`;
+            reviewWallContainer.appendChild(reviewRecipe);
+
+            const reviewText = document.createElement('p');
+            reviewText.textContent = `Review: ${review.ReviewText}`;
+            reviewWallContainer.appendChild(reviewText);
+
+            const reviewRating = document.createElement('p');
+            reviewRating.textContent = `Rating: ${review.Rating}`;
+            reviewWallContainer.appendChild(reviewRating);
+
+            const reviewVotes = document.createElement('p');
+            reviewVotes.textContent = `Votes: ${review.NumVotes}`;
+            reviewWallContainer.appendChild(reviewVotes);
+
+            const reviewDate = document.createElement('p');
+            reviewDate.textContent = `Date: ${review.PublishDate}`;
+            reviewWallContainer.appendChild(reviewDate);
+
+            const lineBreak = document.createElement('br');
+            reviewWallContainer.appendChild(lineBreak);
         });
 
     } catch (error) {
