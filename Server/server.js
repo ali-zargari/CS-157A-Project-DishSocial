@@ -263,6 +263,8 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
         );
 
         connection.release();
+        console.log("Reviews:");
+        console.log(rows);
         res.send(rows);
     } catch (error) {
         console.error(`Failed to get user friend reviews: ${error}`);
