@@ -53,6 +53,7 @@
         <div class="recipe-search">
             <div class="top-row">
                 <input id="general-search" type="text" placeholder="Search recipes..." class="search-input">
+                <input type="text" id="cookTime-search" placeholder="Cook Time" class="cook-time-input">
                 <input type="number" id="min-calories" placeholder="Min Calories" class="min-calories-input">
                 <input type="number" id="max-calories" placeholder="Max Calories" class="max-calories-input">
             </div>
@@ -66,9 +67,7 @@
                     <option value="likedByFriends">Liked by Friends</option>
                     <option value="uploadedByFriends">Uploaded by Friends</option>
                 </select>
-                <label for="vegan" class="vegan-label">
-                    Vegan <input type="checkbox" id="vegan" name="vegan">
-                </label>
+
                 <button class="button filter-button">Filter</button>
             </div>
             <div class="recipe-list">

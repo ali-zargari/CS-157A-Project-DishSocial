@@ -8,7 +8,9 @@ import {
     getSelectedRecipeInfo,
     getUserFriendReviews,
     getUserNameById,
-    userUploadRecipe
+    userUploadRecipe,
+    getRecipesByUser,
+    deleteRecipe
 } from './controller';
 import axios from "axios";
 
@@ -52,33 +54,44 @@ function renderRecipeInfo(recipeInfo) {
 
 async function loadRecipes() {
     try {
-        const recipes = await getAllRecipes(); // This function should fetch all recipes
+        const currentUserId = getUserIdFromCookie();
+        // fetch the uploaded recipes by the current User from the database
+        const userUploadedRecipes = await getRecipesByUser(currentUserId);
+        const recipes = await getAllRecipes();
         const recipeListContainer = document.querySelector('.recipe-list');
-        recipeListContainer.innerHTML = ''; // Clear existing content
+        recipeListContainer.innerHTML = '';
 
         recipes.forEach(recipe => {
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
 
             const recipeTitle = document.createElement('h3');
-            recipeTitle.textContent = recipe.Title; // Assuming 'Title' is the attribute from your database
+            recipeTitle.textContent = recipe.Title;
 
-            // Check if the recipe includes ingredients
             const recipeIngredients = recipe.Ingredients ? `<p>${recipe.Ingredients}</p>` : '';
 
-            // Construct the innerHTML for the recipe element including ingredients if they exist
+            const isUploadedByCurrentUser = userUploadedRecipes.includes(recipe.RecipeID);
             recipeElement.innerHTML = `
                 <h3>${recipe.Title}</h3>
                 ${recipeIngredients}
             `;
 
-            // Add click event listener to each recipe element
+            if (isUploadedByCurrentUser) {
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.addEventListener('click', async (event) => {
+                    event.stopPropagation();
+                    await deleteRecipe(recipe.RecipeID);
+                    await loadRecipes();
+                })
+                recipeElement.appendChild(deleteButton);
+            }
+
             recipeElement.addEventListener('click', function() {
-                selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
-                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
+                selectedRecipeId = recipe.RecipeID;
+                loadRecipeInfo(selectedRecipeId);
             });
 
-            // Append the recipe element to the container
             recipeListContainer.appendChild(recipeElement);
         });
     } catch (error) {
@@ -172,6 +185,7 @@ async function loadRecipeInfo(recipeId) {
     await fetchAndDisplayReviews(recipeId);
 
 }
+
 
 async function fetchAndDisplayReviews(recipeId) {
     try {
@@ -282,6 +296,9 @@ async function performAdvancedRecipeSearch() {
             }
         });
 
+        // Fetch the uploaded recipes by the current User from the database
+        const userUploadedRecipes = await getRecipesByUser(userID);  // <-- NEW
+
         // Clear the current recipe list
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
@@ -290,13 +307,29 @@ async function performAdvancedRecipeSearch() {
         response.data.forEach(recipe => {
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
+
+            // Check if this recipe was uploaded by the current user
+            const isUploadedByCurrentUser = userUploadedRecipes.includes(recipe.RecipeID); // <-- NEW
+
             recipeElement.innerHTML = `
                 <h3>${recipe.Title}</h3>
-                <p>${recipe.Ingredients}</p>  
+                <p>${recipe.Ingredients}</p>
             `;
 
+            // Add a delete button if uploaded by current user
+            if (isUploadedByCurrentUser) {  // <-- NEW
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.addEventListener('click', async (event) => {
+                    event.stopPropagation();
+                    await deleteRecipe(recipe.RecipeID);
+                    await loadRecipes();
+                })
+                recipeElement.appendChild(deleteButton);
+            }
+
             // Add click event listener to each recipe element
-            recipeElement.addEventListener('click', function() {
+            recipeElement.addEventListener('click', function () {
                 const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
                 loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
 
@@ -307,7 +340,7 @@ async function performAdvancedRecipeSearch() {
         });
 
         // If no recipes found, display a message
-        if(response.data.length === 0) {
+        if (response.data.length === 0) {
             recipeListContainer.innerHTML = '<p>No recipes found.</p>';
         }
 
@@ -315,6 +348,9 @@ async function performAdvancedRecipeSearch() {
         console.error('Error performing advanced search:', error);
     }
 }
+
+
+
 document.getElementById('postReviewForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
 
@@ -407,6 +443,8 @@ async function uploadRecipe(event) {
         addRecipeToDom(newRecipe);
         // Optionally clear the form
         event.target.reset();
+
+        await loadRecipes();
     } else {
         // Handle the error case
         alert('Failed to upload recipe.');
