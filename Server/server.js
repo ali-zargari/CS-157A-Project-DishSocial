@@ -230,6 +230,7 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
 });
 
 
+
 // Get recipe details
 app.get('/recipe', async (req, res) => {
     try {
@@ -555,6 +556,21 @@ app.get('/recipes/search', async (req, res) => {
 });
 
 
-
+app.get('/userRecipes/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const userUploadsQuery = `SELECT RecipeID FROM User_Uploads_Recipe WHERE UserID = ?`;
+    let result;
+    try {
+        const connection = await pool.getConnection();
+        [result] = await connection.execute(userUploadsQuery, [userId]);
+        connection.release();
+    } catch (error) {
+        console.error("SQL query execution failed:", error);
+        res.sendStatus(500);
+        return;
+    }
+    const recipeIds = result.map((row) => row.RecipeID);
+    res.send(recipeIds);
+});
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

@@ -287,3 +287,12 @@ function renderRecipeInfo(recipeInfo) {
     // You might want to add more details depending on your recipe structure
 }
 
+export async function getRecipesByUser(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/userRecipes/${userId}`);
+        console.log(response.data); // Log the response; This is an array of recipe IDs
+        return response.data; // Returning the array of RecipeIDs for further use
+    } catch (error) {
+        console.error('There was a problem fetching the user upload data:', error);
+    }
+}
