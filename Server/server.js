@@ -113,6 +113,26 @@ app.get('/users/friends', async (req, res) => {
     }
 });
 
+//get userid of uploaded recipe
+app.post('/recipe/userid', async (req, res) => {
+    const {recipeID} = req.body;
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.execute(
+            'SELECT UserID FROM User_Uploads_Recipe WHERE RecipeID = ?',
+            [recipeID]
+        );
+        console.log("/recipe/userid: ");
+        console.log(rows);
+        connection.release();
+
+        res.send(rows);
+    } catch (error) {
+        console.error("Problem fetching userid from useruploadrecipe: ", error)
+        res.status(500).send(error);
+    }
+});
+
 //delete user
 app.delete('/users/:userId', async (req, res) => {
     const userId = req.params.userId;
@@ -297,8 +317,6 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
         const [rows] = await connection.execute(sqlQuery, [userID]);
 
         connection.release();
-        console.log("Reviews:");
-        console.log(rows);
         res.send(rows);
     } catch (error) {
         console.error(`Failed to get user friend reviews: ${error}`);

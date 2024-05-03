@@ -567,3 +567,19 @@ label:hover {
     background-color: white;
     cursor: pointer;
 }
+
+.recipe-delete-button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #dc3545; /* Bootstrap danger color for red */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px; /* Space from the recipe text */
+}
+
+.delete-button:hover {
+    background-color: #c82333; /* Darker shade of red for hover effect */
+}

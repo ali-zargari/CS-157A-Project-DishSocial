@@ -8,7 +8,9 @@ import {
     getSelectedRecipeInfo,
     getUserFriendReviews,
     getUserNameById,
-    userUploadRecipe
+    userUploadRecipe,
+    getUserIDbyRecipeID,
+    deleteRecipe
 } from './controller';
 import axios from "axios";
 
@@ -16,6 +18,7 @@ let selectedRecipeId = null;
 
 console.log("Current UserID: ");
 console.log(getUserIdFromCookie());
+console.log("dummy");
 
 document.getElementById('logoutButton').addEventListener('click', async function (event) {
     event.preventDefault();
@@ -52,39 +55,51 @@ function renderRecipeInfo(recipeInfo) {
 
 async function loadRecipes() {
     try {
-        const recipes = await getAllRecipes(); // This function should fetch all recipes
+        const recipes = await getAllRecipes(); // Fetch all recipes
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = ''; // Clear existing content
 
-        recipes.forEach(recipe => {
+        // Fetch user data for each recipe in parallel
+        const fetchUserPromises = recipes.map(recipe => getUserIDbyRecipeID(recipe.RecipeID));
+        const users = await Promise.all(fetchUserPromises);
+
+        recipes.forEach((recipe, index) => {
+            const user = users[index]; // Corresponding user info from parallel fetch
+            console.log("debug:");
+            console.log(user[0].UserID);
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
 
-            const recipeTitle = document.createElement('h3');
-            recipeTitle.textContent = recipe.Title; // Assuming 'Title' is the attribute from your database
-
-            // Check if the recipe includes ingredients
             const recipeIngredients = recipe.Ingredients ? `<p>${recipe.Ingredients}</p>` : '';
 
-            // Construct the innerHTML for the recipe element including ingredients if they exist
             recipeElement.innerHTML = `
                 <h3>${recipe.Title}</h3>
                 ${recipeIngredients}
+                ${user.UserID === getUserIdFromCookie() ? `<button class="recipe-delete-button">-</button>` : ''}
             `;
 
-            // Add click event listener to each recipe element
+            // Add event listener for clicking on the recipe to load its details
             recipeElement.addEventListener('click', function() {
-                selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
-                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
+                selectedRecipeId = recipe.RecipeID;
+                loadRecipeInfo(selectedRecipeId);
             });
 
-            // Append the recipe element to the container
+            // Conditionally add event listener for the delete button
+            const deleteButton = recipeElement.querySelector('.recipe-delete-button');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent triggering click on the entire recipe element
+                    deleteRecipe(recipe.RecipeID);
+                });
+            }
+
             recipeListContainer.appendChild(recipeElement);
         });
     } catch (error) {
         console.error('Failed to load recipes:', error);
     }
 }
+
 
 
 async function loadAllUsers() {

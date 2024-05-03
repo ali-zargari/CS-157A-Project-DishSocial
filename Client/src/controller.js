@@ -179,8 +179,6 @@ export async function updateUserById(userId, userData) {
 
 export function getUserIdFromCookie() {
     let cookieArray = document.cookie.split('; ');
-    console.log(cookieArray);
-    console.log(document.cookie);
     for(let i = 0; i < cookieArray.length; i++){
         let cookiePair = cookieArray[i].split('=');
 
@@ -224,6 +222,15 @@ export async function getSelectedRecipeInfo(recipeID) {
         return response.data; // Returning the data for further use
     } catch (error) {
         console.error(`Failed to get selected recipe info: ${error}`);
+    }
+}
+
+export async function getUserIDbyRecipeID(recipeID) {
+    try {
+        const response = await axios.post(`http://localhost:3002/recipe/userid`,{recipeID});
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch userid by recipeid:", error);
     }
 }
 
