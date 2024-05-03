@@ -83,7 +83,7 @@ app.get('/users/friends', async (req, res) => {
         const userID = req.cookies.userID;
 
         const [friendResult] = await connection.execute(
-            'SELECT UserID2 FROM Friends_With WHERE UserID1 = ?',
+            'SELECT UserID2 FROM Follows WHERE UserID1 = ?',
                 [userID]
         );
 
@@ -280,7 +280,7 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
             FROM
                 Users u
                     JOIN
-                Friends_With fw ON u.UserID = fw.UserID1
+                Follows fw ON u.UserID = fw.UserID1
                     JOIN
                 Users friendUser ON fw.UserID2 = friendUser.UserID  -- Join to get the friend's name
                     JOIN
@@ -521,20 +521,20 @@ app.get('/recipes/search', async (req, res) => {
             baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
                    INNER JOIN Review ON Recipe_Has_Review.ReviewID = Review.ReviewID 
                    INNER JOIN User_Leaves_Review ON Review.ReviewID = User_Leaves_Review.ReviewID 
-                   INNER JOIN Friends_With ON User_Leaves_Review.UserID = Friends_With.UserID2 OR User_Leaves_Review.UserID = Friends_With.UserID1`;
-            whereConditions.push(`(Friends_With.UserID1 = ? OR Friends_With.UserID2 = ?)`);
+                   INNER JOIN Follows ON User_Leaves_Review.UserID = Follows.UserID2 OR User_Leaves_Review.UserID = Follows.UserID1`;
+            whereConditions.push(`(Follows.UserID1 = ? OR Follows.UserID2 = ?)`);
             parameters.push(userID, userID);
             break;
         case 'likedByFriends':
             baseQuery += `JOIN User_Likes_Recipe ON Recipe.RecipeID = User_Likes_Recipe.RecipeID 
-                           JOIN Friends_With ON User_Likes_Recipe.UserID = Friends_With.UserID2 `;
-            whereConditions.push(`Friends_With.UserID1 = ?`);
+                           JOIN Follows ON User_Likes_Recipe.UserID = Follows.UserID2 `;
+            whereConditions.push(`Follows.UserID1 = ?`);
             parameters.push(userID);
             break;
         case 'uploadedByFriends':
             baseQuery += `JOIN User_Uploads_Recipe ON Recipe.RecipeID = User_Uploads_Recipe.RecipeID 
-                           JOIN Friends_With ON User_Uploads_Recipe.UserID = Friends_With.UserID2 `;
-            whereConditions.push(`Friends_With.UserID1 = ?`);
+                           JOIN Follows ON User_Uploads_Recipe.UserID = Follows.UserID2 `;
+            whereConditions.push(`Follows.UserID1 = ?`);
             parameters.push(userID);
             break;
         // You can add more cases if needed

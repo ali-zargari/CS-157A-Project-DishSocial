@@ -296,6 +296,9 @@ async function performAdvancedRecipeSearch() {
             }
         });
 
+        // Fetch the uploaded recipes by the current User from the database
+        const userUploadedRecipes = await getRecipesByUser(userID);  // <-- NEW
+
         // Clear the current recipe list
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
@@ -304,13 +307,29 @@ async function performAdvancedRecipeSearch() {
         response.data.forEach(recipe => {
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
+
+            // Check if this recipe was uploaded by the current user
+            const isUploadedByCurrentUser = userUploadedRecipes.includes(recipe.RecipeID); // <-- NEW
+
             recipeElement.innerHTML = `
                 <h3>${recipe.Title}</h3>
-                <p>${recipe.Ingredients}</p>  
+                <p>${recipe.Ingredients}</p>
             `;
 
+            // Add a delete button if uploaded by current user
+            if (isUploadedByCurrentUser) {  // <-- NEW
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.addEventListener('click', async (event) => {
+                    event.stopPropagation();
+                    await deleteRecipe(recipe.RecipeID);
+                    await loadRecipes();
+                })
+                recipeElement.appendChild(deleteButton);
+            }
+
             // Add click event listener to each recipe element
-            recipeElement.addEventListener('click', function() {
+            recipeElement.addEventListener('click', function () {
                 const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
                 loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
 
@@ -321,7 +340,7 @@ async function performAdvancedRecipeSearch() {
         });
 
         // If no recipes found, display a message
-        if(response.data.length === 0) {
+        if (response.data.length === 0) {
             recipeListContainer.innerHTML = '<p>No recipes found.</p>';
         }
 
@@ -329,6 +348,9 @@ async function performAdvancedRecipeSearch() {
         console.error('Error performing advanced search:', error);
     }
 }
+
+
+
 document.getElementById('postReviewForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
 

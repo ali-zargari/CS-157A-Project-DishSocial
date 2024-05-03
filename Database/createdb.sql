@@ -74,7 +74,7 @@ CREATE TABLE Not_Useful_Vote
 -- Relationships
 
 
-CREATE TABLE Friends_With
+CREATE TABLE Follows
 (
     UserID1 INT,
     UserID2 INT,
@@ -161,7 +161,7 @@ CREATE TABLE Liked_By_Friends_Recipes
     FriendID INT,
     UploaderID INT,
     PRIMARY KEY (FriendID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (FriendID) REFERENCES Follows(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (UploaderID, RecipeID) REFERENCES User_Likes_Recipe(UserID, RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -171,7 +171,7 @@ CREATE TABLE Uploaded_By_Friends_Recipes
     FriendID INT,
     UploaderID INT,
     PRIMARY KEY (FriendID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (FriendID) REFERENCES Follows(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (UploaderID, RecipeID) REFERENCES User_Uploads_Recipe(UserID, RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -181,7 +181,7 @@ CREATE TABLE Reviewed_By_Friends_Recipes(
     FriendID INT,
     PRIMARY KEY (FriendID, ReviewID, RecipeID),
     FOREIGN KEY (FriendID) REFERENCES User_Leaves_Review(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (FriendID) REFERENCES Friends_With(UserID2) ON DELETE CASCADE ON UPDATE CASCADE, -- To make sure the friend is actually a friend
+    FOREIGN KEY (FriendID) REFERENCES Follows(UserID2) ON DELETE CASCADE ON UPDATE CASCADE, -- To make sure the friend is actually a friend
     FOREIGN KEY (ReviewID) REFERENCES User_Leaves_Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (RecipeID) REFERENCES Recipe_Has_Review(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 
@@ -217,7 +217,7 @@ FOR EACH ROW
 BEGIN
     DECLARE fwUser INT;
     DECLARE done INT DEFAULT FALSE;
-    DECLARE cur CURSOR FOR SELECT DISTINCT UserID2 FROM Friends_With WHERE UserID1 = NEW.UserID UNION ALL SELECT DISTINCT UserID1 FROM Friends_With WHERE UserID2 = NEW.UserID;
+    DECLARE cur CURSOR FOR SELECT DISTINCT UserID2 FROM Follows WHERE UserID1 = NEW.UserID UNION ALL SELECT DISTINCT UserID1 FROM Follows WHERE UserID2 = NEW.UserID;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     OPEN cur;
     read_loop: LOOP
@@ -242,7 +242,7 @@ FOR EACH ROW
 BEGIN
     DECLARE fwUser INT;
     DECLARE done INT DEFAULT FALSE;
-    DECLARE cur CURSOR FOR SELECT UserID2 FROM Friends_With WHERE UserID1 = NEW.UserID UNION ALL SELECT UserID1 FROM Friends_With WHERE UserID2 = NEW.UserID;
+    DECLARE cur CURSOR FOR SELECT UserID2 FROM Follows WHERE UserID1 = NEW.UserID UNION ALL SELECT UserID1 FROM Follows WHERE UserID2 = NEW.UserID;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     OPEN cur;
     read_loop: LOOP
@@ -267,7 +267,7 @@ FOR EACH ROW
 BEGIN
     INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
     SELECT rhr.RecipeID, NEW.ReviewID, fw.UserID2
-    FROM Friends_With fw
+    FROM Follows fw
     JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
     WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
 END;
@@ -355,7 +355,7 @@ END;
 
 -- Trigger to add the new Friends to the Liked_By_Friends_Recipes table when a new friend is added
 CREATE TRIGGER Add_Friend_To_Liked_By_Friends
-AFTER INSERT ON Friends_With
+AFTER INSERT ON Follows
 FOR EACH ROW
 BEGIN
     -- Insert new UserID1's liked recipes for UserID2
@@ -375,7 +375,7 @@ END;
 
 
 CREATE TRIGGER Add_Friends_Recipes
-AFTER INSERT ON Friends_With
+AFTER INSERT ON Follows
 FOR EACH ROW
 BEGIN
     INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
@@ -394,7 +394,7 @@ END;
 
 -- Trigger to add the new Friends to the Liked_By_Friends_Recipes table when a new friend is added
 CREATE TRIGGER Add_Friends_Liked_Recipes
-AFTER INSERT ON Friends_With
+AFTER INSERT ON Follows
 FOR EACH ROW
 BEGIN
     INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID)
@@ -413,7 +413,7 @@ END;
 
 -- Trigger to add the new Friends to the Reviewed_By_Friends_Recipes table when a new friend is added
 CREATE TRIGGER Add_Friends_Reviewed_Recipes
-AFTER INSERT ON Friends_With
+AFTER INSERT ON Follows
 FOR EACH ROW
 BEGIN
     INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)

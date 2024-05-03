@@ -54,8 +54,8 @@ VALUES
 -- Inserting dummy data into relationship tables
 -- Note: For relationship tables, data is inserted based on existing entries in the referenced tables
 
--- Friends_With
-INSERT INTO Friends_With (UserID1, UserID2)
+-- Follows
+INSERT INTO Follows (UserID1, UserID2)
 VALUES
 (1, 2),
 (2, 1),
