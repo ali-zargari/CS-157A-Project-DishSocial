@@ -48,6 +48,7 @@ button {
     flex-direction: column;
     min-width: 300px;
     overflow: scroll;
+
 }
 
 
@@ -75,6 +76,7 @@ button {
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px; /* Spacing between review items */
+    max-width: 100%;
 }
 
 .review-text {

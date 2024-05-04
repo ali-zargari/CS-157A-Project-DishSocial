@@ -4,6 +4,7 @@ const {readFileSync} = require("node:fs");
 const cors = require('cors');
 
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -22,6 +23,7 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
+app.use(bodyParser.json()) // parse JSON payloads
 
 const pool = mysql.createPool({
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',
@@ -175,8 +177,8 @@ app.post('/recipe', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         await connection.execute(
-            'INSERT INTO Recipe(Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
-            [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
+            'INSERT INTO Recipe(Title, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+            [Title, Steps, TotalCalories, Ingredients]
         );
         connection.release();
 
@@ -196,8 +198,8 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
         const connection = await pool.getConnection();
         // Insert the new recipe and get the insertId
         const [recipeResult] = await connection.execute(
-            'INSERT INTO Recipe (Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
-            [Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients]
+            'INSERT INTO Recipe (Title, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?)',
+            [Title, Steps, TotalCalories, Ingredients]
         );
         const newRecipeId = recipeResult.insertId;
 
@@ -274,8 +276,8 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
 
         const sqlQuery = `
             SELECT
-                r.RecipeID, r.Title, r.CookTime, r.PrepTime, r.Steps, r.TotalCalories, r.Ingredients,
-                rv.ReviewID, rv.PublishDate, rv.NumVotes, rv.Rating, rv.ReviewText,
+                r.RecipeID, r.Title,  r.Steps, r.TotalCalories, r.Ingredients,
+                rv.ReviewID, rv.PublishDate, rv.Rating, rv.ReviewText,
                 friendUser.FirstName as FriendName  -- Assuming the Users table has a Name column
             FROM
                 Users u
@@ -359,7 +361,7 @@ app.post('/review/addReview', async (req, res) => {
 
         // First, insert the review into the Review table
         const [reviewResult] = await connection.execute(
-            'INSERT INTO Review (PublishDate, NumVotes, Rating, ReviewText) VALUES (?, ?, ?, ?)',
+            'INSERT INTO Review (PublishDate, Rating, ReviewText) VALUES (?, ?, ?)',
             [PublishDate, 0, Rating, ReviewText]
         );
 
@@ -421,7 +423,7 @@ app.get('/reviews/:recipeID', async (req, res) => {
 
         // Join the Review, Recipe_Has_Review, and Users tables to get all reviews for a specific recipe
         const [reviews] = await connection.execute(`
-            SELECT r.ReviewID, r.PublishDate, r.NumVotes, r.Rating, r.ReviewText,
+            SELECT r.ReviewID, r.PublishDate, r.Rating, r.ReviewText,
                    u.UserID, u.FirstName, u.LastName
             FROM Review r
             JOIN Recipe_Has_Review rhr ON r.ReviewID = rhr.ReviewID
@@ -537,7 +539,11 @@ app.get('/recipes/search', async (req, res) => {
             whereConditions.push(`Follows.UserID1 = ?`);
             parameters.push(userID);
             break;
-        // You can add more cases if needed
+        case 'myList':
+            baseQuery += `JOIN Custom_List_Recipes ON Recipe.RecipeID = Custom_List_Recipes.RecipeID `;
+            whereConditions.push(`Custom_List_Recipes.UserID = ?`);
+            parameters.push(userID);
+            break;
     }
 
     if (whereConditions.length > 0) {
@@ -555,6 +561,108 @@ app.get('/recipes/search', async (req, res) => {
     }
 });
 
+
+app.post('/addToCustomList', async (req, res) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const { userId, recipeId } = req.body;
+
+        if (!userId || !recipeId) {
+            return res.status(400).json({
+                message: 'userId and recipeId are required',
+            });
+        }
+
+        // Execute an INSERT query
+        const [result] = await connection.execute(
+            'INSERT INTO Custom_List_Recipes (UserID, RecipeID) VALUES (?, ?)',
+            [userId, recipeId]
+        );
+
+        if (result.affectedRows === 1) {
+            res.sendStatus(201); // Send 201 "Created" status code
+        } else {
+            throw new Error('Insert operation failed');
+        }
+
+    } catch (error) {
+        console.error('Failed to insert recipe into custom list:', error);
+        res.status(500).json({
+            message: 'An error occurred',
+        });
+    } finally {
+        connection.release();
+    }
+});
+
+app.delete('/removeFromCustomList', async (req, res) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const { userId, recipeId } = req.body;
+
+        if (!userId || !recipeId) {
+            return res.status(400).json({
+                message: 'userId and recipeId are required',
+            });
+        }
+
+        // Execute a DELETE query
+        const [result] = await connection.execute(
+            'DELETE FROM Custom_List_Recipes WHERE UserID = ? AND RecipeID = ?',
+            [userId, recipeId]
+        );
+
+        if (result.affectedRows === 1) {
+            res.sendStatus(200); // Send 200 "OK" status code
+        } else {
+            throw new Error('Delete operation failed');
+        }
+
+    } catch (error) {
+        console.error('Failed to delete recipe from custom list:', error);
+        res.status(500).json({
+            message: 'An error occurred',
+        });
+    } finally {
+        connection.release();
+    }
+});
+
+
+app.get('/isInCustomList', async (req, res) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const { userId, recipeId } = req.query;
+
+        if (!userId || !recipeId) {
+            return res.status(400).json({
+                message: 'userId and recipeId are required',
+            });
+        }
+
+        const [rows] = await connection.execute(
+            'SELECT 1 FROM Custom_List_Recipes WHERE UserID = ? AND RecipeID = ?',
+            [userId, recipeId]
+        );
+
+        if (rows.length > 0) {
+            res.sendStatus(200); // Send 200 "OK" status code
+        } else {
+            res.sendStatus(204); // Send 204 "No Content" status code
+        }
+
+    } catch (error) {
+        console.error('Failed to check custom list:', error);
+        res.status(500).json({
+            message: 'An error occurred',
+        });
+    } finally {
+        connection.release();
+    }
+});
 
 app.get('/userRecipes/:userId', async (req, res) => {
     const { userId } = req.params;

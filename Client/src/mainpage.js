@@ -15,6 +15,8 @@ import {
 import axios from "axios";
 
 let selectedRecipeId = null;
+let lastSearchTerm = '';
+let lastFilter = '';
 
 console.log("Current UserID: ");
 console.log(getUserIdFromCookie());
@@ -35,21 +37,6 @@ document.querySelector('.filter-button').addEventListener('click', async functio
     await performAdvancedRecipeSearch();
 });
 
-
-
-// Placeholder function to render recipe info to the DOM
-function renderRecipeInfo(recipeInfo) {
-    const recipeInfoContainer = document.getElementById('recipe-info');
-    recipeInfoContainer.innerHTML = `
-        <h3>${recipeInfo.Title}</h3>
-        <p>Cook Time: ${recipeInfo.CookTime}</p>
-        <p>Prep Time: ${recipeInfo.PrepTime}</p>
-        <p>Total Calories: ${recipeInfo.TotalCalories}</p>
-        <p>Ingredients: ${recipeInfo.Ingredients}</p>
-        <p>Steps: ${recipeInfo.Steps}</p>
-    `;
-    // You might want to add more details depending on your recipe structure
-}
 
 
 async function loadRecipes() {
@@ -82,7 +69,7 @@ async function loadRecipes() {
                 deleteButton.addEventListener('click', async (event) => {
                     event.stopPropagation();
                     await deleteRecipe(recipe.RecipeID);
-                    await loadRecipes();
+                    await performAdvancedRecipeSearch(lastSearchTerm, lastFilter); // <-- Here! Call the search function
                 })
                 recipeElement.appendChild(deleteButton);
             }
@@ -180,24 +167,22 @@ async function loadRecipeInfo(recipeId) {
     try {
         const recipeInfo = await getSelectedRecipeInfo(recipeId);
         const recipeInfoContainer = document.querySelector('.recipe-description');
-        const reviewFormSection = document.querySelector('.review-form-section'); // Select the review form section
-
+        const reviewFormSection = document.querySelector('.review-form-section');
 
         // Clear out any existing content in the recipe info container
         recipeInfoContainer.innerHTML = '';
 
         // Assuming that recipeInfo will be null or undefined if no recipe is found
         if (recipeInfo) {
-            reviewFormSection.style.display = 'flex'; // Hide the review form on error
+            reviewFormSection.style.display = 'flex';
         }
 
         // Create and append the recipe title
         const recipeTitle = document.createElement('h3');
-        recipeTitle.textContent = recipeInfo.Title; // Assuming recipeInfo contains a Title property
+        recipeTitle.textContent = recipeInfo.Title;
         recipeInfoContainer.appendChild(recipeTitle);
 
         // Add more elements for the rest of the recipe information like cook time, prep time, etc.
-        // Example for Cook Time:
         const prepTime = document.createElement('p');
         prepTime.textContent = `Prep Time: ${recipeInfo.PrepTime}`;
         recipeInfoContainer.appendChild(prepTime);
@@ -214,20 +199,82 @@ async function loadRecipeInfo(recipeId) {
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
 
+        console.log('recipeId: ', recipeId);
 
-        reviewFormSection.style.display = 'block'; // Show the review form
+        // Create and append 'Add to Custom List' button
+        let isInList = await checkRecipeInList(recipeId);
+        const addButton = document.createElement('button');
+        addButton.textContent = isInList ? "Remove from Custom List" : "Add to Custom List";
 
+        addButton.addEventListener('click', async function() {
+            if(isInList) {
+                await removeFromCustomList(recipeId);
+            } else {
+                await sendRecipeToCustomList(recipeId);
+            }
 
+            // Update isInList and button text
+            isInList = await checkRecipeInList(recipeId);
+            addButton.textContent = isInList ? "Remove from Custom List" : "Add to Custom List";
+        });
+
+        recipeInfoContainer.appendChild(addButton);
+
+        reviewFormSection.style.display = 'block';
     } catch (error) {
         console.error('Failed to load recipe info:', error);
         const reviewFormSection = document.querySelector('.review-form-section');
-
-
     }
 
     // Fetch reviews for the recipe
     await fetchAndDisplayReviews(recipeId);
+}
 
+
+
+async function sendRecipeToCustomList(recipeId) {
+    try {
+        const userId = getUserIdFromCookie();
+        await axios.post('http://localhost:3002/addToCustomList', { userId, recipeId });
+    }
+    catch (error) {
+        console.error('Failed to add recipe to a custom list:', error);
+    }
+}
+
+async function removeFromCustomList(recipeId) {
+    try {
+        const userId = getUserIdFromCookie();
+        const response = await axios.delete('http://localhost:3002/removeFromCustomList', { data: { userId, recipeId } });
+
+        if (response.status === 200) {
+            console.log('Recipe removed from custom list:');
+        } else {
+            throw new Error('Remove operation failed');
+        }
+    }
+    catch (error) {
+        console.error('Failed to remove recipe from custom list:', error);
+    }
+}
+
+async function checkRecipeInList(recipeId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/isInCustomList`, {
+            params: {
+                userId: getUserIdFromCookie(),
+                recipeId: recipeId
+            }
+        });
+
+        return response.status === 200; // If status is 200, return true. The recipe is in the list.
+    } catch (error) {
+        console.error(`Error in checkRecipeInList: ${error.message}`);
+        if (error.response && error.response.status === 404) {
+            console.error('Endpoint not found. Check if server is running and endpoint URL is correct.');
+        }
+        return false; // If the status is not 200 or an error occurred, return false. The recipe is not in the list.
+    }
 }
 
 
@@ -305,7 +352,7 @@ async function loadWall() {
             reviewWallContainer.appendChild(reviewContainer); // Append the review container to the wall container
 
         });
-
+te
     } catch (error) {
         console.error('Failed to load wall:', error);
     }
@@ -328,7 +375,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function performAdvancedRecipeSearch() {
     const searchTerm = document.getElementById('general-search').value;
+    lastSearchTerm = searchTerm; // <-- Save the last search term
+
     const filter = document.getElementById('recipeFilter').value;
+    lastFilter = filter; // <-- Save the last filter
+
     const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
 
     try {
@@ -367,7 +418,7 @@ async function performAdvancedRecipeSearch() {
                 deleteButton.addEventListener('click', async (event) => {
                     event.stopPropagation();
                     await deleteRecipe(recipe.RecipeID);
-                    await loadRecipes();
+                    await performAdvancedRecipeSearch(lastSearchTerm, lastFilter); // <-- Here! Call the search function
                 })
                 recipeElement.appendChild(deleteButton);
             }
@@ -402,6 +453,8 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
     const reviewText = document.getElementById('reviewText').value;
     const reviewRating = document.getElementById('reviewRating').value;
     const userID = getUserIdFromCookie(); // This function retrieves the current user's ID from a cookie
+
+    console.log(selectedRecipeId)
 
     if (!selectedRecipeId) {
         console.error('No recipe selected.');
@@ -462,8 +515,6 @@ async function uploadRecipe(event) {
 
     // Gather the form data
     const title = document.getElementById('title').value;
-    const cookTime = document.getElementById('cookTime').value;
-    const prepTime = document.getElementById('prepTime').value;
     const ingredients = document.getElementById('ingredients').value;
     const totalCalories = document.getElementById('totalCalories').value;
     const cookingSteps = document.getElementById('cookingSteps').value;
@@ -471,8 +522,6 @@ async function uploadRecipe(event) {
     // Put the form data into an object
     const recipeData = {
         Title: title,
-        CookTime: cookTime,
-        PrepTime: prepTime,
         Ingredients: ingredients,
         TotalCalories: totalCalories,
         Steps: cookingSteps
