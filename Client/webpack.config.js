@@ -42,9 +42,9 @@ module.exports = {
             chunks: ['settings'] // Include only the index bundle
         }),
         new HtmlWebpackPlugin({
-            template: './src/User.html', // Source template file
-            filename: 'User.html', // Output file
-            chunks: ['User'] // Include only the index bundle
+            template: './src/user.html', // Source template file
+            filename: 'user.html', // Output file
+            chunks: ['user'] // Include only the index bundle
         }),
 
     ],

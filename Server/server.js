@@ -681,4 +681,25 @@ app.get('/userRecipes/:userId', async (req, res) => {
     res.send(recipeIds);
 });
 
+app.put('/users/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+
+        await connection.execute(
+            'UPDATE Users SET FirstName = ?, LastName = ?, Gender = ?, Email = ?, Birthplace = ?, DateOfBirth = ?, Password = ? WHERE UserID = ?',
+            [FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password, userId]
+        );
+
+        connection.release();
+
+        res.send({status: "success"});
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

@@ -29,6 +29,11 @@ document.getElementById('logoutButton').addEventListener('click', async function
     }
 });
 
+document.getElementById('profileButton').addEventListener('click', function (event) {
+    event.preventDefault();
+    window.location.href = 'settings.html';
+});
+
 
 document.querySelector('.filter-button').addEventListener('click', async function() {
     await performAdvancedRecipeSearch();
@@ -146,8 +151,8 @@ async function loadFriends() {
             profileButton.style.cursor = 'pointer';
             profileButton.style.fontSize = '0.8em';
             profileButton.addEventListener('click', () => {
-                // On click, navigate to User.html
-                window.location.href = 'User.html';
+                // On click, navigate to user.html
+                window.location.href = 'user.html';
             });
             buttonContainer.appendChild(profileButton);
 
