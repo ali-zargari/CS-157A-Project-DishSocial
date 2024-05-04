@@ -6,8 +6,12 @@ VALUES
 ('Jane', 'Smith', 'Female', 'jane.smith@example.com', 'Los Angeles', '1988-08-23', 'janesPassword123'),
 ('Alice', 'Wong', 'Female', 'alice.wong@example.com', 'Seattle', '1992-11-08', 'alicesPassword456'),
 ('Ethan', 'Hunt', 'Male', 'ethan.hunt@example.com', 'Chicago', '1987-04-12', 'ethansPassword789'),
-('Nora', 'Jones', 'Female', 'nora.jones@example.com', 'Austin', '1993-02-24', 'norasPassword012');
-
+('Nora', 'Jones', 'Female', 'nora.jones@example.com', 'Austin', '1993-02-24', 'norasPassword012'),
+('Robert', 'Johnson', 'Male', 'robert.johnson@example.com', 'Dallas', '1981-06-09', 'robertPassword673'),
+('David', 'Rodriguez', 'Male', 'david.rodriguez@example.com', 'San Diego', '2002-03-10', 'davidPassword012'),
+('John', 'Johnson', 'Male', 'john.johnson@example.com', 'Dallas', '1967-11-28', 'johnPassword015'),
+('Emily', 'Rodriguez', 'Female', 'emily.rodriguez@example.com', 'San Antonio', '1992-07-28', 'emilyPassword892'),
+('Sarah', 'Brown', 'Female', 'sarah.brown@example.com', 'Philadelphia', '1977-12-07', 'SarahPassword098');
 
 -- Inserting dummy data into Review
 INSERT INTO Review (PublishDate, NumVotes, Rating, ReviewText) VALUES
@@ -15,7 +19,12 @@ INSERT INTO Review (PublishDate, NumVotes, Rating, ReviewText) VALUES
 ('2023-12-05', 23, 5, 'Delicious! Will make again.'),
 ('2023-11-15', 34, 5, 'This is now a family favorite. Highly recommend.'),
 ('2023-11-20', 12, 3, 'Good, but a bit time-consuming.'),
-('2023-12-03', 18, 2, 'Not what I expected, needs more flavor.');
+('2023-12-03', 18, 2, 'Not what I expected, needs more flavor.'),
+('2024-05-04', 41, 2, 'Exceeded my expectations, great job!'),
+('2024-05-04', 11, 3, 'Not bad, but could use a little improvement on service.'),
+('2024-05-04', 19, 2, 'Just okay, not memorable.'),
+('2024-05-04', 49, 2, 'Absolutely loved it, will definitely come back!'),
+('2024-05-04', 46, 1, 'Horrendous in every way, a complete disaster from start to finish. Absolutely disgusting!');
 
 -- Inserting dummy data into Recipe
 INSERT INTO Recipe (Title, CookTime, PrepTime, CookTemp, Steps, TotalCalories, NumIngredients)
@@ -27,6 +36,16 @@ VALUES
 ('Beef Stroganoff', '40 min', '15 min', 'Medium', '1. Sauté beef...\n2. Prepare sauce...', 900, 12),
 ('Quinoa Salad', '25 min', '5 min', 'None', '1. Cook quinoa...\n2. Mix ingredients...', 400, 5),
 ('Chocolate Chip Cookies', '10 min', '15 min', 'High', '1. Mix dough...\n2. Bake cookies...', 300, 6);
+('Traditional Lasagna', '30 minutes', '15 minutes', '200°C', 'Start with boiling lasagna noodles until al dente.\nIn a separate pan, cook ground beef with onions and garlic.\nLayer with ricotta cheese and marinara sauce in a baking dish.\nTop with mozzarella and bake.', 700, 9),
+('Vegetarian Chili', '45 minutes', '20 minutes', '180°C', 'Soak kidney beans overnight.\nSauté onions, garlic, bell peppers in olive oil.\nAdd chili powder and tomatoes, then simmer.\nAdd beans and cook until flavors meld.\nServe with cornbread.', 550, 10),
+('Chocolate Chip Cookies', '15 minutes', '10 minutes', '175°C', 'Combine softened butter with sugar.\nAdd eggs and vanilla extract.\nMix in flour, baking soda, and salt.\nStir in chocolate chips.\nDrop spoonfuls on baking sheet and bake at 175°C for 10-12 minutes.', 200, 7),
+('Perfect Roast Chicken', '1 hour 20 minutes', '15 minutes', '220°C', 'Rub chicken with olive oil and season with salt, pepper, and herbs.\nPlace in a roasting pan.\nRoast in preheated oven at 220°C.\nBaste periodically until the skin is crisp.\nRest before carving.', 1200, 6),
+('Mushroom Risotto', '25 minutes', '10 minutes', '175°C', 'Sauté chopped onions and mushrooms in butter.\nAdd arborio rice and toast slightly.\nGradually add chicken broth, stirring constantly.\nFinish with parmesan cheese and a knob of butter for creaminess.', 450, 8),
+('Apple Pie', '1 hour', '30 minutes', '200°C', 'Prepare pie dough, roll out and fit into pie dish.\nPeel and slice apples, toss with sugar, cinnamon, and nutmeg.\nFill pie shell, top with lattice crust.\nBake until the crust is golden brown.', 650, 5),
+('Pancakes', '10 minutes', '5 minutes', 'None', 'Mix flour, baking powder, sugar, and salt.\nIn another bowl, beat eggs with milk and melted butter.\nCombine wet and dry ingredients.\nPour batter onto hot griddle and cook until bubbles form, flip once.', 300, 4),
+('Fish Tacos', '20 minutes', '10 minutes', 'None', 'Marinate fish fillets in lime juice, chili powder, and salt.\nGrill until cooked.\nServe on corn tortillas with cabbage slaw, avocado slices, and a squeeze of fresh lime juice.', 500, 8),
+('Beef Stew', '2 hours', '20 minutes', '175°C', 'Season beef chunks with salt and pepper, brown in hot oil.\nAdd chopped onions, carrots, and potatoes.\nPour in beef stock, bring to boil, then simmer covered until meat is tender.\nThicken with flour if desired.', 850, 12),
+('Vegan Curry', '40 minutes', '15 minutes', '180°C', 'Sauté onions and garlic in oil.\nAdd chopped bell peppers and carrots.\nStir in curry powder, add coconut milk and chickpeas.\nSimmer until vegetables are tender.\nServe over cooked basmati rice.', 400, 9);
 
 
 -- Inserting dummy data into Ingredient
