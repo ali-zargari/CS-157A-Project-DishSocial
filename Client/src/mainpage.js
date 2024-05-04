@@ -165,6 +165,8 @@ async function loadFriends() {
 }
 
 
+
+
 async function loadRecipeInfo(recipeId) {
     try {
         const recipeInfo = await getSelectedRecipeInfo(recipeId);
@@ -206,6 +208,13 @@ async function loadRecipeInfo(recipeId) {
         const addButton = document.createElement('button');
         addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
 
+
+        // Create container div for buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex'; // Use flexbox to arrange buttons horizontally
+        buttonContainer.style.marginTop = '10px'; // Add some top margin to separate buttons from recipe info
+
+
         // Set button color based on whether the recipe is in the user's list or not
         addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
 
@@ -224,7 +233,33 @@ async function loadRecipeInfo(recipeId) {
             addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
         });
 
-        recipeInfoContainer.appendChild(addButton);
+
+        // Create and append 'Like' button
+        let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
+        const likeButton = document.createElement('button');
+        likeButton.textContent = isLiked ? "Unlike" : "Like";
+        likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
+        likeButton.style.color = 'white';
+        likeButton.style.marginTop = '10px'; // Extra styling to match the existing buttons
+
+        likeButton.addEventListener('click', async function() {
+            if (isLiked) {
+                await unlikeRecipe(recipeId); // This function needs to be defined to handle unliking the recipe
+            } else {
+                await likeRecipe(recipeId); // This function needs to be defined to handle liking the recipe
+            }
+
+            // Toggle the like state and update the button text and color
+            isLiked = !isLiked;
+            likeButton.textContent = isLiked ? "Unlike" : "Like";
+            likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff";
+        });
+
+        buttonContainer.appendChild(likeButton);
+
+        buttonContainer.appendChild(addButton);
+
+        recipeInfoContainer.appendChild(buttonContainer);
 
         reviewFormSection.style.display = 'block';
     } catch (error) {
@@ -235,6 +270,7 @@ async function loadRecipeInfo(recipeId) {
     // Fetch reviews for the recipe
     await fetchAndDisplayReviews(recipeId);
 }
+
 
 
 
@@ -579,4 +615,63 @@ function addRecipeToDom(recipe) {
 
     // Append the new recipe to the list
     recipeListContainer.appendChild(recipeElement);
+}
+
+
+async function checkIfRecipeIsLiked(recipeId) {
+    try {
+        const userId = getUserIdFromCookie();
+        const response = await axios.get(`http://localhost:3002/recipes/liked`, {
+            params: { userId, recipeId }
+        });
+        return response.status === 200;  // Assumes 200 means it's liked, adjust based on your API
+    } catch (error) {
+        console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);
+        return false; // Return false if there's an error or the recipe is not liked
+    }
+}
+
+
+async function likeRecipe(recipeId) {
+    try {
+        // Retrieve the userId from cookies and ensure it's a digit
+        let userId = getUserIdFromCookie();
+        // Convert both userId and recipeId to integers
+        userId = parseInt(userId, 10);
+        recipeId = parseInt(recipeId, 10);
+
+        console.log(
+            `Liking recipe with ID ${recipeId} for user with ID ${userId}`
+        )
+
+        // Check if either conversion results in NaN, indicating invalid input
+        if (isNaN(userId) || isNaN(recipeId)) {
+            console.error('User ID or Recipe ID is not a valid number');
+            return false;
+        }
+
+        const response = await axios.post('http://localhost:3002/recipes/like', {
+            userId, recipeId
+        });
+
+        return response.status === 201; // Assuming 201 means created/successful
+    } catch (error) {
+        console.error('Failed to like recipe:', error);
+        return false;
+    }
+}
+
+
+
+async function unlikeRecipe(recipeId) {
+    try {
+        const userId = getUserIdFromCookie();
+        const response = await axios.delete(`http://localhost:3002/recipes/unlike`, {
+            data: { userId, recipeId }
+        });
+        return response.status === 200; // Assuming 200 means successful deletion
+    } catch (error) {
+        console.error('Failed to unlike recipe:', error);
+        return false;
+    }
 }

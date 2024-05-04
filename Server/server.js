@@ -781,6 +781,75 @@ app.get('/users/:userID/followers', async (req, res) => {
     }
 });
 
+// check if liked
+app.get('/recipes/liked', async (req, res) => {
+    const { userId, recipeId } = req.query;
+
+    try {
+        const connection = await pool.getConnection();
+        const [result] = await connection.execute(`
+            SELECT 1 FROM User_Likes_Recipe WHERE UserID = ? AND RecipeID = ?
+        `, [userId, recipeId]);
+        connection.release();
+
+        if (result.length > 0) {
+            res.json({ liked: true });
+        } else {
+            res.json({ liked: false });
+        }
+    } catch (error) {
+        console.error("Failed to check if recipe is liked:", error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+// like a recipe
+app.post('/recipes/like', async (req, res) => {
+    const { userId, recipeId } = req.body;
+    console.log('Received userId:', userId);
+    console.log('Received recipeId:', recipeId);
+
+    if (!userId || !recipeId) {
+        return res.status(400).send('Missing userID or recipeID');
+    }
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        await connection.execute(`
+            INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (?, ?)
+        `, [userId, recipeId]);
+        res.status(201).send('Recipe liked successfully');
+    } catch (error) {
+        console.error("Failed to like recipe:", error);
+        res.status(500).send('Internal Server Error');
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
+});
+
+
+// unlike a recipe
+app.delete('/recipes/unlike', async (req, res) => {
+    const { userId, recipeId } = req.body; // Assuming these are passed as JSON payload
+
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(`
+            DELETE FROM User_Likes_Recipe WHERE UserID = ? AND RecipeID = ?
+        `, [userId, recipeId]);
+        connection.release();
+        res.send('Like removed successfully');
+    } catch (error) {
+        console.error("Failed to unlike recipe:", error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 

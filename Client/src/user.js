@@ -115,5 +115,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the 'Main Page' button and add an event listener
+    const mainPageButton = document.getElementById('mainpageButton');
+    if (mainPageButton) {
+        mainPageButton.addEventListener('click', function() {
+            window.location.href = 'mainpage.html'; // Redirects to the main page
+        });
+    }
+
+    // Get the 'Log out' button and add an event listener
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            // Implement log out functionality
+            console.log('Logging out...');
+            // Optionally redirect to login page or do other clean up
+            // window.location.href = 'login.html';
+        });
+    }
+});
 
 
