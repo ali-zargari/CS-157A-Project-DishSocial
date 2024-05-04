@@ -362,7 +362,7 @@ app.post('/review/addReview', async (req, res) => {
         // First, insert the review into the Review table
         const [reviewResult] = await connection.execute(
             'INSERT INTO Review (PublishDate, Rating, ReviewText) VALUES (?, ?, ?)',
-            [PublishDate, 0, Rating, ReviewText]
+            [PublishDate, Rating, ReviewText]
         );
 
         // Then, link the review with the user who left it

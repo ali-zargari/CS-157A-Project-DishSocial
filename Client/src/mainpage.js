@@ -18,12 +18,10 @@ let selectedRecipeId = null;
 let lastSearchTerm = '';
 let lastFilter = '';
 
-console.log("Current UserID: ");
-console.log(getUserIdFromCookie());
+
 
 document.getElementById('logoutButton').addEventListener('click', async function (event) {
     event.preventDefault();
-    console.log("Log out clicked");
 
     if (await logoutUser()){
         window.location.href = 'login.html';
@@ -33,7 +31,6 @@ document.getElementById('logoutButton').addEventListener('click', async function
 
 
 document.querySelector('.filter-button').addEventListener('click', async function() {
-    console.log("search clicked");
     await performAdvancedRecipeSearch();
 });
 
@@ -199,7 +196,6 @@ async function loadRecipeInfo(recipeId) {
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
 
-        console.log('recipeId: ', recipeId);
 
         // Create and append 'Add to Custom List' button
         let isInList = await checkRecipeInList(recipeId);
@@ -283,7 +279,6 @@ async function fetchAndDisplayReviews(recipeId) {
         const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
         const reviews = response.data;
 
-        console.log(reviews);
 
         const reviewsList = document.querySelector('.reviews-list');
         reviewsList.innerHTML = ''; // Clear existing reviews before displaying the latest ones
@@ -352,7 +347,6 @@ async function loadWall() {
             reviewWallContainer.appendChild(reviewContainer); // Append the review container to the wall container
 
         });
-te
     } catch (error) {
         console.error('Failed to load wall:', error);
     }
@@ -454,7 +448,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
     const reviewRating = document.getElementById('reviewRating').value;
     const userID = getUserIdFromCookie(); // This function retrieves the current user's ID from a cookie
 
-    console.log(selectedRecipeId)
+    console.log("Selected: ", reviewText)
 
     if (!selectedRecipeId) {
         console.error('No recipe selected.');
@@ -504,7 +498,6 @@ async function addReviewToPage(review) {
             <span class="review-rating"> ${review.Rating} Stars</span>
         </div>
     `;
-    console.log(await getUserNameById())
     reviewsList.appendChild(reviewItem);
 }
 
@@ -551,7 +544,6 @@ document.getElementById('uploadRecipeForm').addEventListener('submit', uploadRec
 function addRecipeToDom(recipe) {
     const recipeListContainer = document.querySelector('.recipe-list');
 
-    console.log("HAHAHAHAHAHAHAHA", recipe)
 
     // Create the new recipe element
     const recipeElement = document.createElement('div');
