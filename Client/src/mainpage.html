@@ -47,15 +47,20 @@
 
     <!-- Recipes list -->
     <div class="recipes">
-        <h2>Recipes</h2>
+        <h2>Recipe Panel</h2>
 
-        <!-- Recipe Search -->
-        <div class="recipe-search">
+        <div id="search-criteria">
+            <h3>Search for any key-word:</h3>
+            <br>
+            <!-- Recipe Search -->
+            <input id="general-search" type="text" placeholder="Search recipes..." class="search-input">
+
             <div class="top-row">
-                <input id="general-search" type="text" placeholder="Search recipes..." class="search-input">
-                <input type="text" id="cookTime-search" placeholder="Cook Time" class="cook-time-input">
-                <input type="number" id="min-calories" placeholder="Min Calories" class="min-calories-input">
-                <input type="number" id="max-calories" placeholder="Max Calories" class="max-calories-input">
+                <input type="number" id="cookTime-search" placeholder="Cook Time" class="input">
+                <input type="number" id="prepTime-search" placeholder="Prep Time" class="input">
+
+                <input type="number" id="min-calories" placeholder="Min Calories" class="input">
+                <input type="number" id="max-calories" placeholder="Max Calories" class="input">
             </div>
             <div class="bottom-row">
                 <select id="recipeFilter" class="recipe-dropdown">
@@ -70,6 +75,15 @@
 
                 <button class="button filter-button">Filter</button>
             </div>
+        </div>
+
+        <h2>
+            Recipes:
+        </h2>
+
+
+        <div class="recipe-search">
+
             <div class="recipe-list">
                 <div class="recipe">
                     <h3>Chicken Curry</h3>
@@ -87,9 +101,13 @@
             </div>
         </div>
 
+        <h2>
+            Upload Recipes:
+        </h2>
+
+
         <!-- Recipe Upload -->
         <div class="recipe-upload">
-            <h2>Upload Your Recipe</h2>
             <form id="uploadRecipeForm">
                 <input type="text" id="title" placeholder="Title">
                 <input type="text" id="cookTime" placeholder="Cook Time">

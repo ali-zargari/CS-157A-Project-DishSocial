@@ -41,9 +41,12 @@ module.exports = {
             filename: 'settings.html', // Output file
             chunks: ['settings'] // Include only the index bundle
         }),
-        //new HtmlWebpackPlugin({
-        //    title: 'Output Management',
-        //}),
+        new HtmlWebpackPlugin({
+            template: './src/User.html', // Source template file
+            filename: 'User.html', // Output file
+            chunks: ['User'] // Include only the index bundle
+        }),
+
     ],
     output: {
         filename: '[name].bundle.js',

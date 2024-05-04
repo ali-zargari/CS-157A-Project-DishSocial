@@ -140,7 +140,7 @@ button {
     margin: 0 10px;
     display: flex;
     flex-direction: column;
-
+    min-width: 300px;
 
 }
 /* Within .recipes, we create two sections for search and upload */
@@ -158,7 +158,7 @@ button {
 }
 
 /* Recipe Search Layout */
-.recipe-search cookTime-search .options {
+.recipe-search .options {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -169,32 +169,52 @@ button {
 
 .top-row {
     display: flex;
+    flex: 1;
     justify-content: space-between;
     width: 100%;
 }
 
 .search-input {
-    flex: 1 0 50%; /* Grow and shrink with a basis of 50% */
-    margin-right: 10px; /* Spacing between elements */
+    flex: 1; /* Grow and shrink with a basis of 50% */
 }
 
-.min-calories-input {
-    flex: 0 1 15%; /* Grow and shrink with a basis of 25% */
-    max-width: 80px;
-
+#general-search{
+    width: 100%;
+    height: 20px;
+    flex: 1;
 }
 
-.max-calories-input {
-    flex: 0 1 15%; /* Grow and shrink with a basis of 25% */
-    max-width: 80px;
+#search-criteria{
+    height: 100px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.input{
+    flex: 1;
+    min-width: 700px;
+}
+
+/* For Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* For Chrome/Safari */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Bottom row styles */
 .bottom-row {
+    flex: 1;
     display: flex;
     justify-content: space-between;
+    align-content: center;
     width: 100%;
-    padding-bottom: 20px;
 }
 
 .recipe-dropdown {
@@ -219,7 +239,6 @@ button {
 
 /* Input and button styling */
 input[type='text'],
-input[type='number'],
 select,
 button {
     padding: 8px;
@@ -228,6 +247,11 @@ button {
     background-color: #fff;
     color: #495057;
 }
+
+input[type='number']{
+    min-width: 10px;
+}
+
 
 input[type='checkbox'] {
     margin-right: 5px;
@@ -291,7 +315,7 @@ input[type='checkbox'] {
 }
 
 h2 {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-align: center;
     color: #fff; /* Using the header color from your theme */
 }
@@ -582,14 +606,14 @@ label:hover {
         overflow: auto; /* Ensures scrolling within each section */
     }
 
-    #cookTime-search, .max-calories-input, .min-calories-input, .cook-time-input {
+    #cookTime-search, .max-calories-input, .min-calories-input {
         width: 100%; /* Full width on smaller screens */
         margin-right: 0; /* Remove right margin on small screens */
     }
 }
 
 /* Styling for specific input fields */
-#cookTime-search, .max-calories-input, .min-calories-input, .cook-time-input,  .search-input{
+.max-calories-input, .min-calories-input{
     padding: 8px;
     margin: 5px 0; /* Vertical spacing */
     border: 1px solid #ced4da;
@@ -599,10 +623,7 @@ label:hover {
     box-sizing: border-box; /* Include padding and border in the width */
 }
 
-/* Adjusting space between input fields */
-#cookTime-search {
-    margin-right: 5px; /* Add space between the inputs */
-}
+
 
 .max-calories-input {
     margin-right: 5px; /* Add space between the inputs */
