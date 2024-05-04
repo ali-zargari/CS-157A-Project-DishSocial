@@ -83,12 +83,16 @@ header button:hover {
     border-top: 1px solid #ddd; /* Separator between sections */
     display: none;
     margin-top: auto;
+    background-color: white;
+}
+
+.review-form-section h3{
+    flex: 1;
 }
 
 /* Reviews section */
 .reviews-section{
     flex: 1;
-    padding: 10px;
     border-top: 1px solid #ddd; /* Separator between sections */
     margin-top: auto;
 }
@@ -137,8 +141,7 @@ header button:hover {
 /* Reviews list styles */
 .reviews-list {
     max-height: 300px; /* Set a max-height and add scroll if content overflows */
-    overflow-y: auto;
-    margin-bottom: 10px;
+    overflow: auto;
     width: 100%;
 }
 
@@ -189,6 +192,7 @@ header button:hover {
 .recipe-search, .recipe-upload {
     flex: 1;  /* Each section takes half of the .recipes height */
     overflow: auto; /* Add scroll for overflow content */
+    min-height: 130px;
 }
 
 /* Recipe Search Layout */
@@ -220,6 +224,7 @@ header button:hover {
 
 #search-criteria{
     height: 100px;
+    min-height: 100px;
     overflow: auto;
     display: flex;
     flex-direction: column;
@@ -646,9 +651,7 @@ label:hover {
     overflow: scroll; /* Enables scrolling if content overflows the boundary */
 }
 
-.reviews-section{
-    overflow: visible;
-}
+
 
 /* Media Query for smaller screens */
 @media (max-width: 768px) {
@@ -696,6 +699,7 @@ label:hover {
 
 /* Recipe description container */
 .recipe-description {
+    flex: 1;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -756,8 +760,14 @@ label:hover {
     border-bottom: none; /* Removes the border from the last review container */
 }
 
+/* Apply bold styling to Friend and Recipe */
 .review-friend,
-.review-recipe,
+.review-recipe {
+    flex: 1 1 100%; /* Ensures these elements take full width of the container */
+    font-weight: bold; /* Makes text bold */
+}
+
+/* Regular styling for text and date, not bold */
 .review-text,
 .review-date {
     flex: 1 1 100%; /* Ensures these elements take full width of the container */

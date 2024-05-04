@@ -323,12 +323,12 @@ async function loadWall() {
             reviewContainer.className = 'review-container';
 
             const reviewFriend = document.createElement('p');
-            reviewFriend.textContent = `Friend: ${review.FriendName}`;
+            reviewFriend.textContent = `${review.FriendName}`;
             reviewFriend.className = 'review-friend';
             reviewContainer.appendChild(reviewFriend);
 
             const reviewRecipe = document.createElement('p');
-            reviewRecipe.textContent = `Recipe: ${review.Title}`;
+            reviewRecipe.textContent = `Reviewed \'${review.Title}\'`;
             reviewRecipe.className = 'review-recipe';
             reviewContainer.appendChild(reviewRecipe);
 
