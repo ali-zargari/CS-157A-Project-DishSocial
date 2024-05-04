@@ -341,6 +341,9 @@ input[type='number']{
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Adding shadow for consistency */
     color: #333; /* Dark grey text for readability */
     font-family: 'Arial', sans-serif;
+    display: block;
+    overflow: scroll;
+    max-width: 500px;
 }
 
 h2 {
@@ -349,44 +352,68 @@ h2 {
     color: #fff; /* Using the header color from your theme */
 }
 
+
+/* Form container styling */
 #uploadRecipeForm {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: end;
+    padding: 10px; /* Reduced padding */
+    background-color: #fff;
+    border-radius: 6px; /* Slightly reduced border radius */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: auto;
 }
 
+/* General input and textarea styling */
 #uploadRecipeForm input[type="text"],
 #uploadRecipeForm input[type="number"],
 #uploadRecipeForm textarea {
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ced4da; /* Border color like other inputs */
-    color: #495057; /* Input text color */
-    background-color: #fff; /* Input background */
+    width: 100%;
+    padding: 8px; /* Reduced padding for compactness */
+    margin: 8px 0; /* Reduced margin */
+    border: 1px solid #ccc;
+    border-radius: 3px; /* Smaller border radius */
+    box-sizing: border-box;
 }
 
 #uploadRecipeForm textarea {
-    grid-column: 1 / span 2;
-    min-height: 100px;
-    resize: vertical;
+    height: 80px; /* Reduced height */
+    resize: none; /* Disable resizing of the textarea */
 }
 
+/* Style the placeholder text */
+#uploadRecipeForm input::placeholder,
+#uploadRecipeForm textarea::placeholder {
+    color: #aaa;
+    font-size: 0.9em; /* Smaller font size for placeholders */
+}
+
+/* Button styling */
 #uploadButton {
-    grid-column: 1 / span 2;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #28a745; /* Consistent button color with your theme */
+    display: block;
+    width: 100%;
+    padding: 10px 15px; /* Reduced padding */
+    background-color: #4CAF50;
     color: white;
-    font-size: 16px;
+    font-size: 15px; /* Slightly smaller font size */
+    border: none;
+    border-radius: 3px; /* Smaller border radius */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 #uploadButton:hover {
-    background-color: #218838; /* Darken button on hover for a nice effect */
+    background-color: #45a049;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
+
+/* Add focus styles to improve accessibility */
+#uploadRecipeForm input:focus,
+#uploadRecipeForm textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 6px rgba(76, 175, 80, 0.5); /* Reduced focus shadow size */
+}
+
 
 @media (max-width: 768px) {
     #uploadRecipeForm {
@@ -507,6 +534,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     min-width: 200px;
+    max-width: 300px;
 }
 
 /* Header within the wall section */
@@ -614,7 +642,7 @@ label:hover {
 }
 
 /* Global layout adjustments for scrolling */
-.content, .recipe-info,  .recipe-search, .recipe-upload, .friends, .wall-content {
+.content, .recipe-info,  .recipe-search, .friends, .wall-content {
     overflow: scroll; /* Enables scrolling if content overflows the boundary */
 }
 
@@ -678,14 +706,14 @@ label:hover {
 
 /* Recipe title */
 .recipe-description h3 {
-    font-size: 24px;
+    font-size: 20px;
     color: #333;
     margin-bottom: 10px;
 }
 
 /* Recipe details */
 .recipe-description p {
-    font-size: 16px;
+    font-size: 14px;
     color: #555;
     margin-bottom: 5px;
     border-bottom: 1px solid #ccc; /* Add line between sections */
@@ -713,26 +741,33 @@ label:hover {
 }
 
 .review-container {
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 10px;
+    background: #f9f9f9; /* Example background color */
+    border-bottom: 1px solid #ccc; /* Adds a light gray line below each review container */
+    margin-bottom: 10px; /* Adds space between containers */
+    cursor: pointer; /* Changes the cursor to a pointer to indicate interactivity */
 }
 
-.review-friend, .review-recipe, .review-text {
-    font-size: 1.2em;
-    color: #333;
-    font-weight: bold;
+.review-container:last-child {
+    border-bottom: none; /* Removes the border from the last review container */
+}
+
+.review-friend,
+.review-recipe,
+.review-text,
+.review-date {
+    flex: 1 1 100%; /* Ensures these elements take full width of the container */
 }
 
 .review-rating {
+    flex: 0 0 auto;
+    align-self: center;
+    margin-left: auto;
     background-color: #ffd700; /* Gold color for the star rating */
-    color: #ffffff;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.review-votes, .review-date {
-    font-size: 0.9em;
-    color: #777;
+    padding: 5px 10px;
+    border-radius: 5px;
 }

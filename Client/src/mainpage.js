@@ -337,20 +337,17 @@ async function loadWall() {
             reviewText.className = 'review-text';
             reviewContainer.appendChild(reviewText);
 
-            const reviewRating = document.createElement('div'); // Changed to div for better styling control
-            reviewRating.textContent = `Rating: ${review.Rating} Stars`;
-            reviewRating.className = 'review-rating';
-            reviewContainer.appendChild(reviewRating);
-
-            const reviewVotes = document.createElement('p');
-            reviewVotes.textContent = `Votes: ${review.NumVotes}`;
-            reviewVotes.className = 'review-votes';
-            reviewContainer.appendChild(reviewVotes);
-
             const reviewDate = document.createElement('p');
             reviewDate.textContent = `Date: ${review.PublishDate}`;
             reviewDate.className = 'review-date';
             reviewContainer.appendChild(reviewDate);
+
+            const reviewRating = document.createElement('div'); // Changed to div for better styling control
+            reviewRating.textContent = `${review.Rating} Stars`;
+            reviewRating.className = 'review-rating';
+            reviewContainer.appendChild(reviewRating);
+
+
 
             reviewContainer.addEventListener('click', function() {
                 loadRecipeInfo(review.RecipeID);
