@@ -9,6 +9,7 @@ module.exports = {
         registration: './src/registration.js',
         mainpage: './src/mainpage.js',
         settings: './src/settings.js',
+        user: './src/user.js',
     },
     devServer: {
         static: './dist',

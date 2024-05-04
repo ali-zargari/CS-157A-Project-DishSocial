@@ -201,11 +201,13 @@ async function loadRecipeInfo(recipeId) {
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
 
-
         // Create and append 'Add to Custom List' button
         let isInList = await checkRecipeInList(recipeId);
         const addButton = document.createElement('button');
-        addButton.textContent = isInList ? "Remove from Custom List" : "Add to Custom List";
+        addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
+
+        // Set button color based on whether the recipe is in the user's list or not
+        addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
 
         addButton.addEventListener('click', async function() {
             if(isInList) {
@@ -216,7 +218,10 @@ async function loadRecipeInfo(recipeId) {
 
             // Update isInList and button text
             isInList = await checkRecipeInList(recipeId);
-            addButton.textContent = isInList ? "Remove from Custom List" : "Add to Custom List";
+            addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
+
+            // Update button color based on the updated isInList value
+            addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
         });
 
         recipeInfoContainer.appendChild(addButton);
@@ -230,6 +235,7 @@ async function loadRecipeInfo(recipeId) {
     // Fetch reviews for the recipe
     await fetchAndDisplayReviews(recipeId);
 }
+
 
 
 
@@ -357,7 +363,15 @@ async function loadWall() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    const userId = getUserIdFromCookie();
+    const userName = await getUserNameById(userId);
+    const headerH1Element = document.querySelector('header #greeting');
+    if (headerH1Element){
+        headerH1Element.textContent = `Welcome, ${userName}!`;
+        headerH1Element.style.fontSize = '1.5em';
+        headerH1Element.style.textAlign = 'center';
+    }
     loadAllUsers();
     loadFriends();
     loadRecipes();

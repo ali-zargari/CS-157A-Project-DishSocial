@@ -3,53 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Layout styling */
-        .form-container {
-            display: flex;
-            justify-content: start;
-            gap: 50px;
-        }
+    <title>User Settings</title>
 
-        form, .user-info {
-            flex: 1;
-        }
-    </style>
-    <title>Settings</title>
 </head>
 <body>
 <h1>User Settings</h1>
 <div class="form-container">
     <form id="settingsForm">
         <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" required><br>
+        <input type="text" id="firstName" name="firstName" required>
 
         <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" required><br>
+        <input type="text" id="lastName" name="lastName" required>
 
         <label for="gender">Gender:</label>
         <select id="gender" name="gender" required>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
-        </select><br>
+        </select>
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br>
+        <input type="email" id="email" name="email" required>
 
         <label for="birthplace">Birthplace:</label>
-        <input type="text" id="birthplace" name="birthplace" required><br>
+        <input type="text" id="birthplace" name="birthplace" required>
 
         <label for="birthdate">Birthdate:</label>
-        <input type="date" id="birthdate" name="birthdate" required><br>
+        <input type="date" id="birthdate" name="birthdate" required>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
+        <input type="password" id="password" name="password" required>
 
         <button type="submit">Save Changes</button>
     </form>
     <div class="user-info" id="user-info-wrapper">
         <h2>User Information</h2>
+        <!-- User information will be dynamically populated here -->
     </div>
 </div>
 </body>
