@@ -7,10 +7,13 @@
 
 </head>
 <body>
-<header>
-    <h1>Profile of [User's Name]</h1>
-    <button id="logoutButton">Log out</button>
-</header>
+    <header class="sticky-header">
+        <div class="header-content">
+            <h1 id="profileName">Profile of [User's Name]</h1>
+            <button id="mainpageButton">Main Page</button>
+            <button id="logoutButton">Log out</button>
+        </div>
+    </header>
 
 <div class="content">
     <!-- User Details -->
@@ -24,13 +27,23 @@
         <p><strong>Age:</strong> [Age]</p>
     </div>
 
-    <!-- Friends List -->
-    <div id="friends">
-        <h2>Friends</h2>
-        <div class="friend-list">
-            <!-- Friend entries will be dynamically loaded here -->
+    <div id="connections">
+        <div id="following">
+            <h2>Following</h2>
+            <div class="user-list" id="following-list">
+                <!-- Following users will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <div id="followers">
+            <h2>Followers</h2>
+            <div class="user-list" id="followers-list">
+                <!-- Followers will be dynamically loaded here -->
+            </div>
         </div>
     </div>
+
+
 
     <!-- Recipes Interacted With -->
     <div class="recipes">

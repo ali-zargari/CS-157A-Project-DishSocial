@@ -296,3 +296,59 @@ export async function getRecipesByUser(userId) {
         console.error('There was a problem fetching the user upload data:', error);
     }
 }
+
+
+export async function getAllReviewsByUser(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/reviews`);
+        console.log("All reviews by user:", response.data);
+        return response.data; // Return the data for further use
+    } catch (error) {
+        console.error('Failed to fetch reviews by user:', error);
+    }
+}
+
+
+export async function getAllRecipesUploadedByUser(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/recipes`);
+        console.log("All recipes uploaded by user:", response.data);
+        return response.data; // Return the data for further use
+    } catch (error) {
+        console.error('Failed to fetch recipes uploaded by user:', error);
+    }
+}
+
+
+export async function getUserInfoById(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to get user info:', error);
+        return null;
+    }
+}
+
+
+// Function to get the list of users following a specific user
+export async function getFollowers(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/followers`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch followers:', error);
+        return [];
+    }
+}
+
+// Function to get the list of users a specific user is following
+export async function getFollowing(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/following`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch following:', error);
+        return [];
+    }
+}

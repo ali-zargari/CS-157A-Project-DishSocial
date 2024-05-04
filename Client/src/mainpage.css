@@ -791,3 +791,11 @@ label:hover {
     padding: 5px 10px;
     border-radius: 5px;
 }
+
+
+@media (max-width: 950px) {
+    .recipes{
+        min-width: 150px;
+    }
+}
+

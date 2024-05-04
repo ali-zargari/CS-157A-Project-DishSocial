@@ -48,8 +48,75 @@ header button {
     padding-top: 20px;
 }
 
-.friend-list::before,
-.recipe-list::before,
-.reviews-list::before {
-    content: 'No items to display.';
+.recipe-item, .review-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.recipe-item h3, .review-item h3 {
+    color: #333;
+    margin-top: 0;
+}
+
+.recipe-item p, .review-item p {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+strong {
+    color: #333;
+}
+
+#connections {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+#following, #followers {
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-list {
+    margin-top: 10px;
+}
+
+.user-list div {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.user-list div:last-child {
+    border-bottom: none;
+}
+
+h2 {
+    color: #333;
+    padding: 0;
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.user-item {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.user-item:hover {
+    background-color: #f0f0f0;
 }

@@ -152,7 +152,7 @@ async function loadFriends() {
             profileButton.style.fontSize = '0.8em';
             profileButton.addEventListener('click', () => {
                 // On click, navigate to user.html
-                window.location.href = 'user.html';
+                window.location.href = `user.html?userID=${friend.UserID}`;
             });
             buttonContainer.appendChild(profileButton);
 

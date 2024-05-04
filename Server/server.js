@@ -84,9 +84,10 @@ app.get('/users/friends', async (req, res) => {
         const connection = await pool.getConnection();
         const userID = req.cookies.userID;
 
+        // Query to get the friend IDs from the Follows table
         const [friendResult] = await connection.execute(
             'SELECT UserID2 FROM Follows WHERE UserID1 = ?',
-                [userID]
+            [userID]
         );
 
         // Extracting user IDs from the friendResult
@@ -94,26 +95,29 @@ app.get('/users/friends', async (req, res) => {
 
         // Check if there are friend IDs to query
         if (friendIds.length > 0) {
-            // Query to get names of friends
+            // Query to get details of friends
             const friendIdsPlaceHolders = friendIds.map(() => '?').join(',');
 
+            // Including UserID in the SELECT clause
             const [rows] = await connection.execute(
-                `SELECT FirstName, LastName FROM Users WHERE UserID IN (${friendIdsPlaceHolders})`,
+                `SELECT UserID, FirstName, LastName FROM Users WHERE UserID IN (${friendIdsPlaceHolders})`,
                 friendIds
             );
 
-            //console.log(rows)
+            // Returning the user details
             res.send(rows);
-            //console.log(`(${friendIds.join(',')})`);
         } else {
             res.send([]); // No friends found
         }
+
+        // Release the connection back to the pool
         connection.release();
     } catch (error) {
         console.error("Failed to retrieve friends: ", error);
         res.status(500).send(error);
     }
 });
+
 
 //delete user
 app.delete('/users/:userId', async (req, res) => {
@@ -416,6 +420,7 @@ app.delete('/review/:reviewID', async (req, res) => {
 });
 
 
+//reviews of a recipe
 app.get('/reviews/:recipeID', async (req, res) => {
     try {
         const { recipeID } = req.params;
@@ -444,6 +449,7 @@ app.get('/reviews/:recipeID', async (req, res) => {
 });
 
 
+//get user info
 app.get('/users/:userID', async (req, res) => {
     const { userID } = req.params; // Extracting userID from the request URL
 
@@ -701,5 +707,81 @@ app.put('/users/:userId', async (req, res) => {
         res.status(500).send(error);
     }
 });
+
+app.get('/users/:userID/recipes', async (req, res) => {
+    const { userID } = req.params;
+    try {
+        const connection = await pool.getConnection();
+        const [recipes] = await connection.execute(`
+            SELECT r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients
+            FROM Recipe r
+            JOIN User_Uploads_Recipe uur ON r.RecipeID = uur.RecipeID
+            WHERE uur.UserID = ?
+        `, [userID]);
+        connection.release();
+        res.json(recipes);
+    } catch (error) {
+        console.error('Error fetching recipes uploaded by user:', error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/users/:userID/reviews', async (req, res) => {
+    const { userID } = req.params; // Extract the userID from the request parameters
+    try {
+        const connection = await pool.getConnection();
+        const [reviews] = await connection.execute(`
+            SELECT r.ReviewID, r.PublishDate, r.Rating, r.ReviewText, rec.Title AS RecipeTitle
+            FROM Review r
+            JOIN User_Leaves_Review ulr ON r.ReviewID = ulr.ReviewID
+            JOIN Recipe_Has_Review rhr ON r.ReviewID = rhr.ReviewID
+            JOIN Recipe rec ON rhr.RecipeID = rec.RecipeID
+            WHERE ulr.UserID = ?
+        `, [userID]);
+        connection.release();
+        res.json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews by user:', error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+app.get('/users/:userID/following', async (req, res) => {
+    const { userID } = req.params;
+    try {
+        const connection = await pool.getConnection();
+        const [following] = await connection.execute(
+            'SELECT u.UserID, u.FirstName, u.LastName FROM Users u JOIN Follows f ON u.UserID = f.UserID2 WHERE f.UserID1 = ?',
+            [userID]
+        );
+        connection.release();
+        res.json(following);
+    } catch (error) {
+        console.error("Failed to retrieve following users: ", error);
+        res.status(500).send(error);
+    }
+});
+
+app.get('/users/:userID/followers', async (req, res) => {
+    const { userID } = req.params;
+    try {
+        const connection = await pool.getConnection();
+        const [followers] = await connection.execute(
+            'SELECT u.UserID, u.FirstName, u.LastName FROM Users u JOIN Follows f ON u.UserID = f.UserID1 WHERE f.UserID2 = ?',
+            [userID]
+        );
+        connection.release();
+        res.json(followers);
+    } catch (error) {
+        console.error("Failed to retrieve followers: ", error);
+        res.status(500).send(error);
+    }
+});
+
+
+
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
