@@ -10,46 +10,25 @@ VALUES
 
 
 -- Inserting dummy data into Review
-INSERT INTO Review (PublishDate, NumVotes, Rating, ReviewText) VALUES
-('2023-12-01', 15, 4, 'Really enjoyed this recipe! Easy to follow.'),
-('2023-12-05', 23, 5, 'Delicious! Will make again.'),
-('2023-11-15', 34, 5, 'This is now a family favorite. Highly recommend.'),
-('2023-11-20', 12, 3, 'Good, but a bit time-consuming.'),
-('2023-12-03', 18, 2, 'Not what I expected, needs more flavor.');
+INSERT INTO Review (PublishDate,  Rating, ReviewText) VALUES
+('2023-12-01',  4, 'Really enjoyed this recipe! Easy to follow.'),
+('2023-12-05',  5, 'Delicious! Will make again.'),
+('2023-11-15',  5, 'This is now a family favorite. Highly recommend.'),
+('2023-11-20',  3, 'Good, but a bit time-consuming.'),
+('2023-12-03',  2, 'Not what I expected, needs more flavor.');
 
 -- Inserting dummy data into Recipe
-INSERT INTO Recipe (Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients)
+INSERT INTO Recipe (Title,  Steps, TotalCalories, Ingredients)
 VALUES
-('Spaghetti Bolognese', '30 min', '15 min',  '1. Boil pasta...\n2. Cook sauce...', 850, 10),
-('Classic Cheeseburger', '10 min', '5 min', '1. Grill patties...\n2. Assemble burger...', 650, 7),
-('Vegetarian Pizza', '20 min', '10 min',  '1. Prepare dough...\n2. Add toppings...', 750, 8),
-('Chicken Caesar Salad', '15 min', '10 min',  '1. Grill chicken...\n2. Toss salad...', 550, 7),
-('Beef Stroganoff', '40 min', '15 min',  '1. Sauté beef...\n2. Prepare sauce...', 900, 12),
-('Quinoa Salad', '25 min', '5 min',  '1. Cook quinoa...\n2. Mix ingredients...', 400, 5),
-('Chocolate Chip Cookies', '10 min', '15 min',  '1. Mix dough...\n2. Bake cookies...', 300, 6);
+('Spaghetti Bolognese',   '1. Boil pasta...\n2. Cook sauce...', 850, 10),
+('Classic Cheeseburger',  '1. Grill patties...\n2. Assemble burger...', 650, 7),
+('Vegetarian Pizza',   '1. Prepare dough...\n2. Add toppings...', 750, 8),
+('Chicken Caesar Salad',   '1. Grill chicken...\n2. Toss salad...', 550, 7),
+('Beef Stroganoff',   '1. Sauté beef...\n2. Prepare sauce...', 900, 12),
+('Quinoa Salad',   '1. Cook quinoa...\n2. Mix ingredients...', 400, 5),
+('Chocolate Chip Cookies',   '1. Mix dough...\n2. Bake cookies...', 300, 6);
 
 
-
--- Inserting dummy data into Vote and its subtypes
--- Note: Inserting a vote and then classifying it into Tasty or Not Tasty
-INSERT INTO Vote (UserID)
-VALUES
-(1),
-(2),
-(3),
-(4),
-(5);
-
-INSERT INTO Useful_Vote (VoteID)
-VALUES
-(1),
-(3),
-(5);
-
-INSERT INTO Not_Useful_Vote (VoteID)
-VALUES
-(2),
-(4);
 
 -- Inserting dummy data into relationship tables
 -- Note: For relationship tables, data is inserted based on existing entries in the referenced tables
@@ -100,14 +79,7 @@ VALUES
 (4, 4),
 (5, 5);
 
--- User_Gives_Vote
-INSERT INTO User_Gives_Vote (UserID, VoteID)
-VALUES
-(1, 1),
-(2, 2),
-(1, 3),
-(2, 4),
-(3, 5);
+
 
 -- Wall_Displays_Review, Recipe_Has_Review, Recipe_Contains_Ingredient
 -- Assuming these don't have triggers and need manual insertion

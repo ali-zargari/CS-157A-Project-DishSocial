@@ -3,8 +3,8 @@ import { getUserById, updateUserById } from './controller.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = '1'; // Set to the user ID you want to fetch data for
+    const messageBox = document.getElementById('messageBox'); // Get the message box element
 
-    // Fetch user data and populate the form
     try {
         const userData = await getUserById(userId);
         if (userData) {
@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('gender').value = userData.Gender;
             document.getElementById('email').value = userData.Email;
             document.getElementById('birthplace').value = userData.Birthplace;
-            document.getElementById('birthdate').value = userData.DateOfBirth.slice(0, 10); // Assuming it needs to be sliced
-            document.getElementById('password').value = userData.Password;
+            document.getElementById('birthdate').value = userData.DateOfBirth.slice(0, 10);
 
             const userInfoWrapper = document.getElementById('user-info-wrapper');
             userInfoWrapper.innerHTML = '<h2>User Information</h2>';
@@ -31,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching user data:', error);
     }
 
-    // Handle form submission
     const form = document.getElementById('settingsForm');
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -42,17 +40,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             Gender: document.getElementById('gender').value,
             Email: document.getElementById('email').value,
             Birthplace: document.getElementById('birthplace').value,
-            DateOfBirth: document.getElementById('birthdate').value,
-            Password: document.getElementById('password').value,
+            DateOfBirth: document.getElementById('birthdate').value
         };
+
+        const passwordValue = document.getElementById('password').value;
+        if (passwordValue) {
+            updatedData.Password = passwordValue;
+        }
 
         try {
             const updateResponse = await updateUserById(userId, updatedData);
-            console.log('User updated successfully.');
-            // Refresh the page if update is successful
-            location.reload();
+            messageBox.textContent = 'User updated successfully.'; // Set success message
+            messageBox.className = 'message-box success'; // Additional class for styling success
+            messageBox.style.display = 'block'; // Show the message box
+
+            setTimeout(() => {
+                messageBox.style.display = 'none'; // Optionally hide the message after some time
+                location.reload(); // Refresh the page if update is successful
+            }, 4000);
         } catch (error) {
             console.error('Error updating user data:', error);
+            messageBox.textContent = 'Error updating user data.';
+            messageBox.className = 'message-box error'; // Additional class for styling errors
+            messageBox.style.display = 'block'; // Show the message box
         }
     });
 });

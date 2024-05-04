@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header button {
+    margin-top: 20px;
+}
+
+.content {
+    margin: 20px;
+}
+
+#user-details,
+#friends,
+.recipes,
+.reviews {
+    background-color: white;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+#user-details h2,
+#friends h2,
+.recipes h2,
+.reviews h2 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.friend-list,
+.recipe-list,
+.reviews-list {
+    padding-top: 20px;
+}
+
+.friend-list::before,
+.recipe-list::before,
+.reviews-list::before {
+    content: 'No items to display.';
+}

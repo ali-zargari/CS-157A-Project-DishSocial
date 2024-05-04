@@ -30,7 +30,6 @@ CREATE TABLE Review
 (
     ReviewID    INT PRIMARY KEY AUTO_INCREMENT,
     PublishDate DATE NOT NULL,
-    NumVotes    INT NOT NULL,
     Rating      INT NOT NULL,
     ReviewText  TEXT NOT NULL
 
@@ -39,8 +38,6 @@ CREATE TABLE Review
 CREATE TABLE Recipe
 (
     Title       VARCHAR(55) NOT NULL,
-    CookTime    VARCHAR(55) NOT NULL,
-    PrepTime    VARCHAR(55) NOT NULL,
     RecipeID    INT PRIMARY KEY AUTO_INCREMENT,
     Steps       TEXT NOT NULL,
     TotalCalories INT NOT NULL,
@@ -48,26 +45,6 @@ CREATE TABLE Recipe
 );
 
 
-
-CREATE TABLE Vote
-(
-    VoteID INT AUTO_INCREMENT,
-    UserID INT,
-    PRIMARY KEY (VoteID, UserID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Useful_Vote
-(
-    VoteID INT PRIMARY KEY,
-    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Not_Useful_Vote
-(
-    VoteID INT PRIMARY KEY,
-    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID) ON DELETE CASCADE ON UPDATE CASCADE
-);
 
 
 
@@ -112,15 +89,6 @@ CREATE TABLE User_Leaves_Review
     PRIMARY KEY (UserID, ReviewID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE User_Gives_Vote
-(
-    UserID INT,
-    VoteID INT,
-    PRIMARY KEY (UserID, VoteID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (VoteID) REFERENCES Vote(VoteID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Wall_Displays_Review
@@ -271,52 +239,6 @@ BEGIN
     JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
     WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
 END;
-
-
-
-
-
--- Trigger to update the number of votes when a vote is added
-CREATE TRIGGER Update_NumVotes
-AFTER INSERT ON Vote
-FOR EACH ROW
-BEGIN
-    UPDATE Review
-    SET NumVotes = NumVotes + 1
-    WHERE ReviewID = NEW.VoteID;
-END;
-
-
-
-
-
-
--- Trigger to update the number of votes when a vote is removed
-CREATE TRIGGER Update_NumVotes_Remove
-AFTER DELETE ON Vote
-FOR EACH ROW
-BEGIN
-    UPDATE Review
-    SET NumVotes = NumVotes - 1
-    WHERE ReviewID = OLD.VoteID;
-END;
-
-
-
--- Trigger to prevent a user from voting on the same review twice
-CREATE TRIGGER Check_Vote_Duplication
-BEFORE INSERT ON Vote
-FOR EACH ROW
-BEGIN
-    IF EXISTS (
-        SELECT 1 FROM Vote
-        WHERE UserID = NEW.UserID AND VoteID = NEW.VoteID
-    ) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User has already voted on this review';
-    END IF;
-END;
-
-
 
 
 

@@ -13,24 +13,49 @@ body, html {
     background-color: #f8f9fa;
 }
 
+/* Header styles */
 header {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 20px;
+    background-color: #333;  /* Dark background */
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.06);
 }
 
-header h1 {
-    margin: 0;
+header #app-name {
+    font-size: 2em;
+    font-weight: 600;
+    color: #fff;  /* White text */
+    text-transform: uppercase;
 }
 
-button {
-    cursor: pointer;
+header #greeting {
+    flex: 1;
+    font-size: 2em;
+    font-weight: 600;
+    color: #fff;  /* White text */
+    text-align: center;
+    text-transform: uppercase;
 }
 
-/* Layout styles */
+header button {
+    font-size: 1em;
+    padding: 10px 20px;
+    background: none;
+    border: 2px solid #fff;  /* White border */
+    color: #fff;  /* White text */
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+header button:hover {
+    color: #333;  /* Dark text on hover */
+    background: #fff;  /* White background on hover */
+}
+
+/* Main content styles */
 .content {
     display: flex;
     justify-content: space-around;
@@ -38,6 +63,7 @@ button {
     height: calc(100% - 60px); /* Adjust height based on header/footer size */
 }
 
+/* Recipe Info styles */
 .recipe-info {
     background-color: #fff;
     border-radius: 8px;
@@ -46,40 +72,59 @@ button {
     margin: 0 10px;
     display: flex;
     flex-direction: column;
-    min-width: 300px;
+    width: 500px;
     overflow: scroll;
 }
 
-
+/* Review Form section */
 .review-form-section{
+    flex: 1;
     padding: 10px;
     border-top: 1px solid #ddd; /* Separator between sections */
     display: none;
     margin-top: auto;
-
+    background-color: white;
 }
 
+.review-form-section h3{
+    flex: 1;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+/* Reviews section */
 .reviews-section{
-    padding: 10px;
+    flex: 1;
     border-top: 1px solid #ddd; /* Separator between sections */
     margin-top: auto;
-
 }
 
+.reviews-section h3{
+    text-align: center;
+    margin: 10px 0;
+    font-size: 1.5em;
+}
 
+/* Review Item styles */
 .review-item {
     background-color: #ffffff;
     border: 1px solid #dedede;
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px; /* Spacing between review items */
+    max-width: 100%;
 }
 
+/* Review text styles */
 .review-text {
     font-style: italic;
     color: #555555;
+    word-wrap: break-word; /* Wrap long words */
+    overflow: inherit; /* Hide overflow */
+    max-width: 500px;
 }
 
+/* Review details styles */
 .review-details {
     display: flex;
     justify-content: space-between;
@@ -87,11 +132,13 @@ button {
     padding-top: 8px; /* Space between review text and details */
 }
 
+/* Review author styles */
 .review-author {
     font-weight: bold;
     color: #333333;
 }
 
+/* Review rating styles */
 .review-rating {
     background-color: #ffd700; /* Gold color for the star rating */
     color: #ffffff;
@@ -99,17 +146,20 @@ button {
     border-radius: 4px;
 }
 
+/* Reviews list styles */
 .reviews-list {
     max-height: 300px; /* Set a max-height and add scroll if content overflows */
-    overflow-y: auto;
-    margin-bottom: 10px;
+    overflow: auto;
+    width: 100%;
 }
 
+/* Post Review Form styles */
 #postReviewForm {
     display: grid;
     grid-gap: 10px;
 }
 
+/* Review text input styles */
 #reviewText {
     width: 100%;
     padding: 8px;
@@ -119,6 +169,7 @@ button {
     resize: vertical;
 }
 
+/* Submit Review Button styles */
 #submitReviewButton {
     padding: 10px 20px;
     border: none;
@@ -128,10 +179,12 @@ button {
     cursor: pointer;
 }
 
+/* Hover effect for Submit Review Button */
 #submitReviewButton:hover {
     background-color: #218838; /* Darken button on hover for a nice effect */
 }
 
+/* Recipes section styles */
 .recipes{
     background-color: #fff;
     border-radius: 8px;
@@ -140,25 +193,18 @@ button {
     margin: 0 10px;
     display: flex;
     flex-direction: column;
-
-
+    min-width: 300px;
 }
+
 /* Within .recipes, we create two sections for search and upload */
 .recipe-search, .recipe-upload {
     flex: 1;  /* Each section takes half of the .recipes height */
     overflow: auto; /* Add scroll for overflow content */
-}
-
-.recipe-search {
-    background-color: #fff;
-    padding: 5px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-bottom: 20px; /* Spacing between search and list */
+    min-height: 130px;
 }
 
 /* Recipe Search Layout */
-.recipe-search cookTime-search .options {
+.recipe-search .options {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -169,32 +215,53 @@ button {
 
 .top-row {
     display: flex;
+    flex: 1;
     justify-content: space-between;
     width: 100%;
 }
 
 .search-input {
-    flex: 1 0 50%; /* Grow and shrink with a basis of 50% */
-    margin-right: 10px; /* Spacing between elements */
+    flex: 1; /* Grow and shrink with a basis of 50% */
 }
 
-.min-calories-input {
-    flex: 0 1 15%; /* Grow and shrink with a basis of 25% */
-    max-width: 80px;
-
+#general-search{
+    width: 100%;
+    height: 20px;
+    flex: 1;
 }
 
-.max-calories-input {
-    flex: 0 1 15%; /* Grow and shrink with a basis of 25% */
-    max-width: 80px;
+#search-criteria{
+    height: 100px;
+    min-height: 100px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.input{
+    flex: 1;
+    min-width: 700px;
+}
+
+/* For Firefox */
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+/* For Chrome/Safari */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Bottom row styles */
 .bottom-row {
+    flex: 1;
     display: flex;
     justify-content: space-between;
+    align-content: center;
     width: 100%;
-    padding-bottom: 20px;
 }
 
 .recipe-dropdown {
@@ -219,7 +286,6 @@ button {
 
 /* Input and button styling */
 input[type='text'],
-input[type='number'],
 select,
 button {
     padding: 8px;
@@ -229,8 +295,8 @@ button {
     color: #495057;
 }
 
-input[type='checkbox'] {
-    margin-right: 5px;
+input[type='number']{
+    min-width: 10px;
 }
 
 /* Responsive adjustments */
@@ -251,7 +317,7 @@ input[type='checkbox'] {
     }
 }
 
-
+/* Recipe List styles */
 .recipe-list {
     display: flex;
     flex-direction: column;
@@ -281,59 +347,86 @@ input[type='checkbox'] {
     }
 }
 
-
+/* Recipe Upload styles */
 .recipe-upload {
     background-color: #fff; /* changed to white to match your theme */
     border-radius: 8px; /* Adjusted to match your other elements */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Adding shadow for consistency */
     color: #333; /* Dark grey text for readability */
     font-family: 'Arial', sans-serif;
+    display: block;
+    overflow: scroll;
+    max-width: 500px;
 }
 
 h2 {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-align: center;
     color: #fff; /* Using the header color from your theme */
 }
 
+
+/* Form container styling */
 #uploadRecipeForm {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: end;
+    padding: 10px; /* Reduced padding */
+    background-color: #fff;
+    border-radius: 6px; /* Slightly reduced border radius */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: auto;
 }
 
+/* General input and textarea styling */
 #uploadRecipeForm input[type="text"],
 #uploadRecipeForm input[type="number"],
 #uploadRecipeForm textarea {
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ced4da; /* Border color like other inputs */
-    color: #495057; /* Input text color */
-    background-color: #fff; /* Input background */
+    width: 100%;
+    padding: 8px; /* Reduced padding for compactness */
+    margin: 8px 0; /* Reduced margin */
+    border: 1px solid #ccc;
+    border-radius: 3px; /* Smaller border radius */
+    box-sizing: border-box;
 }
 
 #uploadRecipeForm textarea {
-    grid-column: 1 / span 2;
-    min-height: 100px;
-    resize: vertical;
+    height: 80px; /* Reduced height */
+    resize: none; /* Disable resizing of the textarea */
 }
 
+/* Style the placeholder text */
+#uploadRecipeForm input::placeholder,
+#uploadRecipeForm textarea::placeholder {
+    color: #aaa;
+    font-size: 0.9em; /* Smaller font size for placeholders */
+}
+
+/* Button styling */
 #uploadButton {
-    grid-column: 1 / span 2;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #28a745; /* Consistent button color with your theme */
+    display: block;
+    width: 100%;
+    padding: 10px 15px; /* Reduced padding */
+    background-color: #4CAF50;
     color: white;
-    font-size: 16px;
+    font-size: 15px; /* Slightly smaller font size */
+    border: none;
+    border-radius: 3px; /* Smaller border radius */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 #uploadButton:hover {
-    background-color: #218838; /* Darken button on hover for a nice effect */
+    background-color: #45a049;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
+
+/* Add focus styles to improve accessibility */
+#uploadRecipeForm input:focus,
+#uploadRecipeForm textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 6px rgba(76, 175, 80, 0.5); /* Reduced focus shadow size */
+}
+
 
 @media (max-width: 768px) {
     #uploadRecipeForm {
@@ -343,7 +436,6 @@ h2 {
         padding: 10px 20px;
     }
 }
-
 
 /* Ensure the recipe list does not overflow the .recipe-search section */
 .recipe-list {
@@ -436,9 +528,12 @@ button:hover {
     display: block;
 }
 
-.friend-list, .recipe-list, .recipe-info-wall {
+.friend-list, .recipe-list{
     flex-grow: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 
@@ -452,6 +547,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     min-width: 200px;
+    max-width: 300px;
 }
 
 /* Header within the wall section */
@@ -466,9 +562,6 @@ button:hover {
     border-top: 2px solid #eee; /* Separator for the top content */
     padding-top: 20px; /* Spacing at the top of the content */
 }
-
-
-
 
 /* Media Query for smaller screens */
 @media (max-width: 768px) {
@@ -486,7 +579,6 @@ button:hover {
         width: calc(100% - 90px); /* Input field less button width */
     }
 }
-
 
 input[name="tabs"] {
     display: none;
@@ -562,12 +654,12 @@ label:hover {
     cursor: pointer;
 }
 
-
-
 /* Global layout adjustments for scrolling */
-.content, .recipe-info, .reviews-section, .recipe-search, .recipe-upload, .friends, .wall-content {
+.content, .recipe-info,  .recipe-search, .friends, .wall-content {
     overflow: scroll; /* Enables scrolling if content overflows the boundary */
 }
+
+
 
 /* Media Query for smaller screens */
 @media (max-width: 768px) {
@@ -582,14 +674,14 @@ label:hover {
         overflow: auto; /* Ensures scrolling within each section */
     }
 
-    #cookTime-search, .max-calories-input, .min-calories-input, .cook-time-input {
+    #cookTime-search, .max-calories-input, .min-calories-input {
         width: 100%; /* Full width on smaller screens */
         margin-right: 0; /* Remove right margin on small screens */
     }
 }
 
 /* Styling for specific input fields */
-#cookTime-search, .max-calories-input, .min-calories-input, .cook-time-input,  .search-input{
+.max-calories-input, .min-calories-input{
     padding: 8px;
     margin: 5px 0; /* Vertical spacing */
     border: 1px solid #ced4da;
@@ -599,12 +691,101 @@ label:hover {
     box-sizing: border-box; /* Include padding and border in the width */
 }
 
-/* Adjusting space between input fields */
-#cookTime-search {
-    margin-right: 5px; /* Add space between the inputs */
-}
-
 .max-calories-input {
     margin-right: 5px; /* Add space between the inputs */
 }
 
+.friend{
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding-left: 5px;
+}
+
+.friend button{
+    height: 20px;
+}
+
+/* Recipe description container */
+.recipe-description {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%; /* Limit width for better readability */
+    margin: 0 auto; /* Center the container horizontally */
+}
+
+/* Recipe title */
+.recipe-description h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Recipe details */
+.recipe-description p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #ccc; /* Add line between sections */
+    padding-bottom: 5px; /* Add space below each section */
+    width: 100%; /* Set width to 100% */
+}
+
+/* Recipe action button */
+.recipe-description button {
+    margin-top: 10px; /* Add space above the button */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Set width to 100% */
+}
+
+/* Button hover effect */
+.recipe-description button:hover {
+    background-color: #0056b3;
+}
+
+.review-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 10px;
+    background: #f9f9f9; /* Example background color */
+    border-bottom: 1px solid #ccc; /* Adds a light gray line below each review container */
+    margin-bottom: 10px; /* Adds space between containers */
+    cursor: pointer; /* Changes the cursor to a pointer to indicate interactivity */
+}
+
+.review-container:last-child {
+    border-bottom: none; /* Removes the border from the last review container */
+}
+
+/* Apply bold styling to Friend and Recipe */
+.review-friend,
+.review-recipe {
+    flex: 1 1 100%; /* Ensures these elements take full width of the container */
+    font-weight: bold; /* Makes text bold */
+}
+
+/* Regular styling for text and date, not bold */
+.review-text,
+.review-date {
+    flex: 1 1 100%; /* Ensures these elements take full width of the container */
+}
+
+.review-rating {
+    flex: 0 0 auto;
+    align-self: center;
+    margin-left: auto;
+    background-color: #ffd700; /* Gold color for the star rating */
+    padding: 5px 10px;
+    border-radius: 5px;
+}

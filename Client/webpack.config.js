@@ -9,6 +9,7 @@ module.exports = {
         registration: './src/registration.js',
         mainpage: './src/mainpage.js',
         settings: './src/settings.js',
+        user: './src/user.js',
     },
     devServer: {
         static: './dist',
@@ -41,9 +42,12 @@ module.exports = {
             filename: 'settings.html', // Output file
             chunks: ['settings'] // Include only the index bundle
         }),
-        //new HtmlWebpackPlugin({
-        //    title: 'Output Management',
-        //}),
+        new HtmlWebpackPlugin({
+            template: './src/user.html', // Source template file
+            filename: 'user.html', // Output file
+            chunks: ['user'] // Include only the index bundle
+        }),
+
     ],
     output: {
         filename: '[name].bundle.js',
