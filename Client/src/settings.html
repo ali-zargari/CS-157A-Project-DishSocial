@@ -11,36 +11,43 @@
 <div class="form-container">
     <form id="settingsForm">
         <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" required>
+        <input type="text" id="firstName" name="firstName" autocomplete="off" required>
 
         <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" required>
+        <input type="text" id="lastName" name="lastName" autocomplete="off" required>
 
         <label for="gender">Gender:</label>
-        <select id="gender" name="gender" required>
+        <select id="gender" name="gender" autocomplete="off" required>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
         </select>
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" autocomplete="off" required>
 
         <label for="birthplace">Birthplace:</label>
-        <input type="text" id="birthplace" name="birthplace" required>
+        <input type="text" id="birthplace" name="birthplace" autocomplete="off" required>
 
         <label for="birthdate">Birthdate:</label>
-        <input type="date" id="birthdate" name="birthdate" required>
+        <input type="date" id="birthdate" name="birthdate" autocomplete="off" required>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" autocomplete="off" required>
 
         <button type="submit">Save Changes</button>
     </form>
-    <div class="user-info" id="user-info-wrapper">
-        <h2>User Information</h2>
-        <!-- User information will be dynamically populated here -->
+
+    <div id="right">
+        <div class="user-info" id="user-info-wrapper">
+            <h2>User Information</h2>
+            <!-- User information will be dynamically populated here -->
+        </div>
+        <div id="messageBox" class="message-box"></div>
     </div>
+
+
+
 </div>
 </body>
 </html>

@@ -712,3 +712,27 @@ label:hover {
     background-color: #0056b3;
 }
 
+.review-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.review-friend, .review-recipe, .review-text {
+    font-size: 1.2em;
+    color: #333;
+    font-weight: bold;
+}
+
+.review-rating {
+    background-color: #ffd700; /* Gold color for the star rating */
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.review-votes, .review-date {
+    font-size: 0.9em;
+    color: #777;
+}

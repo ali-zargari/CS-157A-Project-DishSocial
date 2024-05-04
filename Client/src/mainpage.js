@@ -319,49 +319,50 @@ async function loadWall() {
         reviewWallContainer.innerHTML = '';
 
         reviews.forEach(review => {
-
             const reviewContainer = document.createElement('div');
-            reviewContainer.className = 'review-container';  // Add a class for styling and interaction
+            reviewContainer.className = 'review-container';
 
             const reviewFriend = document.createElement('p');
             reviewFriend.textContent = `Friend: ${review.FriendName}`;
+            reviewFriend.className = 'review-friend';
             reviewContainer.appendChild(reviewFriend);
 
             const reviewRecipe = document.createElement('p');
             reviewRecipe.textContent = `Recipe: ${review.Title}`;
+            reviewRecipe.className = 'review-recipe';
             reviewContainer.appendChild(reviewRecipe);
 
             const reviewText = document.createElement('p');
-            reviewText.textContent = `Review: ${review.ReviewText}`;
+            reviewText.textContent = `Review: \"${review.ReviewText}\"`;
+            reviewText.className = 'review-text';
             reviewContainer.appendChild(reviewText);
 
-            const reviewRating = document.createElement('p');
-            reviewRating.textContent = `Rating: ${review.Rating}`;
+            const reviewRating = document.createElement('div'); // Changed to div for better styling control
+            reviewRating.textContent = `Rating: ${review.Rating} Stars`;
+            reviewRating.className = 'review-rating';
             reviewContainer.appendChild(reviewRating);
 
             const reviewVotes = document.createElement('p');
             reviewVotes.textContent = `Votes: ${review.NumVotes}`;
+            reviewVotes.className = 'review-votes';
             reviewContainer.appendChild(reviewVotes);
 
             const reviewDate = document.createElement('p');
             reviewDate.textContent = `Date: ${review.PublishDate}`;
+            reviewDate.className = 'review-date';
             reviewContainer.appendChild(reviewDate);
 
-            // Add click event listener to the review container
             reviewContainer.addEventListener('click', function() {
                 loadRecipeInfo(review.RecipeID);
             });
 
-            const lineBreak = document.createElement('br');
-            reviewWallContainer.appendChild(lineBreak);
-
-            reviewWallContainer.appendChild(reviewContainer); // Append the review container to the wall container
-
+            reviewWallContainer.appendChild(reviewContainer);
         });
     } catch (error) {
         console.error('Failed to load wall:', error);
     }
 }
+
 
 document.addEventListener('DOMContentLoaded', async function() {
     const userId = getUserIdFromCookie();
