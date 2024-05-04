@@ -116,6 +116,7 @@ async function loadAllUsers() {
     }
 }
 
+
 async function loadFriends() {
     try {
         const friends = await showFriends();
@@ -124,13 +125,56 @@ async function loadFriends() {
         friends.forEach(friend => {
             const friendElement = document.createElement('div');
             friendElement.className = 'friend';
-            friendElement.textContent = `${friend.FirstName} ${friend.LastName}`;
+            friendElement.style.display = "flex";
+            friendElement.style.justifyContent = "space-between";
+            friendElement.style.alignItems = "center";    // Centre align items vertically
+
+            const friendText = document.createTextNode(`${friend.FirstName} ${friend.LastName}`);
+            friendElement.appendChild(friendText);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+
+            // Create Delete button for each friend
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.style.backgroundColor = 'red';
+            deleteButton.style.color = 'white';
+            deleteButton.style.border = 'none';
+            deleteButton.style.padding = '5px 10px';
+            deleteButton.style.marginLeft = '10px';
+            deleteButton.style.cursor = 'pointer';
+            deleteButton.style.fontSize = '0.8em';
+            deleteButton.addEventListener('click', () => {
+                // Delete friend code here
+                console.log(`Deleting friend: ${friend.FirstName} ${friend.LastName}`);
+            });
+            buttonContainer.appendChild(deleteButton);
+
+            // Create Profile button for each friend
+            const profileButton = document.createElement('button');
+            profileButton.textContent = 'Profile';
+            profileButton.style.backgroundColor = 'green';
+            profileButton.style.color = 'white';
+            profileButton.style.border = 'none';
+            profileButton.style.padding = '5px 10px';
+            profileButton.style.marginLeft = '10px';
+            profileButton.style.cursor = 'pointer';
+            profileButton.style.fontSize = '0.8em';
+            profileButton.addEventListener('click', () => {
+                // On click, navigate to User.html
+                window.location.href = 'User.html';
+            });
+            buttonContainer.appendChild(profileButton);
+
+            friendElement.appendChild(buttonContainer);
             friendsListContainer.appendChild(friendElement);
         });
     } catch (error) {
         console.error('Failed to load friends:', error);
     }
 }
+
 
 async function loadRecipeInfo(recipeId) {
     try {
