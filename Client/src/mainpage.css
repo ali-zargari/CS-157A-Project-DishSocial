@@ -13,46 +13,78 @@ body, html {
     background-color: #f8f9fa;
 }
 
+#app-name{
+
+    font-size: 1.7em;
+
+}
+
+/* Greeting centered in the header */
+#greeting {
+    position: absolute; /* Position the greeting text absolutely */
+    left: 50%; /* Move to the center horizontally */
+    transform: translateX(-50%); /* Offset by half the element width to center it */
+    font-size: 1.5em;
+    text-align: center;
+}
+
 /* Header styles */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #333;  /* Dark background */
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.06);
-}
-
-header #app-name {
-    font-size: 2em;
-    font-weight: 600;
-    color: #fff;  /* White text */
-    text-transform: uppercase;
-}
-
-header #greeting {
-    flex: 1;
-    font-size: 2em;
-    font-weight: 600;
-    color: #fff;  /* White text */
+    background-color: #333;
+    color: white;
+    padding: 10px;
     text-align: center;
-    text-transform: uppercase;
 }
 
+
+header h1 {
+    margin: 0;
+}
+
+/* Group of buttons aligned to the right */
+.header-buttons {
+    display: flex; /* Use flex for layout */
+    gap: 10px; /* Add spacing between buttons */
+    margin-left: auto; /* Pushes the button group to the far right */
+}
+
+
+/* Stylish Buttons (header buttons) */
 header button {
-    font-size: 1em;
-    padding: 10px 20px;
-    background: none;
-    border: 2px solid #fff;  /* White border */
-    color: #fff;  /* White text */
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    margin-left: 10px;
+    padding: 8px 16px; /* Adjusted padding */
+    border: none;
+    border-radius: 4px; /* Smaller, more square radius */
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #007bff; /* Blue color */
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+    transition: all 0.3s ease; /* Smooth transition */
+    margin: 5px; /* Margins for each button */
 }
 
 header button:hover {
-    color: #333;  /* Dark text on hover */
-    background: #fff;  /* White background on hover */
+    background-color: #0056b3; /* Darker blue when hovering */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow */
+}
+
+header button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4); /* Blue focus outline */
+}
+
+header button:active {
+    transform: translateY(1px); /* Button "clicks" down */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow during active state */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #333;
+    color: white;
 }
 
 /* Main content styles */
@@ -853,3 +885,5 @@ label:hover {
 #recipeFilter, #filterButton{
     flex: 1;
 }
+
+

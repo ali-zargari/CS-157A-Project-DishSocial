@@ -26,7 +26,7 @@ document.getElementById('logoutButton').addEventListener('click', async function
     event.preventDefault();
 
     if (await logoutUser()){
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
 
     }
 });
