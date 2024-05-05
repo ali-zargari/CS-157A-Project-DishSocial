@@ -10,7 +10,7 @@ CREATE TABLE Users
     FirstName   VARCHAR(55) NOT NULL,
     LastName    VARCHAR(55) NOT NULL,
     Gender      VARCHAR(55) NOT NULL,
-    Email       VARCHAR(55) NOT NULL,
+    Email       VARCHAR(55) NOT NULL UNIQUE,
     Birthplace  VARCHAR(55) NOT NULL,
     DateOfBirth DATE        NOT NULL,
     Age         INT         AS (TIMESTAMPDIFF(YEAR, DateOfBirth, '2024-01-01')),
@@ -158,30 +158,36 @@ CREATE TABLE Reviewed_By_Friends_Recipes(
 
 -- Triggers
 
+-- Triggers
+
 -- Trigger to create a wall for a user when a user is created
 DELIMITER //
 CREATE TRIGGER Create_Wall
-AFTER INSERT ON Users
-FOR EACH ROW
+    AFTER INSERT ON Users
+    FOR EACH ROW
 BEGIN
-    INSERT INTO Wall (UserID, WallID) VALUES (NEW.UserID, NEW.UserID);
+    IF NOT EXISTS (SELECT * FROM Wall WHERE UserID = NEW.UserID) THEN
+        INSERT INTO Wall (UserID, WallID) VALUES (NEW.UserID, NEW.UserID);
+    END IF;
 END;
 
 
 -- Trigger to add reviews to a user's wall when a review is added
 CREATE TRIGGER After_Review_Added
-AFTER INSERT ON User_Leaves_Review
-FOR EACH ROW
+    AFTER INSERT ON User_Leaves_Review
+    FOR EACH ROW
 BEGIN
-    INSERT INTO Wall_Displays_Review (UserID, ReviewID)
-    VALUES (NEW.UserID, NEW.ReviewID);
+    IF NOT EXISTS (SELECT * FROM Wall_Displays_Review WHERE UserID = NEW.UserID AND ReviewID = NEW.ReviewID) THEN
+        INSERT INTO Wall_Displays_Review (UserID, ReviewID)
+        VALUES (NEW.UserID, NEW.ReviewID);
+    END IF;
 END;
 
 
 -- Trigger to add recipe to Liked_By_Friends_Recipes when a friend likes a recipe
 CREATE TRIGGER After_Friend_Likes_Recipe
-AFTER INSERT ON User_Likes_Recipe
-FOR EACH ROW
+    AFTER INSERT ON User_Likes_Recipe
+    FOR EACH ROW
 BEGIN
     DECLARE fwUser INT;
     DECLARE done INT DEFAULT FALSE;
@@ -193,20 +199,19 @@ BEGIN
         IF done THEN
             LEAVE read_loop;
         END IF;
-        INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
-        SELECT NEW.RecipeID, fwUser, NEW.UserID
-        WHERE NOT EXISTS (SELECT * FROM Liked_By_Friends_Recipes WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser);
+        IF NOT EXISTS (SELECT * FROM Liked_By_Friends_Recipes WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser) THEN
+            INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
+            VALUES (NEW.RecipeID, fwUser, NEW.UserID);
+        END IF;
     END LOOP;
     CLOSE cur;
 END;
 
 
-
-
 -- Trigger to add recipe to Uploaded_By_Friends_Recipes when a friend uploads a recipe
 CREATE TRIGGER After_Friend_Uploads_Recipe
-AFTER INSERT ON User_Uploads_Recipe
-FOR EACH ROW
+    AFTER INSERT ON User_Uploads_Recipe
+    FOR EACH ROW
 BEGIN
     DECLARE fwUser INT;
     DECLARE done INT DEFAULT FALSE;
@@ -218,34 +223,34 @@ BEGIN
         IF done THEN
             LEAVE read_loop;
         END IF;
-        INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
-        SELECT NEW.RecipeID, fwUser
-        WHERE NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser);
+        IF NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser) THEN
+            INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
+            VALUES (NEW.RecipeID, fwUser);
+        END IF;
     END LOOP;
     CLOSE cur;
 END;
 
 
-
-
 -- Trigger to add recipe to Reviewed_By_Friends_Recipes when a friend reviews a recipe
 CREATE TRIGGER After_Friend_Reviews_Recipe
-AFTER INSERT ON User_Leaves_Review
-FOR EACH ROW
+    AFTER INSERT ON User_Leaves_Review
+    FOR EACH ROW
 BEGIN
-    INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
-    SELECT rhr.RecipeID, NEW.ReviewID, fw.UserID2
-    FROM Follows fw
-    JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
-    WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
+    IF NOT EXISTS (SELECT * FROM Reviewed_By_Friends_Recipes WHERE ReviewID = NEW.ReviewID) THEN
+        INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
+        SELECT rhr.RecipeID, NEW.ReviewID, fw.UserID2
+        FROM Follows fw
+                 JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
+        WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
+    END IF;
 END;
-
 
 
 -- Trigger to prevent a user from liking the same recipe twice
 CREATE TRIGGER Check_Like_Duplication
-BEFORE INSERT ON User_Likes_Recipe
-FOR EACH ROW
+    BEFORE INSERT ON User_Likes_Recipe
+    FOR EACH ROW
 BEGIN
     IF EXISTS (
         SELECT 1 FROM User_Likes_Recipe
@@ -256,13 +261,10 @@ BEGIN
 END;
 
 
-
-
-
 -- Trigger to prevent a user from uploading the same recipe twice
 CREATE TRIGGER Check_Upload_Duplication
-BEFORE INSERT ON User_Uploads_Recipe
-FOR EACH ROW
+    BEFORE INSERT ON User_Uploads_Recipe
+    FOR EACH ROW
 BEGIN
     IF EXISTS (
         SELECT 1 FROM User_Uploads_Recipe
@@ -273,82 +275,65 @@ BEGIN
 END;
 
 
-
-
--- Trigger to add the new Friends to the Liked_By_Friends_Recipes table when a new friend is added
-CREATE TRIGGER Add_Friend_To_Liked_By_Friends
-AFTER INSERT ON Follows
-FOR EACH ROW
+CREATE TRIGGER AddLikedRecipesForNewFriend
+    AFTER INSERT ON Follows
+    FOR EACH ROW
 BEGIN
-    -- Insert new UserID1's liked recipes for UserID2
-    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT ulr.RecipeID, NEW.UserID2 AS FriendID
+    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
+    SELECT ulr.RecipeID, NEW.UserID1, ulr.UserID
     FROM User_Likes_Recipe ulr
-    WHERE ulr.UserID = NEW.UserID1;
-
-    -- Insert new UserID2's liked recipes for UserID1
-    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT ulr.RecipeID, NEW.UserID1 AS FriendID
-    FROM User_Likes_Recipe ulr
-    WHERE ulr.UserID = NEW.UserID2;
+    WHERE ulr.UserID = NEW.UserID2
+      AND NOT EXISTS (
+        SELECT * FROM Liked_By_Friends_Recipes
+        WHERE RecipeID = ulr.RecipeID AND FriendID = NEW.UserID1
+    );
 END;
 
 
+DELIMITER //
 
-
-CREATE TRIGGER Add_Friends_Recipes
-AFTER INSERT ON Follows
-FOR EACH ROW
+CREATE TRIGGER Delete_Friends_Recipes
+    AFTER DELETE ON Follows
+    FOR EACH ROW
 BEGIN
-    INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT RecipeID, NEW.UserID1
-    FROM User_Uploads_Recipe
-    WHERE UserID = NEW.UserID2 AND NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = RecipeID AND FriendID = NEW.UserID1);
+    -- Delete from Liked_By_Friends_Recipes
+    DELETE FROM Liked_By_Friends_Recipes
+    WHERE (FriendID = OLD.UserID1 AND RecipeID IN (
+        SELECT RecipeID
+        FROM User_Likes_Recipe
+        WHERE UserID = OLD.UserID2
+    ))
+       OR (FriendID = OLD.UserID2 AND RecipeID IN (
+        SELECT RecipeID
+        FROM User_Likes_Recipe
+        WHERE UserID = OLD.UserID1
+    ));
 
-    INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT RecipeID, NEW.UserID2
-    FROM User_Uploads_Recipe
-    WHERE UserID = NEW.UserID1 AND NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = RecipeID AND FriendID = NEW.UserID2);
-END;
+    -- Delete from Uploaded_By_Friends_Recipes
+    DELETE FROM Uploaded_By_Friends_Recipes
+    WHERE (FriendID = OLD.UserID1 AND RecipeID IN (
+        SELECT RecipeID
+        FROM User_Uploads_Recipe
+        WHERE UserID = OLD.UserID2
+    ))
+       OR (FriendID = OLD.UserID2 AND RecipeID IN (
+        SELECT RecipeID
+        FROM User_Uploads_Recipe
+        WHERE UserID = OLD.UserID1
+    ));
 
+    -- Delete from Reviewed_By_Friends_Recipes
+    DELETE FROM Reviewed_By_Friends_Recipes
+    WHERE (FriendID = OLD.UserID1 AND ReviewID IN (
+        SELECT ReviewID
+        FROM User_Leaves_Review
+        WHERE UserID = OLD.UserID2
+    ))
+       OR (FriendID = OLD.UserID2 AND ReviewID IN (
+        SELECT ReviewID
+        FROM User_Leaves_Review
+        WHERE UserID = OLD.UserID1
+    ));
+END //
 
-
-
--- Trigger to add the new Friends to the Liked_By_Friends_Recipes table when a new friend is added
-CREATE TRIGGER Add_Friends_Liked_Recipes
-AFTER INSERT ON Follows
-FOR EACH ROW
-BEGIN
-    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT RecipeID, NEW.UserID1 AS FriendID
-    FROM User_Likes_Recipe
-    WHERE UserID = NEW.UserID2;
-
-    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID)
-    SELECT RecipeID, NEW.UserID2 AS FriendID
-    FROM User_Likes_Recipe
-    WHERE UserID = NEW.UserID1;
-END;
-
-
-
-
--- Trigger to add the new Friends to the Reviewed_By_Friends_Recipes table when a new friend is added
-CREATE TRIGGER Add_Friends_Reviewed_Recipes
-AFTER INSERT ON Follows
-FOR EACH ROW
-BEGIN
-    INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
-    SELECT rhr.RecipeID, rhr.ReviewID, NEW.UserID1 AS FriendID
-    FROM User_Leaves_Review ulr
-    JOIN Recipe_Has_Review rhr ON rhr.ReviewID = ulr.ReviewID
-    WHERE ulr.UserID = NEW.UserID2;
-
-    INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
-    SELECT rhr.RecipeID, rhr.ReviewID, NEW.UserID2 AS FriendID
-    FROM User_Leaves_Review ulr
-    JOIN Recipe_Has_Review rhr ON rhr.ReviewID = ulr.ReviewID
-    WHERE ulr.UserID = NEW.UserID1;
-END;
-//
 DELIMITER ;

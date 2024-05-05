@@ -851,6 +851,85 @@ app.delete('/recipes/unlike', async (req, res) => {
     }
 });
 
+app.get('/followed', async (req, res) => {
+    const { userId, friendId } = req.query;
+
+    console.log('Received userId:', userId);
+    console.log('Received friendId:', friendId);
+
+    // Check if userId and friendId are provided
+    if (!userId || !friendId) {
+        res.status(400).send('User ID and Friend ID are required');
+        return;
+    }
+
+    try {
+        const connection = await pool.getConnection();
+        const [result] = await connection.execute(`
+            SELECT 1 FROM Follows WHERE UserID1 = ? AND UserID2 = ?
+        `, [userId, friendId]);
+        connection.release();
+
+        if (result.length > 0) {
+            res.json({ followed: true });
+        } else {
+            res.json({ followed: false });
+        }
+    } catch (error) {
+        console.error("Failed to check if user is followed:", error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+app.post('/users/follow', async (req, res) => {
+    const { userId, followedUserId } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+
+        // Check if the follow relationship already exists
+        const [existingFollow] = await connection.execute(`
+            SELECT 1 FROM Follows WHERE UserID1 = ? AND UserID2 = ?
+        `, [userId, followedUserId]);
+
+        if (existingFollow.length > 0) {
+            // If the follow relationship already exists, return a message indicating it
+            res.status(400).json({ message: "Already following this user." });
+        } else {
+            // If the follow relationship does not exist, create it
+            await connection.execute(`
+                INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)
+            `, [userId, followedUserId]);
+
+            // Return a success message
+            res.status(201).json({ message: "Successfully followed user." });
+        }
+
+        // Release the connection back to the pool
+        connection.release();
+    } catch (error) {
+        console.error("Failed to follow user:", error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.delete('/unfollow', async (req, res) => {
+    const { userId, friendId } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(`
+            DELETE FROM Follows WHERE UserID1 = ? AND UserID2 = ?
+        `, [userId, friendId]);
+        connection.release();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error("Failed to unfollow user:", error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
 
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
