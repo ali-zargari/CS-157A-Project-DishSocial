@@ -306,9 +306,6 @@ async function loadRecipeInfo(recipeId) {
         recipeInfoContainer.appendChild(recipeTitle);
 
         // Add more elements for the rest of the recipe information like cook time, prep time, etc.
-        const prepTime = document.createElement('p');
-        prepTime.textContent = `Prep Time: ${recipeInfo.PrepTime}`;
-        recipeInfoContainer.appendChild(prepTime);
 
         const steps = document.createElement('p');
         steps.textContent = `Steps: ${recipeInfo.Steps}`;
