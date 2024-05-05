@@ -315,3 +315,107 @@ export async function deleteReview(reviewIdToDelete) {
         console.error('There was a problem trying to delete a review', error);
     }
 }
+      
+
+export async function getAllReviewsByUser(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/reviews`);
+        console.log("All reviews by user:", response.data);
+        return response.data; // Return the data for further use
+    } catch (error) {
+        console.error('Failed to fetch reviews by user:', error);
+    }
+}
+
+
+export async function getAllRecipesUploadedByUser(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/recipes`);
+        console.log("All recipes uploaded by user:", response.data);
+        return response.data; // Return the data for further use
+    } catch (error) {
+        console.error('Failed to fetch recipes uploaded by user:', error);
+    }
+}
+
+
+export async function getUserInfoById(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to get user info:', error);
+        return null;
+    }
+}
+
+
+// Function to get the list of users following a specific user
+export async function getFollowers(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/followers`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch followers:', error);
+        return [];
+    }
+}
+
+// Function to get the list of users a specific user is following
+export async function getFollowing(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/${userId}/following`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch following:', error);
+        return [];
+    }
+}
+
+export async function followUser(userId, followedUserId) {
+    try {
+        const response = await axios.post('http://localhost:3002/users/follow', {
+            userId,
+            followedUserId
+        });
+
+        if (response.status === 201) {
+            console.log('Successfully followed user.');
+            return true;
+        } else {
+            console.log('Failed to follow user.');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error following user:', error);
+        return false;
+    }
+}
+
+export async function unfollowUser(userId, friendId) {
+    try {
+        // Convert both userId and friendId to integers
+        userId = parseInt(userId, 10);
+        friendId = parseInt(friendId, 10);
+
+        console.log(
+            `User with ID ${userId} is unfollowing user with ID ${friendId}`
+        );
+
+        // Check if either conversion results in NaN, indicating invalid input
+        if (isNaN(userId) || isNaN(friendId)) {
+
+            console.error('User ID or Friend ID is not a valid number');
+            return false;
+        }
+
+        const response = await axios.delete('http://localhost:3002/unfollow', {
+            data: { userId, friendId }
+        });
+
+        return response.data.success;
+    } catch (error) {
+        console.error(`Error unfollowing user: ${error.message}`);
+        return false;
+    }
+}

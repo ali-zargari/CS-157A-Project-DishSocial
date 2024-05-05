@@ -7,10 +7,16 @@
 
 </head>
 <body>
-<header>
-    <h1>Profile of [User's Name]</h1>
-    <button id="logoutButton">Log out</button>
+<header class="sticky-header">
+    <div class="header-content">
+        <h1 id="profileName">Profile of [User's Name]</h1>
+        <div class="header-buttons">
+            <button id="mainpageButton">Main Page</button>
+            <button id="logoutButton">Log out</button>
+        </div>
+    </div>
 </header>
+
 
 <div class="content">
     <!-- User Details -->
@@ -24,27 +30,40 @@
         <p><strong>Age:</strong> [Age]</p>
     </div>
 
-    <!-- Friends List -->
-    <div id="friends">
-        <h2>Friends</h2>
-        <div class="friend-list">
-            <!-- Friend entries will be dynamically loaded here -->
+    <div id="connections">
+        <div id="following">
+            <h2>Following</h2>
+            <div class="user-list" id="following-list">
+                <!-- Following users will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <div id="followers">
+            <h2>Followers</h2>
+            <div class="user-list" id="followers-list">
+                <!-- Followers will be dynamically loaded here -->
+            </div>
         </div>
     </div>
+
+
 
     <!-- Recipes Interacted With -->
-    <div class="recipes">
-        <h2>Recipes</h2>
-        <div class="recipe-list">
-            <!-- Recipes will be dynamically loaded here -->
+    <div class="interactions-container">
+        <!-- Recipes Interacted With -->
+        <div class="recipes">
+            <h2>Recipes</h2>
+            <div class="recipe-list">
+                <!-- Recipes will be dynamically loaded here -->
+            </div>
         </div>
-    </div>
 
-    <!-- Reviews Posted -->
-    <div class="reviews">
-        <h2>Reviews</h2>
-        <div class="reviews-list">
-            <!-- Reviews will be dynamically loaded here -->
+        <!-- Reviews Posted -->
+        <div class="reviews">
+            <h2>Reviews</h2>
+            <div class="reviews-list">
+                <!-- Reviews will be dynamically loaded here -->
+            </div>
         </div>
     </div>
 </div>

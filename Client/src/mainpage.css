@@ -13,46 +13,78 @@ body, html {
     background-color: #f8f9fa;
 }
 
+#app-name{
+
+    font-size: 1.7em;
+
+}
+
+/* Greeting centered in the header */
+#greeting {
+    position: absolute; /* Position the greeting text absolutely */
+    left: 50%; /* Move to the center horizontally */
+    transform: translateX(-50%); /* Offset by half the element width to center it */
+    font-size: 1.5em;
+    text-align: center;
+}
+
 /* Header styles */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #333;  /* Dark background */
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.06);
-}
-
-header #app-name {
-    font-size: 2em;
-    font-weight: 600;
-    color: #fff;  /* White text */
-    text-transform: uppercase;
-}
-
-header #greeting {
-    flex: 1;
-    font-size: 2em;
-    font-weight: 600;
-    color: #fff;  /* White text */
+    background-color: #333;
+    color: white;
+    padding: 10px;
     text-align: center;
-    text-transform: uppercase;
 }
 
+
+header h1 {
+    margin: 0;
+}
+
+/* Group of buttons aligned to the right */
+.header-buttons {
+    display: flex; /* Use flex for layout */
+    gap: 10px; /* Add spacing between buttons */
+    margin-left: auto; /* Pushes the button group to the far right */
+}
+
+
+/* Stylish Buttons (header buttons) */
 header button {
-    font-size: 1em;
-    padding: 10px 20px;
-    background: none;
-    border: 2px solid #fff;  /* White border */
-    color: #fff;  /* White text */
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    margin-left: 10px;
+    padding: 8px 16px; /* Adjusted padding */
+    border: none;
+    border-radius: 4px; /* Smaller, more square radius */
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #007bff; /* Blue color */
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+    transition: all 0.3s ease; /* Smooth transition */
+    margin: 5px; /* Margins for each button */
 }
 
 header button:hover {
-    color: #333;  /* Dark text on hover */
-    background: #fff;  /* White background on hover */
+    background-color: #0056b3; /* Darker blue when hovering */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow */
+}
+
+header button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4); /* Blue focus outline */
+}
+
+header button:active {
+    transform: translateY(1px); /* Button "clicks" down */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow during active state */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #333;
+    color: white;
 }
 
 /* Main content styles */
@@ -149,7 +181,7 @@ header button:hover {
 
 /* Reviews list styles */
 .reviews-list {
-    max-height: 300px; /* Set a max-height and add scroll if content overflows */
+    max-height: 500px; /* Set a max-height and add scroll if content overflows */
     overflow: auto;
     width: 100%;
 }
@@ -196,6 +228,7 @@ header button:hover {
     display: flex;
     flex-direction: column;
     min-width: 300px;
+    max-width: 500px;
 }
 
 /* Within .recipes, we create two sections for search and upload */
@@ -261,7 +294,6 @@ input[type='number']::-webkit-outer-spin-button {
 .bottom-row {
     flex: 1;
     display: flex;
-    justify-content: space-between;
     align-content: center;
     width: 100%;
 }
@@ -530,7 +562,7 @@ button:hover {
     display: block;
 }
 
-.friend-list, .recipe-list{
+.friend-list, .recipe-list, .All-list{
     flex-grow: 1;
     overflow-y: auto;
     display: flex;
@@ -697,14 +729,15 @@ label:hover {
     margin-right: 5px; /* Add space between the inputs */
 }
 
-.friend{
+.friend, .user{
     border-radius: 5px;
     border: 1px solid #ddd;
     padding-left: 5px;
 }
 
-.friend button{
+.friend,.user button{
     height: 20px;
+    flex: 1;
 }
 
 /* Recipe description container */
@@ -801,4 +834,66 @@ label:hover {
     cursor: pointer;
     font-size: 0.8em;
 }
+
+
+@media (max-width: 950px) {
+    .recipes{
+        min-width: 150px;
+    }
+
+    #recipeFilter{
+        min-width: 50px;
+    }
+
+    #filterButton{
+        min-width: 50px;
+    }
+}
+
+/* Button container style */
+.button-container {
+    display: flex;
+    margin-top: 10px;
+}
+
+/* Common button styles */
+.recipe-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+/* Add to Custom List button style */
+.add-button {
+    background-color: #007bff;
+    color: #fff;
+    margin-right: 10px;
+}
+
+/* Like button style */
+.like-button {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+/* Unlike button style */
+.unlike-button {
+    background-color: #f44336;
+    color: #fff;
+}
+
+#laButtons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    gap: 15px;
+}
+
+#recipeFilter, #filterButton{
+    flex: 1;
+}
+
 

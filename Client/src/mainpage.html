@@ -6,13 +6,19 @@
     <title>Main Page</title>
 </head>
 <body>
-<header>
-    <h1 id="app-name">Dish Social</h1>
-    <h1 id="greeting" >Hello, [name]</h1>
-    <button id="logoutButton">Log out</button>
-    <button id="profileButton">Profile</button>
+<header class="sticky-header">
+    <div class="header-content">
+        <h1 id="app-name">Dish Social</h1>
+        <h1 id="greeting" style="font-size: 1.5em; text-align: center;">Welcome, John Doe!</h1>
 
+        <!-- Buttons grouped together -->
+        <div class="header-buttons">
+            <button id="logoutButton">Log out</button>
+            <button id="profileButton">Profile</button>
+        </div>
+    </div>
 </header>
+
 <div class="content">
     <!-- Friends list section -->
     <div id="social">
@@ -25,7 +31,7 @@
         <div id="all-users">
             <h2>All Users</h2>
             <div class="options">
-                <input type="text" placeholder="Search All...">
+                <input id="all-users-search" type="text" placeholder="Search All...">
                 <button>Filter</button>
             </div>
             <div class="All-list">
@@ -37,7 +43,7 @@
 
             <h2>Friends</h2>
             <div class="options">
-                <input type="text" placeholder="Search friends...">
+                <input id="friends-search"  type="text" placeholder="Search friends...">
                 <button>Filter</button>
             </div>
             <div class="friend-list">
@@ -72,7 +78,7 @@
                     <option value="myList">My List</option>
                 </select>
 
-                <button class="button filter-button">Filter</button>
+                <button id="filterButton" class="button filter-button">Filter</button>
             </div>
         </div>
 
@@ -107,13 +113,13 @@
 
         <!-- Recipe Upload -->
 
-            <form id="uploadRecipeForm">
-                <input type="text" id="title" placeholder="Title">
-                <input type="text" id="ingredients" placeholder="Ingredients">
-                <input type="number" id="totalCalories" placeholder="Total Calories">
-                <textarea id="cookingSteps" placeholder="Cooking Steps"></textarea>
-                <button type="submit" id="uploadButton">Upload</button>
-            </form>
+        <form id="uploadRecipeForm">
+            <input type="text" id="title" placeholder="Title">
+            <input type="text" id="ingredients" placeholder="Ingredients">
+            <input type="number" id="totalCalories" placeholder="Total Calories">
+            <textarea id="cookingSteps" placeholder="Cooking Steps"></textarea>
+            <button type="submit" id="uploadButton">Upload</button>
+        </form>
 
     </div>
 
