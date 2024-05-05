@@ -698,6 +698,23 @@ app.get('/userRecipes/:userId', async (req, res) => {
     res.send(recipeIds);
 });
 
+app.get('/userReviews/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const userReviewsQuery = `SELECT ReviewID FROM User_Leaves_Review WHERE UserID = ?`;
+    let result;
+    try {
+        const connection = await pool.getConnection();
+        [result] = await connection.execute(userReviewsQuery, [userId]);
+        connection.release();
+    } catch (error) {
+        console.error("SQL query SELECT ReviewID FROM User_Leaves_Review WHERE UserID = ? execution failed:", error);
+        res.sendStatus(500);
+        return;
+    }
+    const reviewIds = result.map((row) => row.ReviewID);
+    res.send(reviewIds);
+});
+
 app.put('/users/:userId', async (req, res) => {
     const { userId } = req.params;
     const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = req.body;
