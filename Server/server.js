@@ -492,21 +492,21 @@ app.get('/recipes', async (req, res) => {
         res.status(500).send(error);
     }
 });
-
-
 // Endpoint to search and filter recipes
 app.get('/recipes/search', async (req, res) => {
-    const { searchTerm, filter, userID } = req.query; // userID should be obtained from session or token
+    const { searchTerm, filter, userID, minCalories, maxCalories } = req.query;
 
     let baseQuery = `SELECT DISTINCT Recipe.* FROM Recipe `;
     let whereConditions = [];
     let parameters = [];
 
+    // Search term conditions
     if (searchTerm) {
         whereConditions.push(`(Recipe.Title LIKE CONCAT('%', ?, '%') OR Recipe.Ingredients LIKE CONCAT('%', ?, '%'))`);
         parameters.push(searchTerm, searchTerm);
     }
 
+    // Apply filter logic based on the `filter` value
     switch (filter) {
         case 'reviewedByMe':
             baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
@@ -552,6 +552,17 @@ app.get('/recipes/search', async (req, res) => {
             break;
     }
 
+    // Add minimum and maximum calorie filters
+    if (minCalories) {
+        whereConditions.push('Recipe.TotalCalories >= ?');
+        parameters.push(Number(minCalories));
+    }
+    if (maxCalories) {
+        whereConditions.push('Recipe.TotalCalories <= ?');
+        parameters.push(Number(maxCalories));
+    }
+
+    // Combine all conditions to form the final query
     if (whereConditions.length > 0) {
         baseQuery += ` WHERE ${whereConditions.join(' AND ')}`;
     }

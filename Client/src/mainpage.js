@@ -98,7 +98,7 @@ async function loadAllUsers() {
         usersListContainer.innerHTML = '';
 
         for (const user of users) {
-            if (user.UserID === currentUser) {
+            if (user.UserID == currentUser) {
                 continue; // Skip the current user
             }
 
@@ -140,6 +140,7 @@ async function loadAllUsers() {
                             followButton.style.backgroundColor = 'gray';
                         }
                     }
+                    await loadFriends();
                 } catch (error) {
                     console.error(`Error updating follow status: ${error.message}`);
                     if (error.response && error.response.status === 400) {
@@ -482,14 +483,19 @@ async function performAdvancedRecipeSearch() {
     const filter = document.getElementById('recipeFilter').value;
     lastFilter = filter; // <-- Save the last filter
 
+    const minCalories = document.getElementById('min-calories').value;
+    const maxCalories = document.getElementById('max-calories').value;
+
     const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
 
     try {
         const response = await axios.get(`http://localhost:3002/recipes/search`, {
             params: {
-                searchTerm: searchTerm,
-                filter: filter,
-                userID: userID
+                searchTerm,
+                filter,
+                userID,
+                minCalories: minCalories ? Number(minCalories) : undefined, // Send as undefined if empty
+                maxCalories: maxCalories ? Number(maxCalories) : undefined // Send as undefined if empty
             }
         });
 
