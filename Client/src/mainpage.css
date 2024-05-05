@@ -848,6 +848,15 @@ label:hover {
     #filterButton{
         min-width: 50px;
     }
+
+    #laButtons{
+        max-width: 50px;
+        padding: 0;
+    }
+
+    #laButtons *{
+        font-size: 0.8em;
+    }
 }
 
 /* Button container style */
@@ -890,6 +899,7 @@ label:hover {
     justify-content: space-between;
     margin-top: 10px;
     gap: 15px;
+
 }
 
 #recipeFilter, #filterButton{

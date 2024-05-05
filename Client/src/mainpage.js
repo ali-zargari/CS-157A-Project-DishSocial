@@ -357,7 +357,6 @@ async function loadRecipeInfo(recipeId) {
         let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
         const likeButton = document.createElement('button');
         likeButton.textContent = isLiked ? "Unlike" : "Like";
-        likeButton.id = 'likeButton';
         likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
         likeButton.style.color = 'white';
         likeButton.style.marginTop = '10px'; // Extra styling to match the existing buttons
@@ -760,6 +759,7 @@ function addRecipeToDom(recipe) {
     // Append the new recipe to the list
     recipeListContainer.appendChild(recipeElement);
 }
+
 
 
 async function checkIfRecipeIsLiked(recipeId) {
