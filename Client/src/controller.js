@@ -296,3 +296,22 @@ export async function getRecipesByUser(userId) {
         console.error('There was a problem fetching the user upload data:', error);
     }
 }
+
+export async function getReviewsByUser(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/userReviews/${userId}`);
+        console.log(response.data); // Log the response; This is an array of review IDs
+        return response.data; // Returning the array of ReviewIDs for further use
+    } catch (error) {
+        console.error('There was a problem fetching the user reviewIds:', error);
+    }
+}
+
+export async function deleteReview(reviewIdToDelete) {
+    try {
+        const response = await axios.delete(`http://localhost:3002/review/${reviewIdToDelete}`);
+
+    } catch (error) {
+        console.error('There was a problem trying to delete a review', error);
+    }
+}

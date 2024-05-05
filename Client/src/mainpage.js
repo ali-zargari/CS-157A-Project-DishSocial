@@ -10,7 +10,9 @@ import {
     getUserNameById,
     userUploadRecipe,
     getRecipesByUser,
-    deleteRecipe
+    deleteRecipe,
+    getReviewsByUser,
+    deleteReview
 } from './controller';
 import axios from "axios";
 
@@ -287,6 +289,8 @@ async function checkRecipeInList(recipeId) {
 
 async function fetchAndDisplayReviews(recipeId) {
     try {
+        const currentUserId = getUserIdFromCookie();
+        const reviewedByUser = await getReviewsByUser(currentUserId);
         const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
         const reviews = response.data;
 
@@ -297,6 +301,22 @@ async function fetchAndDisplayReviews(recipeId) {
         reviews.forEach(review => {
             // Create and append review items to the reviews list
             const reviewItem = document.createElement('div');
+            const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+
+            // Create Delete button for each friend
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.style.backgroundColor = 'red';
+            deleteButton.style.color = 'white';
+            deleteButton.style.border = 'none';
+            deleteButton.style.padding = '5px 10px';
+            deleteButton.style.marginLeft = '10px';
+            deleteButton.style.cursor = 'pointer';
+            deleteButton.style.fontSize = '0.8em';
+
             reviewItem.className = 'review-item';
             reviewItem.innerHTML = `
                 <p class="review-text">"${review.ReviewText}"</p>
@@ -305,7 +325,16 @@ async function fetchAndDisplayReviews(recipeId) {
                     <span class="review-rating">Rating: ${review.Rating} Stars</span>
                 </div>
             `;
+
             reviewsList.appendChild(reviewItem);
+
+            if(isReviewedByCurrentUser){
+                deleteButton.addEventListener('click', async function() {
+                    await deleteReview(review.ReviewID);
+                    await fetchAndDisplayReviews(recipeId);
+                });
+                reviewsList.appendChild(deleteButton);
+            }
         });
     } catch (error) {
         console.error('Error loading reviews:', error);
@@ -487,7 +516,8 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         if (response.status === 201) {
             // Append the new review to the list on the page
             const newReview = response.data;
-            addReviewToPage(newReview);
+            await fetchAndDisplayReviews(selectedRecipeId);
+            //addReviewToPage(newReview);
 
             // Clear the form fields
             document.getElementById('reviewText').value = '';
