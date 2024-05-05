@@ -807,7 +807,7 @@ app.get('/recipes/liked', async (req, res) => {
         if (result.length > 0) {
             res.status(200).json({ liked: true });
         } else {
-            res.status(404).json({ liked: false });
+            res.status(201).json({ liked: false });
         }
     } catch (error) {
         console.error("Failed to check if recipe is liked:", error);
@@ -942,5 +942,21 @@ app.delete('/unfollow', async (req, res) => {
     }
 });
 
+app.get('/userReviews/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const userReviewsQuery = `SELECT ReviewID FROM User_Leaves_Review WHERE UserID = ?`;
+    let result;
+    try {
+        const connection = await pool.getConnection();
+        [result] = await connection.execute(userReviewsQuery, [userId]);
+        connection.release();
+    } catch (error) {
+        console.error("SQL query SELECT ReviewID FROM User_Leaves_Review WHERE UserID = ? execution failed:", error);
+        res.sendStatus(500);
+        return;
+    }
+    const reviewIds = result.map((row) => row.ReviewID);
+    res.send(reviewIds);
+});
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

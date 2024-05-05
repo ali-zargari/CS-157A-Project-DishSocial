@@ -353,6 +353,7 @@ async function loadRecipeInfo(recipeId) {
         });
 
 
+
         // Create and append 'Like' button
         let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
         const likeButton = document.createElement('button');
@@ -768,6 +769,7 @@ async function checkIfRecipeIsLiked(recipeId) {
         const response = await axios.get(`http://localhost:3002/recipes/liked`, {
             params: { userId, recipeId }
         });
+        console.log("this point is reached");
         return response.status === 200;  // Assumes 200 means it's liked, adjust based on your API
     } catch (error) {
         console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);
