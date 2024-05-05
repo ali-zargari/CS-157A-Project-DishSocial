@@ -12,8 +12,7 @@ import {
     getRecipesByUser,
     deleteRecipe,
     getReviewsByUser,
-    deleteReview
-
+    deleteReview,
     followUser,
     unfollowUser
 } from './controller';
