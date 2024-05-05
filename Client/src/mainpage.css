@@ -791,3 +791,14 @@ label:hover {
     padding: 5px 10px;
     border-radius: 5px;
 }
+
+.delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 10px; /* Adjust margin as needed */
+    cursor: pointer;
+    font-size: 0.8em;
+}
+

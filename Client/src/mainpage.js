@@ -294,7 +294,6 @@ async function fetchAndDisplayReviews(recipeId) {
         const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
         const reviews = response.data;
 
-
         const reviewsList = document.querySelector('.reviews-list');
         reviewsList.innerHTML = ''; // Clear existing reviews before displaying the latest ones
 
@@ -303,43 +302,35 @@ async function fetchAndDisplayReviews(recipeId) {
             const reviewItem = document.createElement('div');
             const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
 
-            const buttonContainer = document.createElement('div');
-            buttonContainer.style.display = 'flex';
-
-            // Create Delete button for each friend
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.style.backgroundColor = 'red';
-            deleteButton.style.color = 'white';
-            deleteButton.style.border = 'none';
-            deleteButton.style.padding = '5px 10px';
-            deleteButton.style.marginLeft = '10px';
-            deleteButton.style.cursor = 'pointer';
-            deleteButton.style.fontSize = '0.8em';
-
             reviewItem.className = 'review-item';
             reviewItem.innerHTML = `
                 <p class="review-text">"${review.ReviewText}"</p>
                 <div class="review-details">
                     <span class="review-author">- ${review.FirstName} ${review.LastName}</span>
                     <span class="review-rating">Rating: ${review.Rating} Stars</span>
+                    ${isReviewedByCurrentUser ? `
+                        <button class="delete-button" data-review-id="${review.ReviewID}">
+                            Delete
+                        </button>
+                    ` : ''}
                 </div>
             `;
 
             reviewsList.appendChild(reviewItem);
 
             if(isReviewedByCurrentUser){
+                const deleteButton = reviewItem.querySelector('.delete-button');
                 deleteButton.addEventListener('click', async function() {
                     await deleteReview(review.ReviewID);
                     await fetchAndDisplayReviews(recipeId);
                 });
-                reviewsList.appendChild(deleteButton);
             }
         });
     } catch (error) {
         console.error('Error loading reviews:', error);
     }
 }
+
 
 async function loadWall() {
     try {
