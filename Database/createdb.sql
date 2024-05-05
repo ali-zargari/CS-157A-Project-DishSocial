@@ -287,16 +287,25 @@ CREATE TRIGGER AddLikedRecipesForNewFriend
     AFTER INSERT ON Follows
     FOR EACH ROW
 BEGIN
-    -- Insert liked recipes by the followed user (UserID2) to the follower's list (UserID1)
-    INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
-    SELECT ulr.RecipeID, NEW.UserID1, ulr.UserID
-    FROM User_Likes_Recipe ulr
-    WHERE ulr.UserID = NEW.UserID2
-      AND NOT EXISTS (
-        SELECT * FROM Liked_By_Friends_Recipes
-        WHERE RecipeID = ulr.RecipeID AND FriendID = NEW.UserID1
-    );
+    DECLARE followedUserExists INT;
+    DECLARE likedRecipeExists INT;
+
+    -- Check if the followed user exists in the Users table
+    SELECT COUNT(*) INTO followedUserExists FROM Users WHERE UserID = NEW.UserID2;
+
+    IF followedUserExists > 0 THEN
+        -- Insert liked recipes by the followed user (UserID2) to the follower's list (UserID1)
+        INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
+        SELECT ulr.RecipeID, NEW.UserID1, ulr.UserID
+        FROM User_Likes_Recipe ulr
+        WHERE ulr.UserID = NEW.UserID2
+          AND NOT EXISTS (
+            SELECT * FROM Liked_By_Friends_Recipes lbf
+            WHERE lbf.RecipeID = ulr.RecipeID AND lbf.FriendID = NEW.UserID1
+        );
+    END IF;
 END;
+
 
 
 

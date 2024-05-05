@@ -911,10 +911,10 @@ app.post('/users/follow', async (req, res) => {
             // If the follow relationship already exists, return a message indicating it
             res.status(400).json({ message: "Already following this user." });
         } else {
+            console.log("this is trying to follow " + userId + " and " + followedUserId);
             // If the follow relationship does not exist, create it
-            await connection.execute(`
-                INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)
-            `, [userId, followedUserId]);
+            await connection.execute(`INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)`,
+                [userId, followedUserId]);
 
             // Return a success message
             res.status(201).json({ message: "Successfully followed user." });
