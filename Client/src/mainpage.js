@@ -90,6 +90,7 @@ async function loadRecipes() {
     }
 }
 
+
 async function loadAllUsers() {
     try {
         const users = await showAllUser();
@@ -124,6 +125,7 @@ async function loadAllUsers() {
                         if (success) {
                             console.log(`Unfollowed user: ${user.FirstName} ${user.LastName}`);
                             await loadAllUsers(); // Reload the user list after unfollowing
+                            await loadWall();
                         } else {
                             console.log(`Failed to unfollow user: ${user.FirstName} ${user.LastName}`);
                             followButton.textContent = 'Error';
@@ -134,13 +136,16 @@ async function loadAllUsers() {
                         if (success) {
                             console.log(`Followed user: ${user.FirstName} ${user.LastName}`);
                             await loadAllUsers(); // Reload the user list after following
+                            await loadWall();
                         } else {
                             console.log(`Failed to follow user: ${user.FirstName} ${user.LastName}`);
                             followButton.textContent = 'Error';
                             followButton.style.backgroundColor = 'gray';
                         }
                     }
-                    await loadFriends();
+                    await loadFriends(); // Reload the friends list after deletion
+                    await loadWall();
+
                 } catch (error) {
                     console.error(`Error updating follow status: ${error.message}`);
                     if (error.response && error.response.status === 400) {
@@ -152,7 +157,16 @@ async function loadAllUsers() {
                     }
                 }
             });
+
+            const profileButton = createButton('Profile', 'green');
+            profileButton.addEventListener('click', () => {
+                // On click, navigate to user.html
+                window.location.href = `user.html?userID=${user.UserID}`;
+            });
+
             buttonContainer.appendChild(followButton);
+            buttonContainer.appendChild(profileButton);
+
 
             userElement.appendChild(buttonContainer);
             usersListContainer.appendChild(userElement);
@@ -196,9 +210,29 @@ async function loadFriends() {
             buttonContainer.style.display = 'flex';
 
             // Create Delete button for each friend
-            const deleteButton = createButton('Delete', 'red');
-            deleteButton.addEventListener('click', () => {
+            const deleteButton = createButton('Unfollow', 'red');
+            deleteButton.addEventListener('click', async function(){
                 // Delete friend code here
+
+
+                try {
+                    const success = await unfollowUser(getUserIdFromCookie(), friend.UserID); // Replace with your actual delete function
+                    if (success) {
+                        console.log(`Successfully deleted friend: ${friend.FirstName} ${friend.LastName}`);
+                        await loadFriends(); // Reload the friends list after deletion
+                        await loadWall();
+                        await loadAllUsers();
+                    } else {
+                        console.log(`Failed to delete friend: ${friend.FirstName} ${friend.LastName}`);
+                        deleteButton.textContent = 'Error';
+                        deleteButton.style.backgroundColor = 'gray';
+                    }
+                } catch (error) {
+                    console.error(`Error deleting friend: ${error.message}`);
+                    deleteButton.textContent = 'Error';
+                    deleteButton.style.backgroundColor = 'gray';
+                }
+
                 console.log(`Deleting friend: ${friend.FirstName} ${friend.LastName}`);
             });
             buttonContainer.appendChild(deleteButton);

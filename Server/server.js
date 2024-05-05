@@ -55,7 +55,7 @@ app.get('/test', async (req, res) => { // You can now use async function
 
         res.send(rows);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -71,11 +71,11 @@ app.get('/users', async (req, res) => {
 
         res.send(rows);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 }, (req, res) => {
-    console.log('This is the second callback');
+    // console.log('This is the second callback');
 });
 
 //get list of friends user has
@@ -123,7 +123,7 @@ app.get('/users/friends', async (req, res) => {
 app.delete('/users/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
-        console.log(userId);//debug statement
+        // console.log(userId);//debug statement
         const connection = await pool.getConnection();
         await connection.execute(
             'DELETE FROM Users WHERE UserID = ?',
@@ -133,7 +133,7 @@ app.delete('/users/:userId', async (req, res) => {
 
         res.send(`User with ID ${userId} has been deleted`);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -170,7 +170,7 @@ app.delete('/recipe/:recipeID', async (req, res) => {
 
         res.send(`Recipe with ID ${recipeId} has been deleted`);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -186,7 +186,7 @@ app.post('/recipe', async (req, res) => {
         );
         connection.release();
 
-        console.log(`Recipe ${Title} has been added`);
+        // console.log(`Recipe ${Title} has been added`);
 
         res.send(`Recipe ${Title} has been added`);
     } catch (error) {
@@ -247,7 +247,7 @@ app.get('/recipe', async (req, res) => {
 
         res.send(rows);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -304,8 +304,8 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
         const [rows] = await connection.execute(sqlQuery, [userID]);
 
         connection.release();
-        console.log("Reviews:");
-        console.log(rows);
+        // console.log("Reviews:");
+        // console.log(rows);
         res.send(rows);
     } catch (error) {
         console.error(`Failed to get user friend reviews: ${error}`);
@@ -337,7 +337,7 @@ app.post('/login', async (req, res) => {
 
         connection.release();
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -345,7 +345,7 @@ app.post('/login', async (req, res) => {
 //logs out the user
 app.post('/logout', async (req, res) => {
     try {
-        console.log(req.cookies);
+        // console.log(req.cookies);
         res.clearCookie('userID');
         res.send({status: "Logged out"});
 
@@ -414,7 +414,7 @@ app.delete('/review/:reviewID', async (req, res) => {
 
         res.send(`ReviewID with ID ${reviewID} has been deleted`);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -488,7 +488,7 @@ app.get('/recipes', async (req, res) => {
 
         res.send(rows);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -714,7 +714,7 @@ app.put('/users/:userId', async (req, res) => {
 
         res.send({status: "success"});
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -819,8 +819,8 @@ app.get('/recipes/liked', async (req, res) => {
 // like a recipe
 app.post('/recipes/like', async (req, res) => {
     const { userId, recipeId } = req.body;
-    console.log('Received userId:', userId);
-    console.log('Received recipeId:', recipeId);
+    // console.log('Received userId:', userId);
+    // console.log('Received recipeId:', recipeId);
 
     if (!userId || !recipeId) {
         return res.status(400).send('Missing userID or recipeID');
@@ -865,8 +865,8 @@ app.delete('/recipes/unlike', async (req, res) => {
 app.get('/followed', async (req, res) => {
     const { userId, friendId } = req.query;
 
-    console.log('Received userId:', userId);
-    console.log('Received friendId:', friendId);
+    // console.log('Received userId:', userId);
+    // console.log('Received friendId:', friendId);
 
     // Check if userId and friendId are provided
     if (!userId || !friendId) {

@@ -196,6 +196,7 @@ header button:hover {
     display: flex;
     flex-direction: column;
     min-width: 300px;
+    max-width: 500px;
 }
 
 /* Within .recipes, we create two sections for search and upload */
@@ -261,7 +262,6 @@ input[type='number']::-webkit-outer-spin-button {
 .bottom-row {
     flex: 1;
     display: flex;
-    justify-content: space-between;
     align-content: center;
     width: 100%;
 }
@@ -697,14 +697,15 @@ label:hover {
     margin-right: 5px; /* Add space between the inputs */
 }
 
-.friend{
+.friend, .user{
     border-radius: 5px;
     border: 1px solid #ddd;
     padding-left: 5px;
 }
 
-.friend button{
+.friend,.user button{
     height: 20px;
+    flex: 1;
 }
 
 /* Recipe description container */
@@ -797,6 +798,14 @@ label:hover {
     .recipes{
         min-width: 150px;
     }
+
+    #recipeFilter{
+        min-width: 50px;
+    }
+
+    #filterButton{
+        min-width: 50px;
+    }
 }
 
 /* Button container style */
@@ -839,4 +848,8 @@ label:hover {
     justify-content: space-between;
     margin-top: 10px;
     gap: 15px;
+}
+
+#recipeFilter, #filterButton{
+    flex: 1;
 }

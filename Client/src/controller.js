@@ -385,6 +385,7 @@ export async function unfollowUser(userId, friendId) {
 
         // Check if either conversion results in NaN, indicating invalid input
         if (isNaN(userId) || isNaN(friendId)) {
+
             console.error('User ID or Friend ID is not a valid number');
             return false;
         }
