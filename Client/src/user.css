@@ -14,10 +14,43 @@ header {
 
 header h1 {
     margin: 0;
+    font-size: 27px;
 }
 
+/* Container for buttons in the header */
+.header-buttons {
+    display: flex;
+    gap: 10px; /* Gap between header buttons */
+    margin-right: 20px;
+}
+
+/* Stylish Buttons (header buttons) */
 header button {
-    margin-top: 20px;
+    padding: 8px 16px; /* Adjusted padding */
+    border: none;
+    border-radius: 4px; /* Smaller, more square radius */
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #007bff; /* Blue color */
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+    transition: all 0.3s ease; /* Smooth transition */
+    margin: 5px; /* Margins for each button */
+}
+
+header button:hover {
+    background-color: #0056b3; /* Darker blue when hovering */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow */
+}
+
+header button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4); /* Blue focus outline */
+}
+
+header button:active {
+    transform: translateY(1px); /* Button "clicks" down */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow during active state */
 }
 
 .content {
@@ -135,13 +168,6 @@ body {
     padding: 10px;
     background-color: #333;
     color: white;
-}
-
-.sticky-header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
 }
 
 .content {
@@ -272,7 +298,6 @@ h2 {
     padding: 10px;
     background-color: #333;
     color: white;
-    width: 100%; /* Ensure the header covers the full width */
 }
 
 .sticky-header {

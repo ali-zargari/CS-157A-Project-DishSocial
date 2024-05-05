@@ -6,13 +6,19 @@
     <title>Main Page</title>
 </head>
 <body>
-<header>
-    <h1 id="app-name">Dish Social</h1>
-    <h1 id="greeting" >Hello, [name]</h1>
-    <button id="logoutButton">Log out</button>
-    <button id="profileButton">Profile</button>
+<header class="sticky-header">
+    <div class="header-content">
+        <h1 id="app-name">Dish Social</h1>
+        <h1 id="greeting" style="font-size: 1.5em; text-align: center;">Welcome, John Doe!</h1>
 
+        <!-- Buttons grouped together -->
+        <div class="header-buttons">
+            <button id="logoutButton">Log out</button>
+            <button id="profileButton">Profile</button>
+        </div>
+    </div>
 </header>
+
 <div class="content">
     <!-- Friends list section -->
     <div id="social">
@@ -107,13 +113,13 @@
 
         <!-- Recipe Upload -->
 
-            <form id="uploadRecipeForm">
-                <input type="text" id="title" placeholder="Title">
-                <input type="text" id="ingredients" placeholder="Ingredients">
-                <input type="number" id="totalCalories" placeholder="Total Calories">
-                <textarea id="cookingSteps" placeholder="Cooking Steps"></textarea>
-                <button type="submit" id="uploadButton">Upload</button>
-            </form>
+        <form id="uploadRecipeForm">
+            <input type="text" id="title" placeholder="Title">
+            <input type="text" id="ingredients" placeholder="Ingredients">
+            <input type="number" id="totalCalories" placeholder="Total Calories">
+            <textarea id="cookingSteps" placeholder="Cooking Steps"></textarea>
+            <button type="submit" id="uploadButton">Upload</button>
+        </form>
 
     </div>
 
