@@ -149,7 +149,7 @@ header button:hover {
 
 /* Reviews list styles */
 .reviews-list {
-    max-height: 300px; /* Set a max-height and add scroll if content overflows */
+    max-height: 500px; /* Set a max-height and add scroll if content overflows */
     overflow: auto;
     width: 100%;
 }
