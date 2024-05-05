@@ -803,11 +803,14 @@ app.get('/recipes/liked', async (req, res) => {
             SELECT 1 FROM User_Likes_Recipe WHERE UserID = ? AND RecipeID = ?
         `, [userId, recipeId]);
         connection.release();
-
+        console.log('result length: ');
+        console.log(result.length);
         if (result.length > 0) {
-            res.status(200).json({ liked: true });
+            console.log("this line should not be here");
+            res.sendStatus(200);
         } else {
-            res.status(201).json({ liked: false });
+            console.log("else statement here");
+            res.sendStatus(201);
         }
     } catch (error) {
         console.error("Failed to check if recipe is liked:", error);
