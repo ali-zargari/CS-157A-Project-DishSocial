@@ -93,6 +93,10 @@ async function loadRecipes() {
 
 async function loadAllUsers() {
     try {
+        let searchTerm = document.getElementById('all-users-search').value.trim().toLowerCase(); // Get search term
+        searchTerm = sanitizeSearchTerm(searchTerm);
+
+
         const users = await showAllUser();
         const usersListContainer = document.querySelector('.All-list');
         const currentUser = getUserIdFromCookie();
@@ -101,6 +105,12 @@ async function loadAllUsers() {
         for (const user of users) {
             if (user.UserID == currentUser) {
                 continue; // Skip the current user
+            }
+
+            // Filter by the search term
+            const userName = `${user.FirstName} ${user.LastName}`.toLowerCase();
+            if (searchTerm && !userName.includes(searchTerm)) {
+                continue; // Skip if search term does not match
             }
 
             const userElement = document.createElement('div');
@@ -190,13 +200,31 @@ function createButton(text, backgroundColor) {
 }
 
 
+function sanitizeSearchTerm(term) {
+    // Remove all non-alphanumeric characters except spaces
+    return term.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
+}
 
 async function loadFriends() {
     try {
+        // Get search term and sanitize it
+        let searchTerm = document.getElementById('friends-search').value;
+        searchTerm = sanitizeSearchTerm(searchTerm);
+
         const friends = await showFriends();
         const friendsListContainer = document.querySelector('.friend-list');
         friendsListContainer.innerHTML = '';
-        friends.forEach(friend => {
+
+        for (let i = 0; i < friends.length; i++) {
+            const friend = friends[i];
+
+            const friendName = `${friend.FirstName} ${friend.LastName}`.toLowerCase();
+            // Skip this friend if the search term does not match or if it's empty
+            if (searchTerm && !friendName.includes(searchTerm)) {
+                return; // Skip this iteration
+            }
+
+
             const friendElement = document.createElement('div');
             friendElement.className = 'friend';
             friendElement.style.display = "flex";
@@ -247,7 +275,7 @@ async function loadFriends() {
 
             friendElement.appendChild(buttonContainer);
             friendsListContainer.appendChild(friendElement);
-        });
+        }
     } catch (error) {
         console.error('Failed to load friends:', error);
     }
@@ -802,3 +830,6 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
         }
     }
 }
+
+document.querySelector('#all-users button').addEventListener('click', loadAllUsers);
+document.querySelector('#friends button').addEventListener('click', loadAllUsers);
