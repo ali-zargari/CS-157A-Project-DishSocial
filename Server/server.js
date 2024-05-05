@@ -792,7 +792,8 @@ app.get('/users/:userID/followers', async (req, res) => {
     }
 });
 
-// check if liked
+// check if liked by user
+// check if liked by user
 app.get('/recipes/liked', async (req, res) => {
     const { userId, recipeId } = req.query;
 
@@ -804,9 +805,9 @@ app.get('/recipes/liked', async (req, res) => {
         connection.release();
 
         if (result.length > 0) {
-            res.json({ liked: true });
+            res.status(200).json({ liked: true });
         } else {
-            res.json({ liked: false });
+            res.status(404).json({ liked: false });
         }
     } catch (error) {
         console.error("Failed to check if recipe is liked:", error);
@@ -814,7 +815,6 @@ app.get('/recipes/liked', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 // like a recipe
 app.post('/recipes/like', async (req, res) => {

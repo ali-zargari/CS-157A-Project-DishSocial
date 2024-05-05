@@ -11,6 +11,8 @@ import {
     userUploadRecipe,
     getRecipesByUser,
     deleteRecipe,
+    getReviewsByUser,
+    deleteReview,
     followUser,
     unfollowUser
 } from './controller';
@@ -355,7 +357,6 @@ async function loadRecipeInfo(recipeId) {
         let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
         const likeButton = document.createElement('button');
         likeButton.textContent = isLiked ? "Unlike" : "Like";
-        likeButton.id = 'likeButton';
         likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
         likeButton.style.color = 'white';
         likeButton.style.marginTop = '10px'; // Extra styling to match the existing buttons
@@ -441,9 +442,10 @@ async function checkRecipeInList(recipeId) {
 
 async function fetchAndDisplayReviews(recipeId) {
     try {
+        const currentUserId = getUserIdFromCookie();
+        const reviewedByUser = await getReviewsByUser(currentUserId);
         const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
         const reviews = response.data;
-
 
         const reviewsList = document.querySelector('.reviews-list');
         reviewsList.innerHTML = ''; // Clear existing reviews before displaying the latest ones
@@ -451,20 +453,37 @@ async function fetchAndDisplayReviews(recipeId) {
         reviews.forEach(review => {
             // Create and append review items to the reviews list
             const reviewItem = document.createElement('div');
+            const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
+
             reviewItem.className = 'review-item';
             reviewItem.innerHTML = `
                 <p class="review-text">"${review.ReviewText}"</p>
                 <div class="review-details">
                     <span class="review-author">- ${review.FirstName} ${review.LastName}</span>
                     <span class="review-rating">Rating: ${review.Rating} Stars</span>
+                    ${isReviewedByCurrentUser ? `
+                        <button class="delete-button" data-review-id="${review.ReviewID}">
+                            Delete
+                        </button>
+                    ` : ''}
                 </div>
             `;
+
             reviewsList.appendChild(reviewItem);
+
+            if(isReviewedByCurrentUser){
+                const deleteButton = reviewItem.querySelector('.delete-button');
+                deleteButton.addEventListener('click', async function() {
+                    await deleteReview(review.ReviewID);
+                    await fetchAndDisplayReviews(recipeId);
+                });
+            }
         });
     } catch (error) {
         console.error('Error loading reviews:', error);
     }
 }
+
 
 async function loadWall() {
     try {
@@ -646,7 +665,8 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         if (response.status === 201) {
             // Append the new review to the list on the page
             const newReview = response.data;
-            addReviewToPage(newReview);
+            await fetchAndDisplayReviews(selectedRecipeId);
+            //addReviewToPage(newReview);
 
             // Clear the form fields
             document.getElementById('reviewText').value = '';
@@ -739,6 +759,7 @@ function addRecipeToDom(recipe) {
     // Append the new recipe to the list
     recipeListContainer.appendChild(recipeElement);
 }
+
 
 
 async function checkIfRecipeIsLiked(recipeId) {

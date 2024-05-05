@@ -282,12 +282,12 @@ BEGIN
 END;
 
 
--- Trigger to add liked recipes for a new friend (one-way)
+-- Trigger to add liked recipes for a new friend
 CREATE TRIGGER AddLikedRecipesForNewFriend
     AFTER INSERT ON Follows
     FOR EACH ROW
 BEGIN
-    -- Only add liked recipes by the followed user (UserID2) to the follower's list (UserID1)
+    -- Insert liked recipes by the followed user (UserID2) to the follower's list (UserID1)
     INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
     SELECT ulr.RecipeID, NEW.UserID1, ulr.UserID
     FROM User_Likes_Recipe ulr
@@ -296,7 +296,8 @@ BEGIN
         SELECT * FROM Liked_By_Friends_Recipes
         WHERE RecipeID = ulr.RecipeID AND FriendID = NEW.UserID1
     );
-END //
+END;
+
 
 
 
