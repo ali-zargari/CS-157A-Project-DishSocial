@@ -158,10 +158,10 @@ CREATE TABLE Reviewed_By_Friends_Recipes(
 
 -- Triggers
 
--- Triggers
 
 -- Trigger to create a wall for a user when a user is created
 DELIMITER //
+
 CREATE TRIGGER Create_Wall
     AFTER INSERT ON Users
     FOR EACH ROW
@@ -208,43 +208,50 @@ BEGIN
 END;
 
 
--- Trigger to add recipe to Uploaded_By_Friends_Recipes when a friend uploads a recipe
+-- Trigger to add uploaded recipes for a new friend (one-way)
 CREATE TRIGGER After_Friend_Uploads_Recipe
     AFTER INSERT ON User_Uploads_Recipe
     FOR EACH ROW
 BEGIN
     DECLARE fwUser INT;
     DECLARE done INT DEFAULT FALSE;
-    DECLARE cur CURSOR FOR SELECT UserID2 FROM Follows WHERE UserID1 = NEW.UserID UNION ALL SELECT UserID1 FROM Follows WHERE UserID2 = NEW.UserID;
+    DECLARE cur CURSOR FOR SELECT UserID2 FROM Follows WHERE UserID1 = NEW.UserID;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
     OPEN cur;
     read_loop: LOOP
         FETCH cur INTO fwUser;
         IF done THEN
             LEAVE read_loop;
         END IF;
-        IF NOT EXISTS (SELECT * FROM Uploaded_By_Friends_Recipes WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser) THEN
+        IF NOT EXISTS (
+            SELECT * FROM Uploaded_By_Friends_Recipes
+            WHERE RecipeID = NEW.RecipeID AND FriendID = fwUser
+        ) THEN
             INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
             VALUES (NEW.RecipeID, fwUser);
         END IF;
     END LOOP;
     CLOSE cur;
-END;
+END //
 
 
--- Trigger to add recipe to Reviewed_By_Friends_Recipes when a friend reviews a recipe
+-- Trigger to add reviewed recipes when a new friend is followed (one-way)
 CREATE TRIGGER After_Friend_Reviews_Recipe
     AFTER INSERT ON User_Leaves_Review
     FOR EACH ROW
 BEGIN
-    IF NOT EXISTS (SELECT * FROM Reviewed_By_Friends_Recipes WHERE ReviewID = NEW.ReviewID) THEN
+    IF NOT EXISTS (
+        SELECT * FROM Reviewed_By_Friends_Recipes
+        WHERE ReviewID = NEW.ReviewID
+    ) THEN
         INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
         SELECT rhr.RecipeID, NEW.ReviewID, fw.UserID2
         FROM Follows fw
-                 JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
+        JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
         WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
     END IF;
-END;
+END //
 
 
 -- Trigger to prevent a user from liking the same recipe twice
@@ -275,10 +282,12 @@ BEGIN
 END;
 
 
+-- Trigger to add liked recipes for a new friend (one-way)
 CREATE TRIGGER AddLikedRecipesForNewFriend
     AFTER INSERT ON Follows
     FOR EACH ROW
 BEGIN
+    -- Only add liked recipes by the followed user (UserID2) to the follower's list (UserID1)
     INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
     SELECT ulr.RecipeID, NEW.UserID1, ulr.UserID
     FROM User_Likes_Recipe ulr
@@ -287,53 +296,38 @@ BEGIN
         SELECT * FROM Liked_By_Friends_Recipes
         WHERE RecipeID = ulr.RecipeID AND FriendID = NEW.UserID1
     );
-END;
+END //
 
 
-DELIMITER //
 
 CREATE TRIGGER Delete_Friends_Recipes
     AFTER DELETE ON Follows
     FOR EACH ROW
 BEGIN
-    -- Delete from Liked_By_Friends_Recipes
+    -- Delete only from Liked_By_Friends_Recipes if UserID1 unfollows UserID2
     DELETE FROM Liked_By_Friends_Recipes
-    WHERE (FriendID = OLD.UserID1 AND RecipeID IN (
+    WHERE FriendID = OLD.UserID1 AND RecipeID IN (
         SELECT RecipeID
         FROM User_Likes_Recipe
         WHERE UserID = OLD.UserID2
-    ))
-       OR (FriendID = OLD.UserID2 AND RecipeID IN (
-        SELECT RecipeID
-        FROM User_Likes_Recipe
-        WHERE UserID = OLD.UserID1
-    ));
+    );
 
-    -- Delete from Uploaded_By_Friends_Recipes
+    -- Delete only from Uploaded_By_Friends_Recipes if UserID1 unfollows UserID2
     DELETE FROM Uploaded_By_Friends_Recipes
-    WHERE (FriendID = OLD.UserID1 AND RecipeID IN (
+    WHERE FriendID = OLD.UserID1 AND RecipeID IN (
         SELECT RecipeID
         FROM User_Uploads_Recipe
         WHERE UserID = OLD.UserID2
-    ))
-       OR (FriendID = OLD.UserID2 AND RecipeID IN (
-        SELECT RecipeID
-        FROM User_Uploads_Recipe
-        WHERE UserID = OLD.UserID1
-    ));
+    );
 
-    -- Delete from Reviewed_By_Friends_Recipes
+    -- Delete only from Reviewed_By_Friends_Recipes if UserID1 unfollows UserID2
     DELETE FROM Reviewed_By_Friends_Recipes
-    WHERE (FriendID = OLD.UserID1 AND ReviewID IN (
+    WHERE FriendID = OLD.UserID1 AND ReviewID IN (
         SELECT ReviewID
         FROM User_Leaves_Review
         WHERE UserID = OLD.UserID2
-    ))
-       OR (FriendID = OLD.UserID2 AND ReviewID IN (
-        SELECT ReviewID
-        FROM User_Leaves_Review
-        WHERE UserID = OLD.UserID1
-    ));
+    );
 END //
+
 
 DELIMITER ;

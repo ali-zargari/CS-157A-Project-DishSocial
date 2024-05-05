@@ -90,8 +90,13 @@ async function loadRecipes() {
     }
 }
 
+
 async function loadAllUsers() {
     try {
+        let searchTerm = document.getElementById('all-users-search').value.trim().toLowerCase(); // Get search term
+        searchTerm = sanitizeSearchTerm(searchTerm);
+
+
         const users = await showAllUser();
         const usersListContainer = document.querySelector('.All-list');
         const currentUser = getUserIdFromCookie();
@@ -100,6 +105,12 @@ async function loadAllUsers() {
         for (const user of users) {
             if (user.UserID == currentUser) {
                 continue; // Skip the current user
+            }
+
+            // Filter by the search term
+            const userName = `${user.FirstName} ${user.LastName}`.toLowerCase();
+            if (searchTerm && !userName.includes(searchTerm)) {
+                continue; // Skip if search term does not match
             }
 
             const userElement = document.createElement('div');
@@ -124,6 +135,7 @@ async function loadAllUsers() {
                         if (success) {
                             console.log(`Unfollowed user: ${user.FirstName} ${user.LastName}`);
                             await loadAllUsers(); // Reload the user list after unfollowing
+                            await loadWall();
                         } else {
                             console.log(`Failed to unfollow user: ${user.FirstName} ${user.LastName}`);
                             followButton.textContent = 'Error';
@@ -134,13 +146,16 @@ async function loadAllUsers() {
                         if (success) {
                             console.log(`Followed user: ${user.FirstName} ${user.LastName}`);
                             await loadAllUsers(); // Reload the user list after following
+                            await loadWall();
                         } else {
                             console.log(`Failed to follow user: ${user.FirstName} ${user.LastName}`);
                             followButton.textContent = 'Error';
                             followButton.style.backgroundColor = 'gray';
                         }
                     }
-                    await loadFriends();
+                    await loadFriends(); // Reload the friends list after deletion
+                    await loadWall();
+
                 } catch (error) {
                     console.error(`Error updating follow status: ${error.message}`);
                     if (error.response && error.response.status === 400) {
@@ -152,7 +167,16 @@ async function loadAllUsers() {
                     }
                 }
             });
+
+            const profileButton = createButton('Profile', 'green');
+            profileButton.addEventListener('click', () => {
+                // On click, navigate to user.html
+                window.location.href = `user.html?userID=${user.UserID}`;
+            });
+
             buttonContainer.appendChild(followButton);
+            buttonContainer.appendChild(profileButton);
+
 
             userElement.appendChild(buttonContainer);
             usersListContainer.appendChild(userElement);
@@ -176,13 +200,31 @@ function createButton(text, backgroundColor) {
 }
 
 
+function sanitizeSearchTerm(term) {
+    // Remove all non-alphanumeric characters except spaces
+    return term.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
+}
 
 async function loadFriends() {
     try {
+        // Get search term and sanitize it
+        let searchTerm = document.getElementById('friends-search').value;
+        searchTerm = sanitizeSearchTerm(searchTerm);
+
         const friends = await showFriends();
         const friendsListContainer = document.querySelector('.friend-list');
         friendsListContainer.innerHTML = '';
-        friends.forEach(friend => {
+
+        for (let i = 0; i < friends.length; i++) {
+            const friend = friends[i];
+
+            const friendName = `${friend.FirstName} ${friend.LastName}`.toLowerCase();
+            // Skip this friend if the search term does not match or if it's empty
+            if (searchTerm && !friendName.includes(searchTerm)) {
+                return; // Skip this iteration
+            }
+
+
             const friendElement = document.createElement('div');
             friendElement.className = 'friend';
             friendElement.style.display = "flex";
@@ -196,9 +238,29 @@ async function loadFriends() {
             buttonContainer.style.display = 'flex';
 
             // Create Delete button for each friend
-            const deleteButton = createButton('Delete', 'red');
-            deleteButton.addEventListener('click', () => {
+            const deleteButton = createButton('Unfollow', 'red');
+            deleteButton.addEventListener('click', async function(){
                 // Delete friend code here
+
+
+                try {
+                    const success = await unfollowUser(getUserIdFromCookie(), friend.UserID); // Replace with your actual delete function
+                    if (success) {
+                        console.log(`Successfully deleted friend: ${friend.FirstName} ${friend.LastName}`);
+                        await loadFriends(); // Reload the friends list after deletion
+                        await loadWall();
+                        await loadAllUsers();
+                    } else {
+                        console.log(`Failed to delete friend: ${friend.FirstName} ${friend.LastName}`);
+                        deleteButton.textContent = 'Error';
+                        deleteButton.style.backgroundColor = 'gray';
+                    }
+                } catch (error) {
+                    console.error(`Error deleting friend: ${error.message}`);
+                    deleteButton.textContent = 'Error';
+                    deleteButton.style.backgroundColor = 'gray';
+                }
+
                 console.log(`Deleting friend: ${friend.FirstName} ${friend.LastName}`);
             });
             buttonContainer.appendChild(deleteButton);
@@ -213,7 +275,7 @@ async function loadFriends() {
 
             friendElement.appendChild(buttonContainer);
             friendsListContainer.appendChild(friendElement);
-        });
+        }
     } catch (error) {
         console.error('Failed to load friends:', error);
     }
@@ -768,3 +830,6 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
         }
     }
 }
+
+document.querySelector('#all-users button').addEventListener('click', loadAllUsers);
+document.querySelector('#friends button').addEventListener('click', loadAllUsers);
