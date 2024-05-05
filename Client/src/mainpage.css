@@ -530,7 +530,7 @@ button:hover {
     display: block;
 }
 
-.friend-list, .recipe-list{
+.friend-list, .recipe-list, .All-list{
     flex-grow: 1;
     overflow-y: auto;
     display: flex;
@@ -790,4 +790,53 @@ label:hover {
     background-color: #ffd700; /* Gold color for the star rating */
     padding: 5px 10px;
     border-radius: 5px;
+}
+
+
+@media (max-width: 950px) {
+    .recipes{
+        min-width: 150px;
+    }
+}
+
+/* Button container style */
+.button-container {
+    display: flex;
+    margin-top: 10px;
+}
+
+/* Common button styles */
+.recipe-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+/* Add to Custom List button style */
+.add-button {
+    background-color: #007bff;
+    color: #fff;
+    margin-right: 10px;
+}
+
+/* Like button style */
+.like-button {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+/* Unlike button style */
+.unlike-button {
+    background-color: #f44336;
+    color: #fff;
+}
+
+#laButtons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    gap: 15px;
 }

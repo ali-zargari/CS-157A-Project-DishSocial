@@ -48,8 +48,252 @@ header button {
     padding-top: 20px;
 }
 
-.friend-list::before,
-.recipe-list::before,
-.reviews-list::before {
+.recipe-item, .review-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.recipe-item h3, .review-item h3 {
+    color: #333;
+    margin-top: 0;
+}
+
+.recipe-item p, .review-item p {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+strong {
+    color: #333;
+}
+
+#connections {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+#following, #followers {
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-list {
+    margin-top: 10px;
+}
+
+.user-list div {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.user-list div:last-child {
+    border-bottom: none;
+}
+
+h2 {
+    color: #333;
+    padding: 0;
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.user-item {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.user-item:hover {
+    background-color: #f0f0f0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+}
+
+.sticky-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.content {
+    margin-top: 80px; /* Adjust as necessary to prevent content from being hidden under the header */
+    margin: 20px;
+}
+
+#user-details,
+#connections {
+    background-color: white;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+#user-details h2,
+#connections h2,
+.recipes h2,
+.reviews h2 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+#connections {
+    display: flex;
+    justify-content: space-between;
+}
+
+.user-list {
+    padding-top: 20px;
+}
+
+.user-list::before {
     content: 'No items to display.';
+}
+
+.recipes-reviews-container {
+    display: flex;
+}
+
+.recipes,
+.reviews {
+    flex: 1;
+    flex-shrink: 0;
+    margin-right: 20px;
+    max-width: 50%;
+}
+
+.recipes h2,
+.reviews h2 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.interactions-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    background-color: white;
+}
+
+.recipes, .reviews {
+    flex: 1;
+    background-color: white;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.recipe-list, .reviews-list {
+    margin-top: 10px;
+}
+
+.recipe-item, .review-item {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.recipe-item:last-child, .review-item:last-child {
+    border-bottom: none;
+}
+
+.recipe-item h3, .review-item h3 {
+    color: #333;
+    margin-top: 0;
+}
+
+.recipe-item p, .review-item p {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+h2 {
+    color: #333;
+    font-size: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.review-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden; /* Ensures the content doesn't overflow the boundary of the box */
+}
+
+.review-item p {
+    word-wrap: break-word; /* Allows long words to be broken and wrapped to the next line */
+    overflow-wrap: break-word; /* Ensures proper breaking of long words if needed */
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    width: 100%; /* Ensure the header covers the full width */
+}
+
+.sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* High z-index to ensure the header is always on top */
+}
+
+.content {
+    padding-top: 60px; /* Adjust this value based on the actual height of your header */
+    margin: 20px; /* Maintains the original margin and adds space at the top */
+    overflow: auto; /* Adds scroll to content if needed */
+}
+
+/* Additional styles for visibility and aesthetics */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    padding-top: 50px; /* Optionally add padding to the entire body if the header is very tall */
 }

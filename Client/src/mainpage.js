@@ -10,7 +10,9 @@ import {
     getUserNameById,
     userUploadRecipe,
     getRecipesByUser,
-    deleteRecipe
+    deleteRecipe,
+    followUser,
+    unfollowUser
 } from './controller';
 import axios from "axios";
 
@@ -88,22 +90,91 @@ async function loadRecipes() {
     }
 }
 
-
 async function loadAllUsers() {
     try {
         const users = await showAllUser();
         const usersListContainer = document.querySelector('.All-list');
+        const currentUser = getUserIdFromCookie();
         usersListContainer.innerHTML = '';
-        users.forEach(user => {
+
+        for (const user of users) {
+            if (user.UserID == currentUser) {
+                continue; // Skip the current user
+            }
+
             const userElement = document.createElement('div');
             userElement.className = 'user';
-            userElement.textContent = `${user.FirstName} ${user.LastName}`;
+            userElement.style.display = "flex";
+            userElement.style.justifyContent = "space-between";
+            userElement.style.alignItems = "center";
+
+            const userText = document.createTextNode(`${user.FirstName} ${user.LastName}`);
+            userElement.appendChild(userText);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+
+            let isFollowed = await checkIfFriend(currentUser, user.UserID);
+
+            const followButton = createButton(isFollowed ? 'Unfollow' : 'Follow', isFollowed ? 'red' : 'green');
+            followButton.addEventListener('click', async () => {
+                try {
+                    if (isFollowed) {
+                        const success = await unfollowUser(currentUser, user.UserID);
+                        if (success) {
+                            console.log(`Unfollowed user: ${user.FirstName} ${user.LastName}`);
+                            await loadAllUsers(); // Reload the user list after unfollowing
+                        } else {
+                            console.log(`Failed to unfollow user: ${user.FirstName} ${user.LastName}`);
+                            followButton.textContent = 'Error';
+                            followButton.style.backgroundColor = 'gray';
+                        }
+                    } else {
+                        const success = await followUser(currentUser, user.UserID);
+                        if (success) {
+                            console.log(`Followed user: ${user.FirstName} ${user.LastName}`);
+                            await loadAllUsers(); // Reload the user list after following
+                        } else {
+                            console.log(`Failed to follow user: ${user.FirstName} ${user.LastName}`);
+                            followButton.textContent = 'Error';
+                            followButton.style.backgroundColor = 'gray';
+                        }
+                    }
+                    await loadFriends();
+                } catch (error) {
+                    console.error(`Error updating follow status: ${error.message}`);
+                    if (error.response && error.response.status === 400) {
+                        followButton.textContent = 'Already ' + (isFollowed ? 'Following' : 'Unfollowed');
+                        followButton.style.backgroundColor = 'gray';
+                    } else {
+                        followButton.textContent = 'Error';
+                        followButton.style.backgroundColor = 'gray';
+                    }
+                }
+            });
+            buttonContainer.appendChild(followButton);
+
+            userElement.appendChild(buttonContainer);
             usersListContainer.appendChild(userElement);
-        });
+        }
     } catch (error) {
         console.error('Failed to load all users:', error);
     }
 }
+
+function createButton(text, backgroundColor) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.style.backgroundColor = backgroundColor;
+    button.style.color = 'white';
+    button.style.border = 'none';
+    button.style.padding = '5px 10px';
+    button.style.marginLeft = '10px';
+    button.style.cursor = 'pointer';
+    button.style.fontSize = '0.8em';
+    return button;
+}
+
 
 
 async function loadFriends() {
@@ -125,15 +196,7 @@ async function loadFriends() {
             buttonContainer.style.display = 'flex';
 
             // Create Delete button for each friend
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.style.backgroundColor = 'red';
-            deleteButton.style.color = 'white';
-            deleteButton.style.border = 'none';
-            deleteButton.style.padding = '5px 10px';
-            deleteButton.style.marginLeft = '10px';
-            deleteButton.style.cursor = 'pointer';
-            deleteButton.style.fontSize = '0.8em';
+            const deleteButton = createButton('Delete', 'red');
             deleteButton.addEventListener('click', () => {
                 // Delete friend code here
                 console.log(`Deleting friend: ${friend.FirstName} ${friend.LastName}`);
@@ -141,18 +204,10 @@ async function loadFriends() {
             buttonContainer.appendChild(deleteButton);
 
             // Create Profile button for each friend
-            const profileButton = document.createElement('button');
-            profileButton.textContent = 'Profile';
-            profileButton.style.backgroundColor = 'green';
-            profileButton.style.color = 'white';
-            profileButton.style.border = 'none';
-            profileButton.style.padding = '5px 10px';
-            profileButton.style.marginLeft = '10px';
-            profileButton.style.cursor = 'pointer';
-            profileButton.style.fontSize = '0.8em';
+            const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
                 // On click, navigate to user.html
-                window.location.href = 'user.html';
+                window.location.href = `user.html?userID=${friend.UserID}`;
             });
             buttonContainer.appendChild(profileButton);
 
@@ -163,6 +218,8 @@ async function loadFriends() {
         console.error('Failed to load friends:', error);
     }
 }
+
+
 
 
 async function loadRecipeInfo(recipeId) {
@@ -206,9 +263,16 @@ async function loadRecipeInfo(recipeId) {
         const addButton = document.createElement('button');
         addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
 
+
+        // Create container div for buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex'; // Use flexbox to arrange buttons horizontally
+        buttonContainer.style.marginTop = '10px'; // Add some top margin to separate buttons from recipe info
+        buttonContainer.id = 'laButtons';
+
         // Set button color based on whether the recipe is in the user's list or not
         addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
-
+        addButton.id = 'addButton';
         addButton.addEventListener('click', async function() {
             if(isInList) {
                 await removeFromCustomList(recipeId);
@@ -224,7 +288,34 @@ async function loadRecipeInfo(recipeId) {
             addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
         });
 
-        recipeInfoContainer.appendChild(addButton);
+
+        // Create and append 'Like' button
+        let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
+        const likeButton = document.createElement('button');
+        likeButton.textContent = isLiked ? "Unlike" : "Like";
+        likeButton.id = 'likeButton';
+        likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
+        likeButton.style.color = 'white';
+        likeButton.style.marginTop = '10px'; // Extra styling to match the existing buttons
+
+        likeButton.addEventListener('click', async function() {
+            if (isLiked) {
+                await unlikeRecipe(recipeId); // This function needs to be defined to handle unliking the recipe
+            } else {
+                await likeRecipe(recipeId); // This function needs to be defined to handle liking the recipe
+            }
+
+            // Toggle the like state and update the button text and color
+            isLiked = !isLiked;
+            likeButton.textContent = isLiked ? "Unlike" : "Like";
+            likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff";
+        });
+
+        buttonContainer.appendChild(likeButton);
+
+        buttonContainer.appendChild(addButton);
+
+        recipeInfoContainer.appendChild(buttonContainer);
 
         reviewFormSection.style.display = 'block';
     } catch (error) {
@@ -235,6 +326,7 @@ async function loadRecipeInfo(recipeId) {
     // Fetch reviews for the recipe
     await fetchAndDisplayReviews(recipeId);
 }
+
 
 
 
@@ -391,14 +483,19 @@ async function performAdvancedRecipeSearch() {
     const filter = document.getElementById('recipeFilter').value;
     lastFilter = filter; // <-- Save the last filter
 
+    const minCalories = document.getElementById('min-calories').value;
+    const maxCalories = document.getElementById('max-calories').value;
+
     const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
 
     try {
         const response = await axios.get(`http://localhost:3002/recipes/search`, {
             params: {
-                searchTerm: searchTerm,
-                filter: filter,
-                userID: userID
+                searchTerm,
+                filter,
+                userID,
+                minCalories: minCalories ? Number(minCalories) : undefined, // Send as undefined if empty
+                maxCalories: maxCalories ? Number(maxCalories) : undefined // Send as undefined if empty
             }
         });
 
@@ -579,4 +676,95 @@ function addRecipeToDom(recipe) {
 
     // Append the new recipe to the list
     recipeListContainer.appendChild(recipeElement);
+}
+
+
+async function checkIfRecipeIsLiked(recipeId) {
+    try {
+        const userId = getUserIdFromCookie();
+        const response = await axios.get(`http://localhost:3002/recipes/liked`, {
+            params: { userId, recipeId }
+        });
+        return response.status === 200;  // Assumes 200 means it's liked, adjust based on your API
+    } catch (error) {
+        console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);
+        return false; // Return false if there's an error or the recipe is not liked
+    }
+}
+
+
+async function likeRecipe(recipeId) {
+    try {
+        // Retrieve the userId from cookies and ensure it's a digit
+        let userId = getUserIdFromCookie();
+        // Convert both userId and recipeId to integers
+        userId = parseInt(userId, 10);
+        recipeId = parseInt(recipeId, 10);
+
+        console.log(
+            `Liking recipe with ID ${recipeId} for user with ID ${userId}`
+        )
+
+        // Check if either conversion results in NaN, indicating invalid input
+        if (isNaN(userId) || isNaN(recipeId)) {
+            console.error('User ID or Recipe ID is not a valid number');
+            return false;
+        }
+
+        const response = await axios.post('http://localhost:3002/recipes/like', {
+            userId, recipeId
+        });
+
+        return response.status === 201; // Assuming 201 means created/successful
+    } catch (error) {
+        console.error('Failed to like recipe:', error);
+        return false;
+    }
+}
+
+
+
+async function unlikeRecipe(recipeId) {
+    try {
+        const userId = getUserIdFromCookie();
+        const response = await axios.delete(`http://localhost:3002/recipes/unlike`, {
+            data: { userId, recipeId }
+        });
+        return response.status === 200; // Assuming 200 means successful deletion
+    } catch (error) {
+        console.error('Failed to unlike recipe:', error);
+        return false;
+    }
+}
+
+
+async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
+    try {
+        userId = parseInt(userId, 10);
+        friendId = parseInt(friendId, 10);
+
+        console.log(
+            `Checking if user with ID ${userId} is friends with user with ID ${friendId}`
+        );
+
+        if (isNaN(userId) || isNaN(friendId)) {
+            console.error('User ID or Friend ID is not a valid number');
+            return false;
+        }
+
+        const response = await axios.get('http://localhost:3002/followed', {
+            params: { userId, friendId }
+        });
+
+        return response.data.followed;
+    } catch (error) {
+        if (error.response && error.response.status === 404 && retries > 0) {
+            console.log(`Retrying checkIfFriend request in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return checkIfFriend(userId, friendId, retries - 1, delay);
+        } else {
+            console.error(`Error checking if user is a friend: ${error.message}`);
+            return false;
+        }
+    }
 }

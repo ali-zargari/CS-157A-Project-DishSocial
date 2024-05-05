@@ -84,9 +84,10 @@ app.get('/users/friends', async (req, res) => {
         const connection = await pool.getConnection();
         const userID = req.cookies.userID;
 
+        // Query to get the friend IDs from the Follows table
         const [friendResult] = await connection.execute(
             'SELECT UserID2 FROM Follows WHERE UserID1 = ?',
-                [userID]
+            [userID]
         );
 
         // Extracting user IDs from the friendResult
@@ -94,26 +95,29 @@ app.get('/users/friends', async (req, res) => {
 
         // Check if there are friend IDs to query
         if (friendIds.length > 0) {
-            // Query to get names of friends
+            // Query to get details of friends
             const friendIdsPlaceHolders = friendIds.map(() => '?').join(',');
 
+            // Including UserID in the SELECT clause
             const [rows] = await connection.execute(
-                `SELECT FirstName, LastName FROM Users WHERE UserID IN (${friendIdsPlaceHolders})`,
+                `SELECT UserID, FirstName, LastName FROM Users WHERE UserID IN (${friendIdsPlaceHolders})`,
                 friendIds
             );
 
-            //console.log(rows)
+            // Returning the user details
             res.send(rows);
-            //console.log(`(${friendIds.join(',')})`);
         } else {
             res.send([]); // No friends found
         }
+
+        // Release the connection back to the pool
         connection.release();
     } catch (error) {
         console.error("Failed to retrieve friends: ", error);
         res.status(500).send(error);
     }
 });
+
 
 //delete user
 app.delete('/users/:userId', async (req, res) => {
@@ -416,6 +420,7 @@ app.delete('/review/:reviewID', async (req, res) => {
 });
 
 
+//reviews of a recipe
 app.get('/reviews/:recipeID', async (req, res) => {
     try {
         const { recipeID } = req.params;
@@ -444,6 +449,7 @@ app.get('/reviews/:recipeID', async (req, res) => {
 });
 
 
+//get user info
 app.get('/users/:userID', async (req, res) => {
     const { userID } = req.params; // Extracting userID from the request URL
 
@@ -486,21 +492,21 @@ app.get('/recipes', async (req, res) => {
         res.status(500).send(error);
     }
 });
-
-
 // Endpoint to search and filter recipes
 app.get('/recipes/search', async (req, res) => {
-    const { searchTerm, filter, userID } = req.query; // userID should be obtained from session or token
+    const { searchTerm, filter, userID, minCalories, maxCalories } = req.query;
 
     let baseQuery = `SELECT DISTINCT Recipe.* FROM Recipe `;
     let whereConditions = [];
     let parameters = [];
 
+    // Search term conditions
     if (searchTerm) {
         whereConditions.push(`(Recipe.Title LIKE CONCAT('%', ?, '%') OR Recipe.Ingredients LIKE CONCAT('%', ?, '%'))`);
         parameters.push(searchTerm, searchTerm);
     }
 
+    // Apply filter logic based on the `filter` value
     switch (filter) {
         case 'reviewedByMe':
             baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
@@ -546,6 +552,17 @@ app.get('/recipes/search', async (req, res) => {
             break;
     }
 
+    // Add minimum and maximum calorie filters
+    if (minCalories) {
+        whereConditions.push('Recipe.TotalCalories >= ?');
+        parameters.push(Number(minCalories));
+    }
+    if (maxCalories) {
+        whereConditions.push('Recipe.TotalCalories <= ?');
+        parameters.push(Number(maxCalories));
+    }
+
+    // Combine all conditions to form the final query
     if (whereConditions.length > 0) {
         baseQuery += ` WHERE ${whereConditions.join(' AND ')}`;
     }
@@ -701,5 +718,229 @@ app.put('/users/:userId', async (req, res) => {
         res.status(500).send(error);
     }
 });
+
+app.get('/users/:userID/recipes', async (req, res) => {
+    const { userID } = req.params;
+    try {
+        const connection = await pool.getConnection();
+        const [recipes] = await connection.execute(`
+            SELECT r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients
+            FROM Recipe r
+            JOIN User_Uploads_Recipe uur ON r.RecipeID = uur.RecipeID
+            WHERE uur.UserID = ?
+        `, [userID]);
+        connection.release();
+        res.json(recipes);
+    } catch (error) {
+        console.error('Error fetching recipes uploaded by user:', error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/users/:userID/reviews', async (req, res) => {
+    const { userID } = req.params; // Extract the userID from the request parameters
+    try {
+        const connection = await pool.getConnection();
+        const [reviews] = await connection.execute(`
+            SELECT r.ReviewID, r.PublishDate, r.Rating, r.ReviewText, rec.Title AS RecipeTitle
+            FROM Review r
+            JOIN User_Leaves_Review ulr ON r.ReviewID = ulr.ReviewID
+            JOIN Recipe_Has_Review rhr ON r.ReviewID = rhr.ReviewID
+            JOIN Recipe rec ON rhr.RecipeID = rec.RecipeID
+            WHERE ulr.UserID = ?
+        `, [userID]);
+        connection.release();
+        res.json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews by user:', error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+app.get('/users/:userID/following', async (req, res) => {
+    const { userID } = req.params;
+    try {
+        const connection = await pool.getConnection();
+        const [following] = await connection.execute(
+            'SELECT u.UserID, u.FirstName, u.LastName FROM Users u JOIN Follows f ON u.UserID = f.UserID2 WHERE f.UserID1 = ?',
+            [userID]
+        );
+        connection.release();
+        res.json(following);
+    } catch (error) {
+        console.error("Failed to retrieve following users: ", error);
+        res.status(500).send(error);
+    }
+});
+
+app.get('/users/:userID/followers', async (req, res) => {
+    const { userID } = req.params;
+    try {
+        const connection = await pool.getConnection();
+        const [followers] = await connection.execute(
+            'SELECT u.UserID, u.FirstName, u.LastName FROM Users u JOIN Follows f ON u.UserID = f.UserID1 WHERE f.UserID2 = ?',
+            [userID]
+        );
+        connection.release();
+        res.json(followers);
+    } catch (error) {
+        console.error("Failed to retrieve followers: ", error);
+        res.status(500).send(error);
+    }
+});
+
+// check if liked
+app.get('/recipes/liked', async (req, res) => {
+    const { userId, recipeId } = req.query;
+
+    try {
+        const connection = await pool.getConnection();
+        const [result] = await connection.execute(`
+            SELECT 1 FROM User_Likes_Recipe WHERE UserID = ? AND RecipeID = ?
+        `, [userId, recipeId]);
+        connection.release();
+
+        if (result.length > 0) {
+            res.json({ liked: true });
+        } else {
+            res.json({ liked: false });
+        }
+    } catch (error) {
+        console.error("Failed to check if recipe is liked:", error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+// like a recipe
+app.post('/recipes/like', async (req, res) => {
+    const { userId, recipeId } = req.body;
+    console.log('Received userId:', userId);
+    console.log('Received recipeId:', recipeId);
+
+    if (!userId || !recipeId) {
+        return res.status(400).send('Missing userID or recipeID');
+    }
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        await connection.execute(`
+            INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (?, ?)
+        `, [userId, recipeId]);
+        res.status(201).send('Recipe liked successfully');
+    } catch (error) {
+        console.error("Failed to like recipe:", error);
+        res.status(500).send('Internal Server Error');
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
+});
+
+
+// unlike a recipe
+app.delete('/recipes/unlike', async (req, res) => {
+    const { userId, recipeId } = req.body; // Assuming these are passed as JSON payload
+
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(`
+            DELETE FROM User_Likes_Recipe WHERE UserID = ? AND RecipeID = ?
+        `, [userId, recipeId]);
+        connection.release();
+        res.send('Like removed successfully');
+    } catch (error) {
+        console.error("Failed to unlike recipe:", error);
+        connection.release();
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/followed', async (req, res) => {
+    const { userId, friendId } = req.query;
+
+    console.log('Received userId:', userId);
+    console.log('Received friendId:', friendId);
+
+    // Check if userId and friendId are provided
+    if (!userId || !friendId) {
+        res.status(400).send('User ID and Friend ID are required');
+        return;
+    }
+
+    try {
+        const connection = await pool.getConnection();
+        const [result] = await connection.execute(`
+            SELECT 1 FROM Follows WHERE UserID1 = ? AND UserID2 = ?
+        `, [userId, friendId]);
+        connection.release();
+
+        if (result.length > 0) {
+            res.json({ followed: true });
+        } else {
+            res.json({ followed: false });
+        }
+    } catch (error) {
+        console.error("Failed to check if user is followed:", error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+app.post('/users/follow', async (req, res) => {
+    const { userId, followedUserId } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+
+        // Check if the follow relationship already exists
+        const [existingFollow] = await connection.execute(`
+            SELECT 1 FROM Follows WHERE UserID1 = ? AND UserID2 = ?
+        `, [userId, followedUserId]);
+
+        if (existingFollow.length > 0) {
+            // If the follow relationship already exists, return a message indicating it
+            res.status(400).json({ message: "Already following this user." });
+        } else {
+            // If the follow relationship does not exist, create it
+            await connection.execute(`
+                INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)
+            `, [userId, followedUserId]);
+
+            // Return a success message
+            res.status(201).json({ message: "Successfully followed user." });
+        }
+
+        // Release the connection back to the pool
+        connection.release();
+    } catch (error) {
+        console.error("Failed to follow user:", error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.delete('/unfollow', async (req, res) => {
+    const { userId, friendId } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+        await connection.execute(`
+            DELETE FROM Follows WHERE UserID1 = ? AND UserID2 = ?
+        `, [userId, friendId]);
+        connection.release();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error("Failed to unfollow user:", error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
