@@ -794,7 +794,7 @@ app.get('/users/:userID/followers', async (req, res) => {
 
 // check if liked by user
 // check if liked by user
-app.get('/recipes/liked', async (req, res) => {
+app.get('/recipes/liked ', async (req, res) => {
     const { userId, recipeId } = req.query;
 
     try {
@@ -867,9 +867,6 @@ app.delete('/recipes/unlike', async (req, res) => {
 
 app.get('/followed', async (req, res) => {
     const { userId, friendId } = req.query;
-
-    // console.log('Received userId:', userId);
-    // console.log('Received friendId:', friendId);
 
     // Check if userId and friendId are provided
     if (!userId || !friendId) {

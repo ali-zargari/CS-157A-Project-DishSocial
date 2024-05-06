@@ -1,8 +1,15 @@
 import './settings.css'
 import { getUserById, updateUserById } from './controller.js';
 
+
+function getUserIDFromQuery() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('userID'); // Returns the userID from the URL, or null if not present
+}
+
+
 document.addEventListener('DOMContentLoaded', async () => {
-    const userId = '1'; // Set to the user ID you want to fetch data for
+    const userId = getUserIDFromQuery(); // Set to the user ID you want to fetch data for
     const messageBox = document.getElementById('messageBox'); // Get the message box element
 
     try {
@@ -65,4 +72,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             messageBox.style.display = 'block'; // Show the message box
         }
     });
+});
+
+
+// Select the Logout button using its ID
+const logoutButton = document.getElementById('logoutButton');
+
+// Add an event listener to the Logout button
+logoutButton.addEventListener('click', function () {
+    try {
+        // Expire the userID cookie
+        document.cookie = "userID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        console.log("Logged out successfully.");
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        console.error('There was an error trying to log out:', error);
+    }
+});
+
+
+const dashbordButton = document.getElementById('dashbordButton');
+
+// Add an event listener to the Logout button
+dashbordButton.addEventListener('click', function () {
+    try {
+        // Expire the userID cookie
+        window.location.href = 'mainpage.html';
+
+    } catch (error) {
+        console.error('There was an error:', error);
+    }
 });

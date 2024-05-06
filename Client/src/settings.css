@@ -13,18 +13,48 @@ body {
     padding: 20px;
 }
 
-h1 {
-    text-align: center;
+/* Header banner styling */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    font-size: 2em;
-    color: #333;
+}
+
+header h1 {
+    font-size: 1.8em;
+    margin: 0;
+}
+
+header .navigation {
+    display: flex;
+    gap: 15px;
+}
+
+header .navigation button {
+    padding: 8px 15px;
+    background-color: #0056b3;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+header .navigation button:hover {
+    background-color: #003d80;
 }
 
 /* Layout containers */
 .form-container {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Adjusted to align items at the start */
+    align-items: flex-start;
     gap: 50px;
     margin-top: 20px;
 }
@@ -35,16 +65,16 @@ h1 {
     justify-content: flex-start;
     align-items: center;
     gap: 20px;
-    flex: 1; /* Ensure it takes available space */
+    flex: 1;
 }
 
 /* Form styling */
 form {
-    flex: 1; /* Ensures form takes up half of the space */
+    flex: 1;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 25px;
 }
 
 form label {
@@ -68,7 +98,7 @@ form input[type="password"] {
 }
 
 form button {
-    background-color: #007bff;
+    background-color: #28a745;
     color: #fff;
     border: none;
     cursor: pointer;
@@ -76,7 +106,7 @@ form button {
 }
 
 form button:hover {
-    background-color: #0056b3;
+    background-color: #218838;
 }
 
 /* User info container */
@@ -86,7 +116,7 @@ form button:hover {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 25px;
 }
 
 .user-info h2 {
@@ -117,12 +147,12 @@ form button:hover {
 /* Responsive adjustments for various resolutions */
 @media screen and (min-width: 1920px) {
     form input[type="password"], form input[type="text"], form input[type="email"] {
-        font-size: 1.1em; /* Scaled for better readability on larger screens */
+        font-size: 1.1em;
     }
 }
 
 @media screen and (max-width: 1280px) {
     form input[type="password"], form input[type="text"], form input[type="email"] {
-        font-size: 0.9em; /* Adjust for better usability on smaller screens */
+        font-size: 0.9em;
     }
 }

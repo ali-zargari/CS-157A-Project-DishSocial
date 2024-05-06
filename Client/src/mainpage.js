@@ -33,7 +33,16 @@ document.getElementById('logoutButton').addEventListener('click', async function
 
 document.getElementById('profileButton').addEventListener('click', function (event) {
     event.preventDefault();
-    window.location.href = 'settings.html';
+
+    const userID = getUserIdFromCookie();
+
+    // If userID is found, pass it as a query parameter to the settings page
+    if (userID !== null) {
+        window.location.href = `settings.html?userID=${encodeURIComponent(userID)}`;
+    } else {
+        // Handle the scenario where no userID is present
+        window.location.href = 'settings.html';
+    }
 });
 
 
@@ -133,22 +142,22 @@ async function loadAllUsers() {
                     if (isFollowed) {
                         const success = await unfollowUser(currentUser, user.UserID);
                         if (success) {
-                            console.log(`Unfollowed user: ${user.FirstName} ${user.LastName}`);
+                            // console.log(`Unfollowed user: ${user.FirstName} ${user.LastName}`);
                             await loadAllUsers(); // Reload the user list after unfollowing
                             await loadWall();
                         } else {
-                            console.log(`Failed to unfollow user: ${user.FirstName} ${user.LastName}`);
+                            // console.log(`Failed to unfollow user: ${user.FirstName} ${user.LastName}`);
                             followButton.textContent = 'Error';
                             followButton.style.backgroundColor = 'gray';
                         }
                     } else {
                         const success = await followUser(currentUser, user.UserID);
                         if (success) {
-                            console.log(`Followed user: ${user.FirstName} ${user.LastName}`);
+                            // console.log(`Followed user: ${user.FirstName} ${user.LastName}`);
                             await loadAllUsers(); // Reload the user list after following
                             await loadWall();
                         } else {
-                            console.log(`Failed to follow user: ${user.FirstName} ${user.LastName}`);
+                            // console.log(`Failed to follow user: ${user.FirstName} ${user.LastName}`);
                             followButton.textContent = 'Error';
                             followButton.style.backgroundColor = 'gray';
                         }
@@ -246,12 +255,12 @@ async function loadFriends() {
                 try {
                     const success = await unfollowUser(getUserIdFromCookie(), friend.UserID); // Replace with your actual delete function
                     if (success) {
-                        console.log(`Successfully deleted friend: ${friend.FirstName} ${friend.LastName}`);
+                        // console.log(`Successfully deleted friend: ${friend.FirstName} ${friend.LastName}`);
                         await loadFriends(); // Reload the friends list after deletion
                         await loadWall();
                         await loadAllUsers();
                     } else {
-                        console.log(`Failed to delete friend: ${friend.FirstName} ${friend.LastName}`);
+                        // console.log(`Failed to delete friend: ${friend.FirstName} ${friend.LastName}`);
                         deleteButton.textContent = 'Error';
                         deleteButton.style.backgroundColor = 'gray';
                     }
@@ -261,7 +270,7 @@ async function loadFriends() {
                     deleteButton.style.backgroundColor = 'gray';
                 }
 
-                console.log(`Deleting friend: ${friend.FirstName} ${friend.LastName}`);
+                // console.log(`Deleting friend: ${friend.FirstName} ${friend.LastName}`);
             });
             buttonContainer.appendChild(deleteButton);
 
@@ -351,8 +360,8 @@ async function loadRecipeInfo(recipeId) {
 
         // Create and append 'Like' button
         let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
-        console.log("this is the like boolean");
-        console.log(isLiked);
+        // console.log("this is the like boolean");
+        // console.log(isLiked);
         const likeButton = document.createElement('button');
         likeButton.textContent = isLiked ? "Unlike" : "Like";
         likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
@@ -408,7 +417,7 @@ async function removeFromCustomList(recipeId) {
         const response = await axios.delete('https://ai-council-419503.wl.r.appspot.com/removeFromCustomList', { data: { userId, recipeId } });
 
         if (response.status === 200) {
-            console.log('Recipe removed from custom list:');
+            // console.log('Recipe removed from custom list:');
         } else {
             throw new Error('Remove operation failed');
         }
@@ -642,7 +651,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
     const reviewRating = document.getElementById('reviewRating').value;
     const userID = getUserIdFromCookie(); // This function retrieves the current user's ID from a cookie
 
-    console.log("Selected: ", reviewText)
+    // console.log("Selected: ", reviewText)
 
     if (!selectedRecipeId) {
         console.error('No recipe selected.');
@@ -748,8 +757,8 @@ async function showFriends() {
         const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users/friends', {
             params: { uid }
         });
-        console.log("All friends: ");
-        console.log(response.data); // Log the response from the server
+        // console.log("All friends: ");
+        // console.log(response.data); // Log the response from the server
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios showFriends operation:', error);
@@ -792,8 +801,8 @@ async function checkIfRecipeIsLiked(recipeId) {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/liked`, {
             params: { userId, recipeId }
         });
-        console.log("this point is reached");
-        console.log(response.status);
+        // console.log("this point is reached");
+        // console.log(response.status);
         return response.status === 200;  // Assumes 200 means it's liked, adjust based on your API
     } catch (error) {
         console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);
@@ -810,9 +819,7 @@ async function likeRecipe(recipeId) {
         userId = parseInt(userId, 10);
         recipeId = parseInt(recipeId, 10);
 
-        console.log(
-            `Liking recipe with ID ${recipeId} for user with ID ${userId}`
-        )
+        // console.log(`Liking recipe with ID ${recipeId} for user with ID ${userId}`)
 
         // Check if either conversion results in NaN, indicating invalid input
         if (isNaN(userId) || isNaN(recipeId)) {
@@ -852,9 +859,7 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
         userId = parseInt(userId, 10);
         friendId = parseInt(friendId, 10);
 
-        console.log(
-            `Checking if user with ID ${userId} is friends with user with ID ${friendId}`
-        );
+        // console.log(`Checking if user with ID ${userId} is friends with user with ID ${friendId}`);
 
         if (isNaN(userId) || isNaN(friendId)) {
             console.error('User ID or Friend ID is not a valid number');
@@ -868,7 +873,7 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
         return response.data.followed;
     } catch (error) {
         if (error.response && error.response.status === 404 && retries > 0) {
-            console.log(`Retrying checkIfFriend request in ${delay}ms...`);
+            // console.log(`Retrying checkIfFriend request in ${delay}ms...`);
             await new Promise(resolve => setTimeout(resolve, delay));
             return checkIfFriend(userId, friendId, retries - 1, delay);
         } else {

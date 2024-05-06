@@ -2,7 +2,6 @@ import './user.css'
 import {getAllRecipesUploadedByUser, getAllReviewsByUser, getUserInfoById} from "./controller";
 import { getFollowers, getFollowing } from "./controller";  // Adjust the path as necessary
 
-const fID = getUserIDFromQuery();
 
 function getUserIDFromQuery() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -29,7 +28,7 @@ async function displayUserContent(userId) {
         document.getElementById('profileName').textContent = 'User Profile';
     }
 
-        // Render user info
+    // Render user info
     if (userInfo) {
 
 
@@ -130,8 +129,16 @@ document.addEventListener('DOMContentLoaded', function() {
         logoutButton.addEventListener('click', function() {
             // Implement log out functionality
             console.log('Logging out...');
-            // Optionally redirect to login page or do other clean up
-            // window.location.href = 'login.html';
+            try {
+
+                document.cookie = "userID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+                window.location.href = 'index.html';
+                return true;
+
+            } catch (error) {
+                console.error('There was an error trying to log out:', error);
+                return false;
+            }
         });
     }
 });
