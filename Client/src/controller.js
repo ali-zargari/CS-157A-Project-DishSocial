@@ -3,7 +3,7 @@ import axios from 'axios';
 export async function getUserById(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}`);
-        console.log(response.data); // You can also manipulate or directly return this data
+        // console.log(response.data); // You can also manipulate or directly return this data
         return response.data; // Returning the data for further use
     } catch (error) {
         console.error('There was a problem fetching the user data:', error);
@@ -13,7 +13,7 @@ export async function getUserById(userId) {
 export async function app(useridToDelete) {
     try {
         const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/users/${useridToDelete}`);
-        console.log(response.data); // Log the response from the server
+        // console.log(response.data); // Log the response from the server
 
     } catch (error) {
         console.error('There was a problem trying to delete a user', error);
@@ -23,7 +23,7 @@ export async function app(useridToDelete) {
 export async function deleteRecipe(recipeID) {
     try {
         const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/recipe/${recipeID}`);
-        console.log(response.data); // Log the response from the server
+        // console.log(response.data); // Log the response from the server
 
     } catch (error) {
         console.error('There was a problem trying to delete a recipe', error);
@@ -33,8 +33,8 @@ export async function deleteRecipe(recipeID) {
 export async function showAllUser() {
     try {
         const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users');
-        console.log("All users: ");
-        console.log(response.data); // Log the response from the server
+        // console.log("All users: ");
+        // console.log(response.data); // Log the response from the server
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation:', error);
@@ -58,11 +58,11 @@ export async function loginUser(email, password) {
 
         // Process the server response to determine login status
         if (response.data.status === 'Logged in') {
-            console.log('Login was successful');
+            // console.log('Login was successful');
             document.cookie = `userID=${response.data.userID}; path=/`; // Update or set the userID in a cookie
             return response.data.userID;
         } else {
-            console.log('Login failed');
+            // console.log('Login failed');
             return null;
         }
     } catch (error) {
@@ -77,6 +77,7 @@ export async function logoutUser(email, password) {
 
         document.cookie = "userID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
 
+        return true;
     } catch (error) {
         console.error('There was an error trying to log out:', error);
         return false;
@@ -93,7 +94,7 @@ export async function addUser(FirstName, LastName, Gender, Email, Birthplace, Da
         if (response.data.status === 'success') {
             return true;
         } else {
-            console.log('Registration failed');
+            // console.log('Registration failed');
             return false;
         }
     } catch (error) {
@@ -110,7 +111,7 @@ export async function updateUserById(userId, userData) {
 
         // Check if the request was successful
         if(response.status === 200){
-            console.log(`User with ID ${userId} successfully updated.`);
+            // console.log(`User with ID ${userId} successfully updated.`);
             return response.data;
         } else {
             console.error(`Error occurred: Status code ${response.status}`);
@@ -193,7 +194,7 @@ export async function getAllRecipes() {
 export async function getRecipesByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/userRecipes/${userId}`);
-        console.log(response.data); // Log the response; This is an array of recipe IDs
+        // console.log(response.data); // Log the response; This is an array of recipe IDs
         return response.data; // Returning the array of RecipeIDs for further use
     } catch (error) {
         console.error('There was a problem fetching the user upload data:', error);
@@ -204,7 +205,7 @@ export async function getRecipesByUser(userId) {
 export async function getAllReviewsByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/reviews`);
-        console.log("All reviews by user:", response.data);
+        // console.log("All reviews by user:", response.data);
         return response.data; // Return the data for further use
     } catch (error) {
         console.error('Failed to fetch reviews by user:', error);
@@ -215,7 +216,7 @@ export async function getAllReviewsByUser(userId) {
 export async function getAllRecipesUploadedByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/recipes`);
-        console.log("All recipes uploaded by user:", response.data);
+        // console.log("All recipes uploaded by user:", response.data);
         return response.data; // Return the data for further use
     } catch (error) {
         console.error('Failed to fetch recipes uploaded by user:', error);
@@ -257,17 +258,17 @@ export async function getFollowing(userId) {
 }
 
 export async function followUser(userId, followedUserId) {
-    console.log(userId,' ', followedUserId);
+    // console.log(userId,' ', followedUserId);
     try {
         const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/users/follow', {
             userId,
             followedUserId
         });
         if (response.status === 201) {
-            console.log('Successfully followed user.');
+            // console.log('Successfully followed user.');
             return true;
         } else {
-            console.log('Failed to follow user.');
+            // console.log('Failed to follow user.');
             return false;
         }
     } catch (error) {
@@ -282,9 +283,9 @@ export async function unfollowUser(userId, friendId) {
         userId = parseInt(userId, 10);
         friendId = parseInt(friendId, 10);
 
-        console.log(
-            `User with ID ${userId} is unfollowing user with ID ${friendId}`
-        );
+        // console.log(
+        //    `User with ID ${userId} is unfollowing user with ID ${friendId}`
+        //);
 
         // Check if either conversion results in NaN, indicating invalid input
         if (isNaN(userId) || isNaN(friendId)) {
@@ -307,7 +308,7 @@ export async function unfollowUser(userId, friendId) {
 export async function getReviewsByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/userReviews/${userId}`);
-        console.log(response.data); // Log the response; This is an array of review IDs
+        // console.log(response.data); // Log the response; This is an array of review IDs
         return response.data; // Returning the array of ReviewIDs for further use
     } catch (error) {
         console.error('There was a problem fetching the user reviewIds:', error);
