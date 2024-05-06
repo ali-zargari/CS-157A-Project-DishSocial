@@ -76,6 +76,7 @@ export async function logoutUser(email, password) {
     try {
 
         document.cookie = "userID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        return true;
 
     } catch (error) {
         console.error('There was an error trying to log out:', error);
