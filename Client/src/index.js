@@ -19,7 +19,11 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
     const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = user;
 
     if(await addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password)) {
+        alert("You are registered successfully.");
         console.log('User Added Successfully');
+        if (await loginUser(Email, Password)) {
+            window.location.href = 'mainpage.html';
+        }
     } else {
         console.log('User NOT ADDED.');
         // Create an error message element if the user already exists
