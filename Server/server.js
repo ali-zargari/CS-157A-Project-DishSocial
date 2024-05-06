@@ -181,7 +181,7 @@ app.post('/recipe', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         await connection.execute(
-            'INSERT INTO Recipe(Title, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?, ?, ?)',
+            'INSERT INTO Recipe(Title, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?)',
             [Title, Steps, TotalCalories, Ingredients]
         );
         connection.release();

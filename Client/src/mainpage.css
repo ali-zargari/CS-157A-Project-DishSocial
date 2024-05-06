@@ -483,6 +483,7 @@ h2 {
 
 #social{
     min-width: 200px;
+    max-height: 600px;
 }
 
 .friends{
@@ -568,6 +569,14 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 5px;
+}
+
+.All-list {
+    max-height: 70vh; /* Adjust to the desired proportion (e.g., 70% of the viewport height) */
+    overflow-y: auto; /* Ensure vertical scrolling is enabled */
+    border: 1px solid #ccc; /* Optional: Add a border for better visual distinction */
+    padding: 10px; /* Optional: Add padding for spacing */
+    margin: 20px 0; /* Optional: Margin around the container */
 }
 
 
