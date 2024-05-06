@@ -3,12 +3,10 @@ import {
     getUserIdFromCookie,
     logoutUser,
     showAllUser,
-    showFriends,
     getAllRecipes,
     getSelectedRecipeInfo,
     getUserFriendReviews,
     getUserNameById,
-    userUploadRecipe,
     getRecipesByUser,
     deleteRecipe,
     getReviewsByUser,
@@ -397,7 +395,7 @@ async function loadRecipeInfo(recipeId) {
 async function sendRecipeToCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        await axios.post('http://localhost:3002/addToCustomList', { userId, recipeId });
+        await axios.post('https://ai-council-419503.wl.r.appspot.com/addToCustomList', { userId, recipeId });
     }
     catch (error) {
         console.error('Failed to add recipe to a custom list:', error);
@@ -407,7 +405,7 @@ async function sendRecipeToCustomList(recipeId) {
 async function removeFromCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete('http://localhost:3002/removeFromCustomList', { data: { userId, recipeId } });
+        const response = await axios.delete('https://ai-council-419503.wl.r.appspot.com/removeFromCustomList', { data: { userId, recipeId } });
 
         if (response.status === 200) {
             console.log('Recipe removed from custom list:');
@@ -420,9 +418,19 @@ async function removeFromCustomList(recipeId) {
     }
 }
 
+async function userUploadRecipe(recipeData) {
+    try {
+        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipe/userUploadRecipe', recipeData, { withCredentials : true });
+        return response.data; // You might want to return the created recipe object
+    } catch (error) {
+        console.error('There was a problem with your axios operation: user upload recipe', error);
+        return null;
+    }
+}
+
 async function checkRecipeInList(recipeId) {
     try {
-        const response = await axios.get(`http://localhost:3002/isInCustomList`, {
+        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/isInCustomList`, {
             params: {
                 userId: getUserIdFromCookie(),
                 recipeId: recipeId
@@ -444,7 +452,7 @@ async function fetchAndDisplayReviews(recipeId) {
     try {
         const currentUserId = getUserIdFromCookie();
         const reviewedByUser = await getReviewsByUser(currentUserId);
-        const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
+        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/reviews/${recipeId}`);
         const reviews = response.data;
 
         const reviewsList = document.querySelector('.reviews-list');
@@ -570,7 +578,7 @@ async function performAdvancedRecipeSearch() {
     const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
 
     try {
-        const response = await axios.get(`http://localhost:3002/recipes/search`, {
+        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/search`, {
             params: {
                 searchTerm,
                 filter,
@@ -660,7 +668,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         };
 
         // POST the review data to the server
-        const response = await axios.post('http://localhost:3002/review/addReview', postData);
+        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/review/addReview', postData);
 
         if (response.status === 201) {
             // Append the new review to the list on the page
@@ -733,6 +741,19 @@ async function uploadRecipe(event) {
     }
 }
 
+
+async function showFriends() {
+    try {
+        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users/friends', {withCredentials : true});
+        console.log("All friends: ");
+        console.log(response.data); // Log the response from the server
+        return response.data;
+    } catch (error) {
+        console.error('There was a problem with your axios showFriends operation:', error);
+    }
+}
+
+
 // Attach the event listener to the form
 document.getElementById('uploadRecipeForm').addEventListener('submit', uploadRecipe);
 
@@ -765,7 +786,7 @@ function addRecipeToDom(recipe) {
 async function checkIfRecipeIsLiked(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.get(`http://localhost:3002/recipes/liked`, {
+        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/liked`, {
             params: { userId, recipeId }
         });
         console.log("this point is reached");
@@ -796,7 +817,7 @@ async function likeRecipe(recipeId) {
             return false;
         }
 
-        const response = await axios.post('http://localhost:3002/recipes/like', {
+        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipes/like', {
             userId, recipeId
         });
 
@@ -812,7 +833,7 @@ async function likeRecipe(recipeId) {
 async function unlikeRecipe(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete(`http://localhost:3002/recipes/unlike`, {
+        const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/recipes/unlike`, {
             data: { userId, recipeId }
         });
         return response.status === 200; // Assuming 200 means successful deletion
@@ -837,7 +858,7 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
             return false;
         }
 
-        const response = await axios.get('http://localhost:3002/followed', {
+        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/followed', {
             params: { userId, friendId }
         });
 
