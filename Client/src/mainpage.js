@@ -306,9 +306,6 @@ async function loadRecipeInfo(recipeId) {
         recipeInfoContainer.appendChild(recipeTitle);
 
         // Add more elements for the rest of the recipe information like cook time, prep time, etc.
-        const prepTime = document.createElement('p');
-        prepTime.textContent = `Prep Time: ${recipeInfo.PrepTime}`;
-        recipeInfoContainer.appendChild(prepTime);
 
         const steps = document.createElement('p');
         steps.textContent = `Steps: ${recipeInfo.Steps}`;
@@ -353,8 +350,11 @@ async function loadRecipeInfo(recipeId) {
         });
 
 
+
         // Create and append 'Like' button
         let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
+        console.log("this is the like boolean");
+        console.log(isLiked);
         const likeButton = document.createElement('button');
         likeButton.textContent = isLiked ? "Unlike" : "Like";
         likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
@@ -768,6 +768,8 @@ async function checkIfRecipeIsLiked(recipeId) {
         const response = await axios.get(`http://localhost:3002/recipes/liked`, {
             params: { userId, recipeId }
         });
+        console.log("this point is reached");
+        console.log(response.status);
         return response.status === 200;  // Assumes 200 means it's liked, adjust based on your API
     } catch (error) {
         console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);

@@ -803,11 +803,14 @@ app.get('/recipes/liked', async (req, res) => {
             SELECT 1 FROM User_Likes_Recipe WHERE UserID = ? AND RecipeID = ?
         `, [userId, recipeId]);
         connection.release();
-
+        console.log('result length: ');
+        console.log(result.length);
         if (result.length > 0) {
-            res.status(200).json({ liked: true });
+            console.log("this line should not be here");
+            res.sendStatus(200);
         } else {
-            res.status(404).json({ liked: false });
+            console.log("else statement here");
+            res.sendStatus(201);
         }
     } catch (error) {
         console.error("Failed to check if recipe is liked:", error);
@@ -908,10 +911,10 @@ app.post('/users/follow', async (req, res) => {
             // If the follow relationship already exists, return a message indicating it
             res.status(400).json({ message: "Already following this user." });
         } else {
+            console.log("this is trying to follow " + userId + " and " + followedUserId);
             // If the follow relationship does not exist, create it
-            await connection.execute(`
-                INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)
-            `, [userId, followedUserId]);
+            await connection.execute(`INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)`,
+                [userId, followedUserId]);
 
             // Return a success message
             res.status(201).json({ message: "Successfully followed user." });
@@ -942,5 +945,21 @@ app.delete('/unfollow', async (req, res) => {
     }
 });
 
+app.get('/userReviews/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const userReviewsQuery = `SELECT ReviewID FROM User_Leaves_Review WHERE UserID = ?`;
+    let result;
+    try {
+        const connection = await pool.getConnection();
+        [result] = await connection.execute(userReviewsQuery, [userId]);
+        connection.release();
+    } catch (error) {
+        console.error("SQL query SELECT ReviewID FROM User_Leaves_Review WHERE UserID = ? execution failed:", error);
+        res.sendStatus(500);
+        return;
+    }
+    const reviewIds = result.map((row) => row.ReviewID);
+    res.send(reviewIds);
+});
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
