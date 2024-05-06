@@ -12,7 +12,8 @@ import {
     getReviewsByUser,
     deleteReview,
     followUser,
-    unfollowUser
+    unfollowUser,
+    getRecipeAuthor
 } from './controller';
 import axios from "axios";
 
@@ -299,6 +300,8 @@ async function loadRecipeInfo(recipeId) {
         const recipeInfoContainer = document.querySelector('.recipe-description');
         const reviewFormSection = document.querySelector('.review-form-section');
 
+        const recipeAuthor = await getRecipeAuthor(recipeId);
+
         // Clear out any existing content in the recipe info container
         recipeInfoContainer.innerHTML = '';
 
@@ -325,6 +328,15 @@ async function loadRecipeInfo(recipeId) {
         const ingredients = document.createElement('p');
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
+
+        const author = document.createElement('p');
+        if(recipeAuthor === 0 ){
+            author.textContent = 'Author: DishSocial';
+        }else{
+            const authorName = await getUserNameById(recipeAuthor.UserID);
+            author.textContent = `Author: ${authorName}`;
+        }
+        recipeInfoContainer.appendChild(author);
 
         // Create and append 'Add to Custom List' button
         let isInList = await checkRecipeInList(recipeId);
