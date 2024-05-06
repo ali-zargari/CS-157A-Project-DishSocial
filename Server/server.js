@@ -10,17 +10,14 @@ const app = express();
 const port = process.env.PORT || 3002;
 
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
 
-app.use(cors({
-    origin: 'http://localhost:8080',
-    credentials: true
-}));
+app.use(cors());
 
 app.use(cookieParser());
 app.use(bodyParser.json()) // parse JSON payloads
@@ -78,11 +75,14 @@ app.get('/users', async (req, res) => {
     // console.log('This is the second callback');
 });
 
-//get list of friends user has
+
+// Get list of friends using `uid` from the query parameters
 app.get('/users/friends', async (req, res) => {
+    // Retrieve the User ID (uid) from the query parameters
+    const userID = req.query.uid;
+
     try {
         const connection = await pool.getConnection();
-        const userID = req.cookies.userID;
 
         // Query to get the friend IDs from the Follows table
         const [friendResult] = await connection.execute(
@@ -98,13 +98,12 @@ app.get('/users/friends', async (req, res) => {
             // Query to get details of friends
             const friendIdsPlaceHolders = friendIds.map(() => '?').join(',');
 
-            // Including UserID in the SELECT clause
             const [rows] = await connection.execute(
                 `SELECT UserID, FirstName, LastName FROM Users WHERE UserID IN (${friendIdsPlaceHolders})`,
                 friendIds
             );
 
-            // Returning the user details
+            // Return the user details
             res.send(rows);
         } else {
             res.send([]); // No friends found
@@ -197,7 +196,7 @@ app.post('/recipe', async (req, res) => {
 
 // add recipe by user upload
 app.post('/recipe/userUploadRecipe', async (req, res) => {
-    const { Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients } = req.body;
+    const { Title, Steps, TotalCalories, Ingredients, uid } = req.body;
     try {
         const connection = await pool.getConnection();
         // Insert the new recipe and get the insertId
@@ -211,7 +210,7 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
         // Insert into User_Uploads_Recipe table
         await connection.execute(
             'INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (?, ?, ?)',
-            [req.cookies.userID, newRecipeId, currentDate]
+            [uid, newRecipeId, currentDate]
         );
 
         // Retrieve the full information of the newly added recipe
@@ -315,6 +314,7 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
 
 
 // log in user.
+// log in user.
 app.post('/login', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -342,10 +342,10 @@ app.post('/login', async (req, res) => {
     }
 });
 
+
 //logs out the user
 app.post('/logout', async (req, res) => {
     try {
-        // console.log(req.cookies);
         res.clearCookie('userID');
         res.send({status: "Logged out"});
 
