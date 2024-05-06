@@ -45,12 +45,21 @@ export async function showAllUser() {
 
 
 export async function loginUser(email, password) {
-    try {
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/login', { email, password }, { withCredentials: true });
+    // Retrieve the User ID from the cookie
+    const uid = getUserIdFromCookie();
 
+    try {
+        // Pass the UID in the request payload along with email and password
+        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/login', {
+            email,
+            password,
+            uid // Include the UID here
+        });
+
+        // Process the server response to determine login status
         if (response.data.status === 'Logged in') {
             console.log('Login was successful');
-            document.cookie = `userID=${response.data.userID}; path=/`; // Save the userID in a cookie
+            document.cookie = `userID=${response.data.userID}; path=/`; // Update or set the userID in a cookie
             return response.data.userID;
         } else {
             console.log('Login failed');
@@ -62,25 +71,18 @@ export async function loginUser(email, password) {
     }
 }
 
+
 export async function logoutUser(email, password) {
     try {
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/logout', {}, {
-            withCredentials: true  // This ensures cookies are included in the request
-        });
 
-        if (response.data.status === 'Logged out') {
-            console.log('You are logged out');
-            document.cookie = "userID= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
-            return true;
-        } else {
-            console.log('Logged out failed');
-            return false;
-        }
+        document.cookie = "userID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
     } catch (error) {
         console.error('There was an error trying to log out:', error);
         return false;
     }
 }
+
 
 export async function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
     try {

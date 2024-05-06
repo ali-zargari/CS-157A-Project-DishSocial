@@ -721,9 +721,18 @@ async function uploadRecipe(event) {
 
 
 async function userUploadRecipe(recipeData) {
+    // Retrieve the User ID from the cookie
+    const uid = getUserIdFromCookie();
+
+    // Add the User ID to the recipe data
+    const fullRecipeData = { ...recipeData, uid };
+
     try {
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipe/userUploadRecipe', recipeData, { withCredentials : true });
-        return response.data; // You might want to return the created recipe object
+        // Send the POST request with the user ID included in the data
+        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipe/userUploadRecipe', fullRecipeData);
+
+        // Return the created recipe object (or any other relevant response data)
+        return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation: user upload recipe', error);
         return null;
@@ -731,9 +740,14 @@ async function userUploadRecipe(recipeData) {
 }
 
 
+
 async function showFriends() {
+    const uid = getUserIdFromCookie();
+
     try {
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users/friends', {withCredentials : true});
+        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users/friends', {
+            params: { uid }
+        });
         console.log("All friends: ");
         console.log(response.data); // Log the response from the server
         return response.data;
