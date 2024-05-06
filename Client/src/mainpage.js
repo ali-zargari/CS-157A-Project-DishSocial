@@ -101,27 +101,29 @@ async function loadRecipes() {
 }
 
 
+let friendsSet = new Set();
+
+// Fetch all users and the initial friends list
 async function loadAllUsers() {
     try {
-        let searchTerm = document.getElementById('all-users-search').value.trim().toLowerCase(); // Get search term
+        let searchTerm = document.getElementById('all-users-search').value.trim().toLowerCase();
         searchTerm = sanitizeSearchTerm(searchTerm);
 
-
-        const users = await showAllUser();
+        // Fetch users and friends list
+        const [users, friends] = await Promise.all([showAllUser(), showFriends()]);
         const usersListContainer = document.querySelector('.All-list');
         const currentUser = getUserIdFromCookie();
         usersListContainer.innerHTML = '';
 
-        for (const user of users) {
-            if (user.UserID == currentUser) {
-                continue; // Skip the current user
-            }
+        // Initialize friends set for quick lookup
+        friendsSet = new Set(friends.map(friend => friend.UserID));
 
-            // Filter by the search term
+        // Create user elements with initial states
+        for (const user of users) {
+            if (user.UserID === currentUser) continue;
+
             const userName = `${user.FirstName} ${user.LastName}`.toLowerCase();
-            if (searchTerm && !userName.includes(searchTerm)) {
-                continue; // Skip if search term does not match
-            }
+            if (searchTerm && !userName.includes(searchTerm)) continue;
 
             const userElement = document.createElement('div');
             userElement.className = 'user';
@@ -135,55 +137,53 @@ async function loadAllUsers() {
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
-            let isFollowed = await checkIfFriend(currentUser, user.UserID);
+            const followButton = createButton(
+                friendsSet.has(user.UserID) ? 'Unfollow' : 'Follow',
+                friendsSet.has(user.UserID) ? 'red' : 'green'
+            );
 
-            const followButton = createButton(isFollowed ? 'Unfollow' : 'Follow', isFollowed ? 'red' : 'green');
             followButton.addEventListener('click', async () => {
+                const isCurrentlyFollowed = friendsSet.has(user.UserID);
+
                 try {
-                    if (isFollowed) {
+                    if (isCurrentlyFollowed) {
+                        // Unfollow logic
                         const success = await unfollowUser(currentUser, user.UserID);
                         if (success) {
-                            await loadAllUsers(); // Reload the user list after unfollowing
-                            await loadWall();
-                        } else {
-                            followButton.textContent = 'Error';
-                            followButton.style.backgroundColor = 'gray';
+                            followButton.textContent = 'Follow';
+                            followButton.style.backgroundColor = 'green';
+
                         }
                     } else {
+                        // Follow logic
                         const success = await followUser(currentUser, user.UserID);
                         if (success) {
-                            await loadAllUsers(); // Reload the user list after following
-                            await loadWall();
-                        } else {
-                            followButton.textContent = 'Error';
-                            followButton.style.backgroundColor = 'gray';
+
+                            followButton.textContent = 'Unfollow';
+                            followButton.style.backgroundColor = 'red';
+                            friendsSet.add(user.UserID); // Update friends set
+                            // Move the user to the top of the list
+                            moveUserToTop(userElement, usersListContainer);
+
                         }
                     }
-                    await loadFriends(); // Reload the friends list after deletion
-                    await loadWall();
+                    await loadWall(); // Optionally refresh the wall
+                    await loadFriends(); // Refresh the friends list
 
                 } catch (error) {
                     console.error(`Error updating follow status: ${error.message}`);
-                    if (error.response && error.response.status === 400) {
-                        followButton.textContent = 'Already ' + (isFollowed ? 'Following' : 'Unfollowed');
-                        followButton.style.backgroundColor = 'gray';
-                    } else {
-                        followButton.textContent = 'Error';
-                        followButton.style.backgroundColor = 'gray';
-                    }
+                    followButton.textContent = 'Error';
+                    followButton.style.backgroundColor = 'gray';
                 }
             });
 
             const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
-                // On click, navigate to user.html
                 window.location.href = `user.html?userID=${user.UserID}`;
             });
 
             buttonContainer.appendChild(followButton);
             buttonContainer.appendChild(profileButton);
-
-
             userElement.appendChild(buttonContainer);
             usersListContainer.appendChild(userElement);
         }
@@ -191,6 +191,15 @@ async function loadAllUsers() {
         console.error('Failed to load all users:', error);
     }
 }
+
+function moveUserToTop(userElement, container) {
+    // Remove the user element and re-insert it at the top
+    container.removeChild(userElement);
+    container.insertBefore(userElement, container.firstChild);
+}
+
+
+
 
 function createButton(text, backgroundColor) {
     const button = document.createElement('button');
