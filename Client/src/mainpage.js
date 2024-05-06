@@ -118,7 +118,6 @@ async function loadAllUsers() {
         // Initialize friends set for quick lookup
         friendsSet = new Set(friends.map(friend => friend.UserID));
 
-        // Create user elements with initial states
         for (const user of users) {
             if (user.UserID === currentUser) continue;
 
@@ -137,34 +136,32 @@ async function loadAllUsers() {
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
+            // Determine if the user is already followed
+            const isCurrentlyFollowed = friendsSet.has(user.UserID);
             const followButton = createButton(
-                friendsSet.has(user.UserID) ? 'Unfollow' : 'Follow',
-                friendsSet.has(user.UserID) ? 'red' : 'green'
+                isCurrentlyFollowed ? 'Unfollow' : 'Follow',
+                isCurrentlyFollowed ? 'red' : 'green'
             );
 
             followButton.addEventListener('click', async () => {
-                const isCurrentlyFollowed = friendsSet.has(user.UserID);
+                const isFollowed = friendsSet.has(user.UserID);
 
                 try {
-                    if (isCurrentlyFollowed) {
+                    if (isFollowed) {
                         // Unfollow logic
                         const success = await unfollowUser(currentUser, user.UserID);
                         if (success) {
                             followButton.textContent = 'Follow';
                             followButton.style.backgroundColor = 'green';
-
+                            friendsSet.delete(user.UserID); // Remove from the friends set
                         }
                     } else {
                         // Follow logic
                         const success = await followUser(currentUser, user.UserID);
                         if (success) {
-
                             followButton.textContent = 'Unfollow';
                             followButton.style.backgroundColor = 'red';
-                            friendsSet.add(user.UserID); // Update friends set
-                            // Move the user to the top of the list
-                            moveUserToTop(userElement, usersListContainer);
-
+                            friendsSet.add(user.UserID); // Add to the friends set
                         }
                     }
                     await loadWall(); // Optionally refresh the wall
@@ -190,12 +187,6 @@ async function loadAllUsers() {
     } catch (error) {
         console.error('Failed to load all users:', error);
     }
-}
-
-function moveUserToTop(userElement, container) {
-    // Remove the user element and re-insert it at the top
-    container.removeChild(userElement);
-    container.insertBefore(userElement, container.firstChild);
 }
 
 
