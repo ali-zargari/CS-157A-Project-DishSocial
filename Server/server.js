@@ -52,7 +52,6 @@ app.get('/test', async (req, res) => { // You can now use async function
 
         res.send(rows);
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -68,11 +67,8 @@ app.get('/users', async (req, res) => {
 
         res.send(rows);
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
-}, (req, res) => {
-    // console.log('This is the second callback');
 });
 
 
@@ -122,7 +118,6 @@ app.get('/users/friends', async (req, res) => {
 app.delete('/users/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
-        // console.log(userId);//debug statement
         const connection = await pool.getConnection();
         await connection.execute(
             'DELETE FROM Users WHERE UserID = ?',
@@ -132,7 +127,6 @@ app.delete('/users/:userId', async (req, res) => {
 
         res.send(`User with ID ${userId} has been deleted`);
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -169,7 +163,6 @@ app.delete('/recipe/:recipeID', async (req, res) => {
 
         res.send(`Recipe with ID ${recipeId} has been deleted`);
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -184,8 +177,6 @@ app.post('/recipe', async (req, res) => {
             [Title, Steps, TotalCalories, Ingredients]
         );
         connection.release();
-
-        // console.log(`Recipe ${Title} has been added`);
 
         res.send(`Recipe ${Title} has been added`);
     } catch (error) {
@@ -246,7 +237,6 @@ app.get('/recipe', async (req, res) => {
 
         res.send(rows);
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -303,8 +293,6 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
         const [rows] = await connection.execute(sqlQuery, [userID]);
 
         connection.release();
-        // console.log("Reviews:");
-        // console.log(rows);
         res.send(rows);
     } catch (error) {
         console.error(`Failed to get user friend reviews: ${error}`);
@@ -337,7 +325,6 @@ app.post('/login', async (req, res) => {
 
         connection.release();
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -414,7 +401,6 @@ app.delete('/review/:reviewID', async (req, res) => {
 
         res.send(`ReviewID with ID ${reviewID} has been deleted`);
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -488,7 +474,6 @@ app.get('/recipes', async (req, res) => {
 
         res.send(rows);
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -714,7 +699,6 @@ app.put('/users/:userId', async (req, res) => {
 
         res.send({status: "success"});
     } catch (error) {
-        // console.log(error);
         res.status(500).send(error);
     }
 });
@@ -803,13 +787,9 @@ app.get('/recipes/liked ', async (req, res) => {
             SELECT 1 FROM User_Likes_Recipe WHERE UserID = ? AND RecipeID = ?
         `, [userId, recipeId]);
         connection.release();
-        console.log('result length: ');
-        console.log(result.length);
         if (result.length > 0) {
-            console.log("this line should not be here");
             res.sendStatus(200);
         } else {
-            console.log("else statement here");
             res.sendStatus(201);
         }
     } catch (error) {
@@ -822,8 +802,6 @@ app.get('/recipes/liked ', async (req, res) => {
 // like a recipe
 app.post('/recipes/like', async (req, res) => {
     const { userId, recipeId } = req.body;
-    // console.log('Received userId:', userId);
-    // console.log('Received recipeId:', recipeId);
 
     if (!userId || !recipeId) {
         return res.status(400).send('Missing userID or recipeID');
@@ -908,7 +886,6 @@ app.post('/users/follow', async (req, res) => {
             // If the follow relationship already exists, return a message indicating it
             res.status(400).json({ message: "Already following this user." });
         } else {
-            console.log("this is trying to follow " + userId + " and " + followedUserId);
             // If the follow relationship does not exist, create it
             await connection.execute(`INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)`,
                 [userId, followedUserId]);
@@ -957,6 +934,29 @@ app.get('/userReviews/:userId', async (req, res) => {
     }
     const reviewIds = result.map((row) => row.ReviewID);
     res.send(reviewIds);
+});
+
+//get recipe author
+app.get('/getRecipeAuthor/:recipeId', async (req, res) => {
+    try {
+        const recipeID  = req.params.recipeId;
+        const connection = await pool.getConnection();
+        // Use this SQL query to return the recipe details for a given recipeID.
+        const [rows] = await connection.execute(
+            'SELECT UserID FROM User_Uploads_Recipe WHERE RecipeID = ?',
+            [recipeID]
+        );
+
+        connection.release();
+        if(rows.length > 0) {
+            res.send(rows[0]);
+        }else{
+            res.send("0");
+        }
+    } catch (error) {
+        console.error(`Failed to get selected recipe author: ${error}`);
+        res.status(500).send(error);
+    }
 });
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

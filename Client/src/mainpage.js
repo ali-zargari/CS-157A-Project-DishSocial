@@ -12,7 +12,8 @@ import {
     getReviewsByUser,
     deleteReview,
     followUser,
-    unfollowUser
+    unfollowUser,
+    getRecipeAuthor
 } from './controller';
 import axios from "axios";
 
@@ -151,17 +152,19 @@ async function loadAllUsers() {
                         if (success) {
                             followButton.textContent = 'Follow';
                             followButton.style.backgroundColor = 'green';
-                            friendsSet.delete(user.UserID); // Update friends set
+
                         }
                     } else {
                         // Follow logic
                         const success = await followUser(currentUser, user.UserID);
                         if (success) {
+
                             followButton.textContent = 'Unfollow';
                             followButton.style.backgroundColor = 'red';
                             friendsSet.add(user.UserID); // Update friends set
                             // Move the user to the top of the list
                             moveUserToTop(userElement, usersListContainer);
+
                         }
                     }
                     await loadWall(); // Optionally refresh the wall
@@ -258,12 +261,10 @@ async function loadFriends() {
                 try {
                     const success = await unfollowUser(getUserIdFromCookie(), friend.UserID); // Replace with your actual delete function
                     if (success) {
-                        // console.log(`Successfully deleted friend: ${friend.FirstName} ${friend.LastName}`);
                         await loadFriends(); // Reload the friends list after deletion
                         await loadWall();
                         await loadAllUsers();
                     } else {
-                        // console.log(`Failed to delete friend: ${friend.FirstName} ${friend.LastName}`);
                         deleteButton.textContent = 'Error';
                         deleteButton.style.backgroundColor = 'gray';
                     }
@@ -273,7 +274,6 @@ async function loadFriends() {
                     deleteButton.style.backgroundColor = 'gray';
                 }
 
-                // console.log(`Deleting friend: ${friend.FirstName} ${friend.LastName}`);
             });
             buttonContainer.appendChild(deleteButton);
 
@@ -302,6 +302,8 @@ async function loadRecipeInfo(recipeId) {
         const recipeInfoContainer = document.querySelector('.recipe-description');
         const reviewFormSection = document.querySelector('.review-form-section');
 
+        const recipeAuthor = await getRecipeAuthor(recipeId);
+
         // Clear out any existing content in the recipe info container
         recipeInfoContainer.innerHTML = '';
 
@@ -328,6 +330,15 @@ async function loadRecipeInfo(recipeId) {
         const ingredients = document.createElement('p');
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
+
+        const author = document.createElement('p');
+        if(recipeAuthor === 0 ){
+            author.textContent = 'Author: DishSocial';
+        }else{
+            const authorName = await getUserNameById(recipeAuthor.UserID);
+            author.textContent = `Author: ${authorName}`;
+        }
+        recipeInfoContainer.appendChild(author);
 
         // Create and append 'Add to Custom List' button
         let isInList = await checkRecipeInList(recipeId);
@@ -363,8 +374,6 @@ async function loadRecipeInfo(recipeId) {
 
         // Create and append 'Like' button
         let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
-        // console.log("this is the like boolean");
-        // console.log(isLiked);
         const likeButton = document.createElement('button');
         likeButton.textContent = isLiked ? "Unlike" : "Like";
         likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
@@ -420,7 +429,6 @@ async function removeFromCustomList(recipeId) {
         const response = await axios.delete('https://ai-council-419503.wl.r.appspot.com/removeFromCustomList', { data: { userId, recipeId } });
 
         if (response.status === 200) {
-            // console.log('Recipe removed from custom list:');
         } else {
             throw new Error('Remove operation failed');
         }
@@ -654,8 +662,6 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
     const reviewRating = document.getElementById('reviewRating').value;
     const userID = getUserIdFromCookie(); // This function retrieves the current user's ID from a cookie
 
-    // console.log("Selected: ", reviewText)
-
     if (!selectedRecipeId) {
         console.error('No recipe selected.');
         alert('Please select a recipe before submitting a review.');
@@ -760,8 +766,6 @@ async function showFriends() {
         const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users/friends', {
             params: { uid }
         });
-        // console.log("All friends: ");
-        // console.log(response.data); // Log the response from the server
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios showFriends operation:', error);
@@ -804,8 +808,6 @@ async function checkIfRecipeIsLiked(recipeId) {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/liked`, {
             params: { userId, recipeId }
         });
-        // console.log("this point is reached");
-        // console.log(response.status);
         return response.status === 200;  // Assumes 200 means it's liked, adjust based on your API
     } catch (error) {
         console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);
@@ -822,7 +824,6 @@ async function likeRecipe(recipeId) {
         userId = parseInt(userId, 10);
         recipeId = parseInt(recipeId, 10);
 
-        // console.log(`Liking recipe with ID ${recipeId} for user with ID ${userId}`)
 
         // Check if either conversion results in NaN, indicating invalid input
         if (isNaN(userId) || isNaN(recipeId)) {
@@ -862,8 +863,6 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
         userId = parseInt(userId, 10);
         friendId = parseInt(friendId, 10);
 
-        // console.log(`Checking if user with ID ${userId} is friends with user with ID ${friendId}`);
-
         if (isNaN(userId) || isNaN(friendId)) {
             console.error('User ID or Friend ID is not a valid number');
             return false;
@@ -876,7 +875,6 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
         return response.data.followed;
     } catch (error) {
         if (error.response && error.response.status === 404 && retries > 0) {
-            // console.log(`Retrying checkIfFriend request in ${delay}ms...`);
             await new Promise(resolve => setTimeout(resolve, delay));
             return checkIfFriend(userId, friendId, retries - 1, delay);
         } else {
