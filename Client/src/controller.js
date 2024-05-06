@@ -179,8 +179,6 @@ export async function updateUserById(userId, userData) {
 
 export function getUserIdFromCookie() {
     let cookieArray = document.cookie.split('; ');
-    console.log(cookieArray);
-    console.log(document.cookie);
     for(let i = 0; i < cookieArray.length; i++){
         let cookiePair = cookieArray[i].split('=');
 
@@ -354,12 +352,12 @@ export async function getFollowing(userId) {
 }
 
 export async function followUser(userId, followedUserId) {
+    console.log(userId,' ', followedUserId);
     try {
         const response = await axios.post('http://localhost:3002/users/follow', {
             userId,
             followedUserId
         });
-
         if (response.status === 201) {
             console.log('Successfully followed user.');
             return true;
