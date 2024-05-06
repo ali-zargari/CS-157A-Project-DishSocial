@@ -197,7 +197,7 @@ app.post('/recipe', async (req, res) => {
 
 // add recipe by user upload
 app.post('/recipe/userUploadRecipe', async (req, res) => {
-    const { Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients } = req.body;
+    const { Title, Steps, TotalCalories, Ingredients } = req.body;
     try {
         const connection = await pool.getConnection();
         // Insert the new recipe and get the insertId

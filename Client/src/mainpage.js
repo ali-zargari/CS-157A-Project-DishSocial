@@ -418,15 +418,6 @@ async function removeFromCustomList(recipeId) {
     }
 }
 
-async function userUploadRecipe(recipeData) {
-    try {
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipe/userUploadRecipe', recipeData, { withCredentials : true });
-        return response.data; // You might want to return the created recipe object
-    } catch (error) {
-        console.error('There was a problem with your axios operation: user upload recipe', error);
-        return null;
-    }
-}
 
 async function checkRecipeInList(recipeId) {
     try {
@@ -690,20 +681,6 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
     }
 });
 
-async function addReviewToPage(review) {
-    const reviewsList = document.querySelector('.reviews-list');
-    const reviewItem = document.createElement('div');
-    const author = await getUserNameById(review.UserID);
-    reviewItem.className = 'review-item';
-    reviewItem.innerHTML = `
-        <p class="review-text">"${review.ReviewText}"</p>
-        <div class="review-details">
-            <span class="review-author">- ${author}</span>
-            <span class="review-rating"> ${review.Rating} Stars</span>
-        </div>
-    `;
-    reviewsList.appendChild(reviewItem);
-}
 
 
 // Function to handle the upload form submission
@@ -738,6 +715,18 @@ async function uploadRecipe(event) {
     } else {
         // Handle the error case
         alert('Failed to upload recipe.');
+    }
+}
+
+
+
+async function userUploadRecipe(recipeData) {
+    try {
+        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipe/userUploadRecipe', recipeData, { withCredentials : true });
+        return response.data; // You might want to return the created recipe object
+    } catch (error) {
+        console.error('There was a problem with your axios operation: user upload recipe', error);
+        return null;
     }
 }
 
