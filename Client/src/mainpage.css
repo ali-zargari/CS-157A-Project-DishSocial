@@ -758,8 +758,9 @@ label:hover {
     background-color: #f9f9f9;
     width: 100%; /* Limit width for better readability */
     margin: 0 auto; /* Center the container horizontally */
+    word-wrap: break-word; /* Wrap long words to the next line */
+    overflow-wrap: break-word; /* Alternative to word-wrap for better browser support */
 }
-
 /* Recipe title */
 .recipe-description h3 {
     font-size: 20px;
