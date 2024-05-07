@@ -55,64 +55,121 @@ document.querySelector('.filter-button').addEventListener('click', async functio
 
 async function loadRecipes() {
     try {
-        const currentUserId = getUserIdFromCookie();
-        // Fetch recipes uploaded by the current user and all available recipes
-        const userUploadedRecipes = await getRecipesByUser(currentUserId);
-        const recipes = await getAllRecipes();
-        let highlightedRecipeElement = null;
+        // Make an Axios GET request to fetch all recipes with authors
+        const response = await axios.get('http://localhost:3002/recipes-with-authors');
+        const recipesWithAuthors = response.data;
 
+        // Get the current user's uploaded recipes
+        const currentUserId = getUserIdFromCookie();
+        const userUploadedRecipes = await getRecipesByUser(currentUserId);
+        const uploadedRecipesSet = new Set(userUploadedRecipes);
+
+        // Create a document fragment for efficient DOM updates
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
+        const fragment = document.createDocumentFragment();
 
-        // Loop through each recipe and build the layout
-        recipes.forEach(recipe => {
+        // Process the fetched recipes
+        for (const recipe of recipesWithAuthors) {
+            // Determine if the current user uploaded this recipe
+            const isUploadedByCurrentUser = uploadedRecipesSet.has(recipe.RecipeID);
+
             // Create the main recipe element
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
             recipeElement.style.display = 'flex';
             recipeElement.style.justifyContent = 'space-between';
-            recipeElement.style.alignItems = 'center';
+            recipeElement.style.alignItems = 'flex-start';
             recipeElement.style.padding = '15px';
             recipeElement.style.border = '1px solid #ddd';
             recipeElement.style.borderRadius = '8px';
             recipeElement.style.marginBottom = '10px';
             recipeElement.style.cursor = 'pointer';
 
-            // Create a text container to stack the title and ingredients vertically
-            const textContainer = document.createElement('div');
-            textContainer.className = 'text-container';
-            textContainer.style.display = 'flex';
-            textContainer.style.flexDirection = 'column';
-            textContainer.style.gap = '4px';
+            // Create a container for the primary and extra info with flexbox layout
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'info-container';
+            infoContainer.style.display = 'flex';
+            infoContainer.style.flexDirection = 'row';
+            infoContainer.style.justifyContent = 'space-between';
+            //infoContainer.style.gap = '8px';
+            infoContainer.style.flex = '0 0 75%'; // Take up 75% of the width
 
-            // Add the title
+            // Create a sub-container for the title and ingredients specifically
+            const titleAndIngredientsContainer = document.createElement('div');
+            titleAndIngredientsContainer.className = 'title-ingredients-container';
+            titleAndIngredientsContainer.style.display = 'flex';
+            titleAndIngredientsContainer.style.flexDirection = 'column';
+            titleAndIngredientsContainer.style.gap = '4px';
+
+            // Add the primary recipe details (title and ingredients)
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title;
             recipeTitle.style.margin = '0';
 
-            // Add ingredients if available
             const recipeIngredients = document.createElement('p');
             recipeIngredients.textContent = recipe.Ingredients || '';
             recipeIngredients.style.margin = '0';
 
-            // Append the title and ingredients to the text container
-            textContainer.appendChild(recipeTitle);
-            textContainer.appendChild(recipeIngredients);
+            // Append the title and ingredients to their sub-container
+            titleAndIngredientsContainer.appendChild(recipeTitle);
+            titleAndIngredientsContainer.appendChild(recipeIngredients);
 
-            // Create a button container for the delete button
+            // Create a container specifically for the extra details (author, ratings, reviews)
+            const detailsInfoContainer = document.createElement('div');
+            detailsInfoContainer.className = 'details-info-container';
+            detailsInfoContainer.style.display = 'flex';
+            detailsInfoContainer.style.flexDirection = 'column';
+            detailsInfoContainer.style.gap = '4px';
+
+            // Prepare the author and ratings information
+            const recipeAuthor = `Author: ${recipe.AuthorName || 'Unknown'}`;
+            let avgRatingText = 'N/A';
+            if (recipe.AvgRating > '0' && recipe.AvgRating < '5.01') {
+                avgRatingText = parseFloat(recipe.AvgRating).toFixed(1);
+            }
+
+            const avgRating = `Average Rating: ${avgRatingText}`;
+            const numRatings = `${recipe.NumRatings || 0}`;
+            const numReviews = `${recipe.NumReviews || 0}`;
+
+            // Add these lines to paragraphs
+            const line1Element = document.createElement('p');
+            line1Element.textContent = recipeAuthor;
+            line1Element.style.margin = '0';
+
+            const line2Element = document.createElement('p');
+            line2Element.textContent = avgRating;
+            line2Element.style.margin = '0';
+
+            const line3Element = document.createElement('p');
+            line3Element.textContent = `${numRatings} Ratings \n ${numReviews} Reviews`;
+            line3Element.style.margin = '0';
+
+
+            // Append the lines to the extra details container
+            detailsInfoContainer.appendChild(line1Element);
+            detailsInfoContainer.appendChild(line2Element);
+            detailsInfoContainer.appendChild(line3Element);
+
+            // Append both the title-ingredients and extra details containers to the main info container
+            infoContainer.appendChild(titleAndIngredientsContainer);
+            infoContainer.appendChild(detailsInfoContainer);
+
+            // Create a container for the buttons to the right of both the main and extra info
             const buttonContainer = document.createElement('div');
             buttonContainer.className = 'button-container';
             buttonContainer.style.display = 'flex';
+            buttonContainer.style.gap = '8px';
 
-            // Check if the recipe is uploaded by the current user
-            const isUploadedByCurrentUser = userUploadedRecipes.includes(recipe.RecipeID);
+            // If uploaded by the current user, provide a delete button
             if (isUploadedByCurrentUser) {
                 const deleteButton = document.createElement('button');
                 deleteButton.innerText = 'Delete';
                 deleteButton.style.padding = '8px 15px';
                 deleteButton.style.border = 'none';
                 deleteButton.style.borderRadius = '5px';
-                deleteButton.style.backgroundColor = '#a72828'; // Green
+                deleteButton.style.backgroundColor = '#a72828'; // Red for deletion
                 deleteButton.style.color = '#fff';
                 deleteButton.style.cursor = 'pointer';
                 deleteButton.style.fontSize = '0.9em';
@@ -120,35 +177,40 @@ async function loadRecipes() {
                 deleteButton.addEventListener('click', async (event) => {
                     event.stopPropagation(); // Prevent triggering the recipe info loading event
                     await deleteRecipe(recipe.RecipeID);
-                    await loadRecipes(); // Reload recipes after deletion
+                    await loadRecipes(); // Reload after deletion
                 });
 
                 // Append the delete button to the button container
                 buttonContainer.appendChild(deleteButton);
+            } else {
+                infoContainer.style.width = '100%';
+                recipeElement.style.justifyContent = 'space-around';
             }
-
-            // Add an event listener for loading detailed recipe info
-            recipeElement.addEventListener('click', function () {
+            // Add click event to load detailed recipe info
+            recipeElement.addEventListener('click', () => {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
 
                 // Remove highlighting from the currently highlighted recipe if it exists
-                if (highlightedRecipeElement) {
-                    highlightedRecipeElement.classList.remove('recipe-highlighted');
+                const highlightedElement = document.querySelector('.recipe-highlighted');
+                if (highlightedElement) {
+                    highlightedElement.classList.remove('recipe-highlighted');
                 }
 
                 // Add highlight to the clicked recipe and update the reference
                 recipeElement.classList.add('recipe-highlighted');
-                highlightedRecipeElement = recipeElement; // Update the reference to the new highlighted element
             });
 
-            // Append text and button containers to the main recipe element
-            recipeElement.appendChild(textContainer);
+            // Append both the info container and button container to the main recipe element
+            recipeElement.appendChild(infoContainer);
             recipeElement.appendChild(buttonContainer);
 
-            // Add the main recipe element to the list container
-            recipeListContainer.appendChild(recipeElement);
-        });
+            // Add the main recipe element to the fragment
+            fragment.appendChild(recipeElement);
+        }
+
+        // Append the fragment to the recipe list container
+        recipeListContainer.appendChild(fragment);
     } catch (error) {
         console.error('Failed to load recipes:', error);
     }
@@ -663,14 +725,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function performAdvancedRecipeSearch() {
-
     let searchTerm;
     let filter;
-    if(arguments.length === 0) {
+    if (arguments.length === 0) {
         searchTerm = document.getElementById('general-search').value;
         filter = document.getElementById('recipeFilter').value;
-    }else
-    {
+    } else {
         searchTerm = arguments[0];
         filter = arguments[1];
     }
@@ -678,85 +738,18 @@ async function performAdvancedRecipeSearch() {
     lastSearchTerm = searchTerm;
     lastFilter = filter;
 
-    console.log(lastSearchTerm);
-    console.log(filter);
     const minCalories = document.getElementById('min-calories').value;
     const maxCalories = document.getElementById('max-calories').value;
 
-    const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
+    const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from the cookie
 
-    let highlightedRecipeElement = null;
-
-    try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/search`, {
-            params: {
-                searchTerm,
-                filter,
-                userID,
-                minCalories: minCalories ? Number(minCalories) : undefined, // Send as undefined if empty
-                maxCalories: maxCalories ? Number(maxCalories) : undefined // Send as undefined if empty
-            }
-        });
-
-        // Fetch the uploaded recipes by the current User from the database
-        const userUploadedRecipes = await getRecipesByUser(userID);  // <-- NEW
-
-        // Clear the current recipe list
-        const recipeListContainer = document.querySelector('.recipe-list');
-        recipeListContainer.innerHTML = '';
-
-        // Populate with new results
-        response.data.forEach(recipe => {
-            const recipeElement = document.createElement('div');
-            recipeElement.className = 'recipe';
-
-            // Check if this recipe was uploaded by the current user
-            const isUploadedByCurrentUser = userUploadedRecipes.includes(recipe.RecipeID); // <-- NEW
-
-            recipeElement.innerHTML = `
-                <h3>${recipe.Title}</h3>
-                <p>${recipe.Ingredients}</p>
-            `;
-
-            // Add a delete button if uploaded by current user
-            if (isUploadedByCurrentUser) {  // <-- NEW
-                const deleteButton = document.createElement('button');
-                deleteButton.innerText = 'Delete';
-                deleteButton.addEventListener('click', async (event) => {
-                    event.stopPropagation();
-                    await deleteRecipe(recipe.RecipeID);
-                    await performAdvancedRecipeSearch(lastSearchTerm, lastFilter); // <-- Here! Call the search function
-                })
-                recipeElement.appendChild(deleteButton);
-            }
-
-            // Add an event listener for loading detailed recipe info
-            recipeElement.addEventListener('click', function () {
-                selectedRecipeId = recipe.RecipeID;
-                loadRecipeInfo(selectedRecipeId);
-
-                // Remove highlighting from the currently highlighted recipe if it exists
-                if (highlightedRecipeElement) {
-                    highlightedRecipeElement.classList.remove('recipe-highlighted');
-                }
-
-                // Add highlight to the clicked recipe and update the reference
-                recipeElement.classList.add('recipe-highlighted');
-                highlightedRecipeElement = recipeElement; // Update the reference to the new highlighted element
-            });
-
-            // Append the new element to the container
-            recipeListContainer.appendChild(recipeElement);
-        });
-
-        // If no recipes found, display a message
-        if (response.data.length === 0) {
-            recipeListContainer.innerHTML = '<p>No recipes found.</p>';
-        }
-
-    } catch (error) {
-        console.error('Error performing advanced search:', error);
-    }
+    await loadRecipesWithParams({
+        searchTerm,
+        filter,
+        userID,
+        minCalories: minCalories ? Number(minCalories) : undefined,
+        maxCalories: maxCalories ? Number(maxCalories) : undefined
+    });
 }
 
 
@@ -994,6 +987,186 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
             console.error(`Error checking if user is a friend: ${error.message}`);
             return false;
         }
+    }
+}
+
+
+async function getAllRecipesWithAuthors() {
+    try {
+        // Make an Axios GET request to the `/recipes-with-authors` endpoint
+        const response = await axios.get('http://localhost:3002/recipes-with-authors');
+
+        // Return the array of recipes with author information
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all recipes with authors:', error);
+        return []; // Return an empty array if there's an error
+    }
+}
+
+async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, maxCalories }) {
+    try {
+        // Make an Axios GET request with parameters
+        const response = await axios.get('http://localhost:3002/recipes/search', {
+            params: {
+                searchTerm,
+                filter,
+                userID,
+                minCalories: minCalories ? Number(minCalories) : undefined,
+                maxCalories: maxCalories ? Number(maxCalories) : undefined
+            }
+        });
+
+        // Get the user's uploaded recipes
+        const userUploadedRecipes = await getRecipesByUser(userID);
+        const uploadedRecipesSet = new Set(userUploadedRecipes);
+
+        // Create a document fragment for efficient DOM updates
+        const recipeListContainer = document.querySelector('.recipe-list');
+        recipeListContainer.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+
+        // Process the fetched recipes
+        for (const recipe of response.data) {
+            // Determine if the current user uploaded this recipe
+            const isUploadedByCurrentUser = uploadedRecipesSet.has(recipe.RecipeID);
+
+            // Create the main recipe element
+            const recipeElement = document.createElement('div');
+            recipeElement.className = 'recipe';
+            recipeElement.style.display = 'flex';
+            recipeElement.style.justifyContent = 'space-between';
+            recipeElement.style.alignItems = 'flex-start';
+            recipeElement.style.padding = '15px';
+            recipeElement.style.border = '1px solid #ddd';
+            recipeElement.style.borderRadius = '8px';
+            recipeElement.style.marginBottom = '10px';
+            recipeElement.style.cursor = 'pointer';
+
+            // Create a container for the primary and extra info with flexbox layout
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'info-container';
+            infoContainer.style.display = 'flex';
+            infoContainer.style.flexDirection = 'row';
+            infoContainer.style.justifyContent = 'space-between';
+            //infoContainer.style.gap = '8px';
+            infoContainer.style.flex = '0 0 75%'; // Take up 75% of the width
+
+            // Create a sub-container for the title and ingredients specifically
+            const titleAndIngredientsContainer = document.createElement('div');
+            titleAndIngredientsContainer.className = 'title-ingredients-container';
+            titleAndIngredientsContainer.style.display = 'flex';
+            titleAndIngredientsContainer.style.flexDirection = 'column';
+            titleAndIngredientsContainer.style.gap = '4px';
+
+            // Add the primary recipe details (title and ingredients)
+            const recipeTitle = document.createElement('h3');
+            recipeTitle.textContent = recipe.Title;
+            recipeTitle.style.margin = '0';
+
+            const recipeIngredients = document.createElement('p');
+            recipeIngredients.textContent = recipe.Ingredients || '';
+            recipeIngredients.style.margin = '0';
+
+            // Append the title and ingredients to their sub-container
+            titleAndIngredientsContainer.appendChild(recipeTitle);
+            titleAndIngredientsContainer.appendChild(recipeIngredients);
+
+            // Create a container specifically for the extra details (author, ratings, reviews)
+            const detailsInfoContainer = document.createElement('div');
+            detailsInfoContainer.className = 'details-info-container';
+            detailsInfoContainer.style.display = 'flex';
+            detailsInfoContainer.style.flexDirection = 'column';
+            detailsInfoContainer.style.gap = '4px';
+
+            // Prepare the author and ratings information
+            const separator = ' | ';
+            const recipeAuthor = `Author: ${recipe.AuthorName || 'Unknown'}`;
+            let avgRatingText = 'N/A';
+            if (typeof recipe.AvgRating === 'number') {
+                avgRatingText = recipe.AvgRating.toFixed(1);
+            }
+            const avgRating = `Average Rating: ${avgRatingText}`;
+            const numRatings = `Number of Ratings: ${recipe.NumRatings || 0}`;
+            const numReviews = `Number of Reviews: ${recipe.NumReviews || 0}`;
+
+            // Add these lines to paragraphs
+            const line1Element = document.createElement('p');
+            line1Element.textContent = recipeAuthor;
+            line1Element.style.margin = '0';
+
+            const line2Element = document.createElement('p');
+            line2Element.textContent = avgRating;
+            line2Element.style.margin = '0';
+
+            const line3Element = document.createElement('p');
+            line3Element.textContent = `${numRatings} | ${numReviews}`;
+            line3Element.style.margin = '0';
+
+            // Append the lines to the extra details container
+            detailsInfoContainer.appendChild(line1Element);
+            detailsInfoContainer.appendChild(line2Element);
+            detailsInfoContainer.appendChild(line3Element);
+
+            // Append both the title-ingredients and extra details containers to the main info container
+            infoContainer.appendChild(titleAndIngredientsContainer);
+            infoContainer.appendChild(detailsInfoContainer);
+
+            // Create a container for the buttons to the right of both the main and extra info
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'button-container';
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.gap = '8px';
+
+            // If uploaded by the current user, provide a delete button
+            if (isUploadedByCurrentUser) {
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.style.padding = '8px 15px';
+                deleteButton.style.border = 'none';
+                deleteButton.style.borderRadius = '5px';
+                deleteButton.style.backgroundColor = '#a72828'; // Red for deletion
+                deleteButton.style.color = '#fff';
+                deleteButton.style.cursor = 'pointer';
+                deleteButton.style.fontSize = '0.9em';
+                deleteButton.style.marginLeft = '10px';
+                deleteButton.addEventListener('click', async (event) => {
+                    event.stopPropagation(); // Prevent triggering the recipe info loading event
+                    await deleteRecipe(recipe.RecipeID);
+                    await loadRecipesWithParams({ searchTerm, filter, userID, minCalories, maxCalories });
+                });
+
+                // Append the delete button to the button container
+                buttonContainer.appendChild(deleteButton);
+            }
+
+            // Add click event to load detailed recipe info
+            recipeElement.addEventListener('click', () => {
+                selectedRecipeId = recipe.RecipeID;
+                loadRecipeInfo(selectedRecipeId);
+
+                // Remove highlighting from the currently highlighted recipe if it exists
+                const highlightedElement = document.querySelector('.recipe-highlighted');
+                if (highlightedElement) {
+                    highlightedElement.classList.remove('recipe-highlighted');
+                }
+
+                // Add highlight to the clicked recipe and update the reference
+                recipeElement.classList.add('recipe-highlighted');
+            });
+
+            // Append both the info container and button container to the main recipe element
+            recipeElement.appendChild(infoContainer);
+            recipeElement.appendChild(buttonContainer);
+
+            // Add the main recipe element to the fragment
+            fragment.appendChild(recipeElement);
+        }
+
+        // Append the fragment to the recipe list container
+        recipeListContainer.appendChild(fragment);
+    } catch (error) {
+        console.error('Failed to load recipes:', error);
     }
 }
 
