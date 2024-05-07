@@ -211,6 +211,7 @@ header button:active {
     background-color: #28a745; /* Consistent button color with your theme */
     color: white;
     cursor: pointer;
+    font-size: 16px;
 }
 
 /* Hover effect for Submit Review Button */
@@ -914,3 +915,72 @@ label:hover {
     cursor: pointer;
     font-size: 0.8em;
 }
+
+
+/* Styles for the recipe card */
+
+/* Styles for the recipe card */
+.recipe {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s, background-color 0.2s;
+    display: flex;
+    justify-content: space-between; /* Separate the text and buttons horizontally */
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Add hover effect for better interaction */
+.recipe:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background-color: #f9f9f9;
+}
+
+/* Text container for the heading and paragraph */
+.text-container {
+    display: flex;
+    flex-direction: column; /* Arrange the heading and paragraph vertically */
+    gap: 4px; /* Add space between the title and description */
+}
+
+/* Recipe title styles */
+.recipe h3 {
+    margin: 0;
+    font-size: 1.4em;
+    color: #333;
+}
+
+/* Recipe description styles */
+.recipe p {
+    margin: 0;
+    font-size: 1em;
+    color: #666;
+}
+
+/* Button container on the right side */
+.button-container {
+    display: flex;
+    gap: 10px; /* Space out multiple buttons horizontally */
+}
+
+/* Common button styles */
+.recipe button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #28a745; /* Green by default */
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+/* Button hover state */
+.recipe button:hover {
+    background-color: #218838;
+}
+

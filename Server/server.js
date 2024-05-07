@@ -778,7 +778,7 @@ app.get('/users/:userID/followers', async (req, res) => {
 
 // check if liked by user
 // check if liked by user
-app.get('/recipes/liked ', async (req, res) => {
+app.get('/recipes/liked', async (req, res) => {
     const { userId, recipeId } = req.query;
 
     try {
