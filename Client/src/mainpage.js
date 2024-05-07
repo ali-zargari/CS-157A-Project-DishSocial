@@ -56,7 +56,7 @@ document.querySelector('.filter-button').addEventListener('click', async functio
 async function loadRecipes() {
     try {
         // Make an Axios GET request to fetch all recipes with authors
-        const response = await axios.get('http://localhost:3002/recipes-with-authors');
+        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes-with-authors');
         const recipesWithAuthors = response.data;
 
         // Get the current user's uploaded recipes
@@ -1016,7 +1016,7 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
 async function getAllRecipesWithAuthors() {
     try {
         // Make an Axios GET request to the `/recipes-with-authors` endpoint
-        const response = await axios.get('http://localhost:3002/recipes-with-authors');
+        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes-with-authors');
 
         // Return the array of recipes with author information
         return response.data;
@@ -1029,7 +1029,7 @@ async function getAllRecipesWithAuthors() {
 async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, maxCalories }) {
     try {
         // Make an Axios GET request with parameters
-        const response = await axios.get('http://localhost:3002/recipes/search', {
+        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes/search', {
             params: {
                 searchTerm,
                 filter,
