@@ -404,6 +404,22 @@ async function loadRecipeInfo(recipeId) {
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
 
+        const reviewCount = document.createElement('p');
+        reviewCount.textContent = `Total Reviews: ${recipeInfo.ReviewCount}`;
+        recipeInfoContainer.appendChild(reviewCount);
+
+        const ratingCount = document.createElement('p');
+        ratingCount.textContent = `Total Ratings: ${recipeInfo.RatingCount}`;
+        recipeInfoContainer.appendChild(ratingCount);
+
+        const avgRating = document.createElement('p');
+        if(recipeInfo.AverageRating != null) {
+            avgRating.textContent = `Average Rating: ${recipeInfo.AverageRating}`;
+        }else{
+            avgRating.textContent = `Average Rating: 0`;
+        }
+        recipeInfoContainer.appendChild(avgRating);
+
         const author = document.createElement('p');
         if(recipeAuthor === 0 ){
             author.textContent = 'Author: DishSocial';

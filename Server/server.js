@@ -241,25 +241,52 @@ app.get('/recipe', async (req, res) => {
     }
 });
 
-//get recipe info
+// Get recipe info with review statistics including total reviews, total ratings, and average rating
 app.get('/recipe/:recipeID', async (req, res) => {
     try {
         const { recipeID } = req.params;
         const connection = await pool.getConnection();
 
-        // Use this SQL query to return the recipe details for a given recipeID.
-        const [rows] = await connection.execute(
+        // Query to get recipe details
+        const [recipeDetails] = await connection.execute(
             'SELECT * FROM Recipe WHERE RecipeID = ?',
             [recipeID]
         );
 
+        // Query to get total review count
+        const [reviewStats] = await connection.execute(
+            `SELECT COUNT(*) AS ReviewCount FROM Recipe_Has_Review
+             WHERE RecipeID = ?`,
+            [recipeID]
+        );
+
+        // Query to get ratings count and average rating
+        const [ratingStats] = await connection.execute(
+            `SELECT COUNT(Rating) AS RatingCount, AVG(Rating) AS AverageRating FROM Review
+             JOIN Recipe_Has_Review ON Review.ReviewID = Recipe_Has_Review.ReviewID
+             WHERE Recipe_Has_Review.RecipeID = ? AND Rating IS NOT NULL`,
+            [recipeID]
+        );
+
         connection.release();
-        res.send(rows[0]); // Assuming each recipeID corresponds to one recipe
+        console.log(ratingStats);
+        if (recipeDetails.length > 0) {
+            const response = {
+                ...recipeDetails[0],
+                ReviewCount: reviewStats[0].ReviewCount,
+                RatingCount: ratingStats[0].RatingCount,
+                AverageRating: ratingStats[0].AverageRating
+            };
+            res.json(response);
+        } else {
+            res.status(404).send('Recipe not found');
+        }
     } catch (error) {
         console.error(`Failed to get selected recipe info: ${error}`);
         res.status(500).send(error);
     }
 });
+
 
 // Get friend reviews for a user
 app.get('/user/friendReviews/:userID', async (req, res) => {
