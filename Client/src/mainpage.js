@@ -1175,7 +1175,7 @@ async function loadRecipesWithParams(params) {
                     event.stopPropagation(); // Prevent triggering the recipe info loading event
                     await deleteRecipe(recipe.RecipeID);
 
-                    await loadRecipesWithParams({ searchTerm, filter, userID, minCalories, maxCalories });
+                    await loadRecipesWithParams(params);
                     if (selectedRecipeId === recipe.RecipeID){
                         const recipeInfoContainer = document.querySelector('.recipe-description');
                         const reviewFormSection = document.querySelector('.review-form-section');
