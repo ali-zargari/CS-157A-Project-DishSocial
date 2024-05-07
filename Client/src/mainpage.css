@@ -572,12 +572,13 @@ button:hover {
     gap: 5px;
 }
 
-.All-list {
-    max-height: 70vh; /* Adjust to the desired proportion (e.g., 70% of the viewport height) */
+.All-list, .friend-list {
+    max-height: 60vh; /* Adjust to the desired proportion (e.g., 70% of the viewport height) */
     overflow-y: auto; /* Ensure vertical scrolling is enabled */
     border: 1px solid #ccc; /* Optional: Add a border for better visual distinction */
     padding: 10px; /* Optional: Add padding for spacing */
     margin: 20px 0; /* Optional: Margin around the container */
+    flex: 1;
 }
 
 
@@ -636,7 +637,8 @@ label {
 }
 input#all-users-tab:checked ~ #all-users,
 input#friends-tab:checked ~ #friends {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 input[type="radio"] {
@@ -681,6 +683,7 @@ label:hover {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 0 0 4px 4px;
+    max-height: 80vh;
 }
 
 .options {
@@ -739,15 +742,27 @@ label:hover {
     margin-right: 5px; /* Add space between the inputs */
 }
 
-.friend, .user{
+
+.friend{
     border-radius: 5px;
     border: 1px solid #ddd;
-    padding-left: 5px;
+    padding: 19px 7px;
+}
+
+.user{
+    border-radius: 5px;
+    border: 1px solid #ddd;
 }
 
 .friend,.user button{
     height: 20px;
     flex: 1;
+}
+
+.friend,.user div{
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
 }
 
 /* Recipe description container */
@@ -835,6 +850,33 @@ label:hover {
     border-radius: 5px;
 }
 
+@media (max-width: 1300px) {
+
+    .user, .friend{
+        font-size: 8px !important;
+        padding: 10px 0 !important;
+
+    }
+
+    .user div{
+        max-width: 60px;
+        flex: 1;
+    }
+
+    .user button{
+        overflow: clip;
+        max-width: 50px;
+        padding: 4px 1px !important;
+        margin: 0 !important;
+    }
+    .friend button{
+        font-size: 5px !important;
+        padding: 4px 1px !important;
+        margin: 0 !important;
+
+    }
+
+}
 
 @media (max-width: 950px) {
     .recipes{
@@ -857,6 +899,9 @@ label:hover {
     #laButtons *{
         font-size: 0.8em;
     }
+
+
+
 }
 
 /* Button container style */
@@ -988,3 +1033,5 @@ label:hover {
     background-color: powderblue; /* Light grey background for the highlighted recipe */
     border-color: black; /* Blue border color for emphasis */
 }
+
+

@@ -307,7 +307,7 @@ async function loadFriends() {
             friendElement.style.display = "flex";
             friendElement.style.justifyContent = "space-between";
             friendElement.style.alignItems = "center";
-            friendElement.style.padding = '10px';
+            //friendElement.style.padding = '10px';
 
             // Check if the current friend is the logged-in user and add the "Me" label
             if (friend.UserID == currentUser) {
