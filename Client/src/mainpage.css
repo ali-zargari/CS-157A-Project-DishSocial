@@ -1034,4 +1034,6 @@ label:hover {
     border-color: black; /* Blue border color for emphasis */
 }
 
-
+button{
+    cursor: pointer;
+}
