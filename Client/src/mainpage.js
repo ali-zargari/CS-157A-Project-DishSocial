@@ -643,13 +643,19 @@ async function fetchAndDisplayReviews(recipeId) {
             // Create and append review items to the reviews list
             const reviewItem = document.createElement('div');
             const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
+            let isFiveStars = false;
 
+            if(review.Rating === 5){
+                isFiveStars = true;
+            }
             reviewItem.className = 'review-item';
             reviewItem.innerHTML = `
                 <p class="review-text">"${review.ReviewText}"</p>
                 <div class="review-details">
                     <span class="review-author">- ${review.FirstName} ${review.LastName}</span>
-                    <span class="review-rating">Rating: ${review.Rating} Stars</span>
+                    ${isFiveStars ? `
+                        <span class="gold-rating">Rating: ${review.Rating} Stars</span>
+                    ` : `<span class="review-rating">Rating: ${review.Rating} Stars</span>`}
                     ${isReviewedByCurrentUser ? `
                         <button class="delete-button" data-review-id="${review.ReviewID}">
                             Delete
@@ -706,10 +712,13 @@ async function loadWall() {
 
             const reviewRating = document.createElement('div'); // Changed to div for better styling control
             reviewRating.textContent = `${review.Rating} Stars`;
-            reviewRating.className = 'review-rating';
+            if (review.Rating === 5) {
+                reviewRating.className = 'gold-rating';
+            }
+            else{
+                reviewRating.className = 'review-rating';
+            }
             reviewContainer.appendChild(reviewRating);
-
-
 
             reviewContainer.addEventListener('click', function() {
                 loadRecipeInfo(review.RecipeID);
@@ -783,6 +792,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
     const reviewText = document.getElementById('reviewText').value;
     const reviewRating = document.getElementById('reviewRating').value;
     const userID = getUserIdFromCookie(); // This function retrieves the current user's ID from a cookie
+    const reviewFormSection = document.querySelector('.review-form-section');
 
     if (!selectedRecipeId) {
         console.error('No recipe selected.');
@@ -811,6 +821,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
             document.getElementById('reviewText').value = '';
             document.getElementById('reviewRating').value = '1';
             alert('Review successfully added.');
+            reviewFormSection.classList.remove('post-gold-rating');
         } else {
             console.error('Failed to submit review:', response.status, response.statusText);
             alert('Failed to submit review.');
@@ -1011,6 +1022,19 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
         }
     }
 }
+
+
+document.getElementById('reviewRating').addEventListener('change', function() {
+    const reviewRating = this;
+    const reviewFormSection = document.querySelector('.review-form-section');
+
+    // Check if the selected rating is 5
+    if (reviewRating.value === '5') {
+        reviewFormSection.classList.add('post-gold-rating');
+    } else {
+        reviewFormSection.classList.remove('post-gold-rating');
+    }
+});
 
 
 async function getAllRecipesWithAuthors() {
