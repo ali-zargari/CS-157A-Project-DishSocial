@@ -985,4 +985,52 @@ app.get('/getRecipeAuthor/:recipeId', async (req, res) => {
     }
 });
 
+
+app.get('/recipes-with-authors', async (req, res) => {
+    try {
+        // Establish a database connection
+        const connection = await pool.getConnection();
+
+        // SQL query to join recipes with their authors' information
+        const query = `
+            SELECT 
+                r.RecipeID,
+                r.Title,
+                r.Steps,
+                r.TotalCalories,
+                r.Ingredients,
+                CONCAT(u.FirstName, ' ', u.LastName) AS AuthorName,
+                COUNT(re.ReviewID) AS NumReviews,
+                COUNT(re.Rating) AS NumRatings,
+                AVG(re.Rating) AS AvgRating
+            FROM
+                Recipe r
+            LEFT JOIN
+                User_Uploads_Recipe ur ON r.RecipeID = ur.RecipeID
+            LEFT JOIN
+                Users u ON ur.UserID = u.UserID
+            LEFT JOIN
+                Recipe_Has_Review rr ON r.RecipeID = rr.RecipeID
+            LEFT JOIN
+                Review re ON rr.ReviewID = re.ReviewID
+            GROUP BY
+                r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients, u.FirstName, u.LastName
+        `;
+
+        // Execute the query
+        const [rows] = await connection.execute(query);
+
+        // Release the database connection
+        connection.release();
+
+        // Send the results back to the client
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error('Failed to fetch recipes with authors:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
