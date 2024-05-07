@@ -235,6 +235,8 @@ async function loadAllUsers() {
         // Initialize friends set for quick lookup
         friendsSet = new Set(friends.map(friend => friend.UserID));
 
+        let currentUserElement = null;
+
         for (const user of users) {
             const userName = `${user.FirstName} ${user.LastName}`.toLowerCase();
             if (searchTerm && !userName.includes(searchTerm)) continue;
@@ -255,12 +257,12 @@ async function loadAllUsers() {
                 meLabel.style.color = '#00796b'; // Teal color for the "Me" label
                 meLabel.style.marginLeft = '10px';
                 userElement.appendChild(meLabel);
+                currentUserElement = userElement; // Store this element to prepend later
+            } else {
+                // Create the user name text node for non-current users
+                const userText = document.createTextNode(`${user.FirstName} ${user.LastName}`);
+                userElement.appendChild(userText);
             }
-
-            // Create the user name text node
-            const userText = document.createTextNode(`${user.FirstName} ${user.LastName}`);
-
-            if (user.UserID != currentUser) userElement.appendChild(userText);
 
             // Create a container for the buttons
             const buttonContainer = document.createElement('div');
@@ -317,50 +319,41 @@ async function loadAllUsers() {
             userElement.appendChild(buttonContainer);
 
             // Add the user element to the main list
-            usersListContainer.appendChild(userElement);
+            if (user.UserID !== currentUser) {
+                usersListContainer.appendChild(userElement);
+            }
+        }
+
+        // Prepend the current user to the top of the user list
+        if (currentUserElement) {
+            usersListContainer.prepend(currentUserElement);
         }
     } catch (error) {
         console.error('Failed to load all users:', error);
     }
 }
 
+document.getElementById('friends-filter-btn').addEventListener('click', loadFriends);
 
-
-
-
-function createButton(text, backgroundColor) {
-    const button = document.createElement('button');
-    button.textContent = text;
-    button.style.backgroundColor = backgroundColor;
-    button.style.color = 'white';
-    button.style.border = 'none';
-    button.style.padding = '5px 10px';
-    button.style.marginLeft = '10px';
-    button.style.cursor = 'pointer';
-    button.style.fontSize = '0.8em';
-    return button;
-}
-
-
-function sanitizeSearchTerm(term) {
-    // Remove all non-alphanumeric characters except spaces
-    return term.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
-}
 
 async function loadFriends() {
     try {
-        // Get search term and sanitize it
         let searchTerm = document.getElementById('friends-search').value.trim().toLowerCase();
         searchTerm = sanitizeSearchTerm(searchTerm);
 
-        const friends = await showFriends();
+        // Fetch users and friends list
+        const [users, friends] = await Promise.all([showAllUser(), showFriends()]);
         const friendsListContainer = document.querySelector('.friend-list');
         const currentUser = getUserIdFromCookie(); // Ensure this is correctly implemented
         friendsListContainer.innerHTML = '';
 
+        // Initialize friends set for quick lookup
+        friendsSet = new Set(friends.map(friend => friend.UserID));
+
+        let currentUserElement = null;
+
         for (const friend of friends) {
             const friendName = `${friend.FirstName} ${friend.LastName}`.toLowerCase();
-            // Skip friends that don't match the search term
             if (searchTerm && !friendName.includes(searchTerm)) continue;
 
             // Create the friend element
@@ -379,11 +372,12 @@ async function loadFriends() {
                 meLabel.style.color = '#00796b'; // Teal color
                 meLabel.style.marginLeft = '10px';
                 friendElement.appendChild(meLabel);
+                currentUserElement = friendElement; // Store this element to prepend later
+            } else {
+                // Add the friend's name if they are not the current user
+                const friendText = document.createTextNode(`${friend.FirstName} ${friend.LastName}`);
+                friendElement.appendChild(friendText);
             }
-
-            // Add the friend's name if they are not the current user
-            const friendText = document.createTextNode(`${friend.FirstName} ${friend.LastName}`);
-            if (friend.UserID != currentUser) friendElement.appendChild(friendText);
 
             // Create a container for the buttons
             const buttonContainer = document.createElement('div');
@@ -423,11 +417,39 @@ async function loadFriends() {
             friendElement.appendChild(buttonContainer);
 
             // Add the friend element to the friends list container
-            friendsListContainer.appendChild(friendElement);
+            if (friend.UserID !== currentUser) {
+                friendsListContainer.appendChild(friendElement);
+            }
+        }
+
+        // Prepend the current user to the top of the friends list
+        if (currentUserElement) {
+            friendsListContainer.prepend(currentUserElement);
         }
     } catch (error) {
         console.error('Failed to load friends:', error);
     }
+}
+
+
+
+function createButton(text, backgroundColor) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.style.backgroundColor = backgroundColor;
+    button.style.color = 'white';
+    button.style.border = 'none';
+    button.style.padding = '5px 10px';
+    button.style.marginLeft = '10px';
+    button.style.cursor = 'pointer';
+    button.style.fontSize = '0.8em';
+    return button;
+}
+
+
+function sanitizeSearchTerm(term) {
+    // Remove all non-alphanumeric characters except spaces
+    return term.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
 }
 
 
