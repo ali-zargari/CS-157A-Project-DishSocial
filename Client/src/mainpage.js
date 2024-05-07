@@ -56,49 +56,93 @@ document.querySelector('.filter-button').addEventListener('click', async functio
 async function loadRecipes() {
     try {
         const currentUserId = getUserIdFromCookie();
-        // fetch the uploaded recipes by the current User from the database
+        // Fetch recipes uploaded by the current user and all available recipes
         const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const recipes = await getAllRecipes();
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
 
+        // Loop through each recipe and build the layout
         recipes.forEach(recipe => {
+            // Create the main recipe element
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
+            recipeElement.style.display = 'flex';
+            recipeElement.style.justifyContent = 'space-between';
+            recipeElement.style.alignItems = 'center';
+            recipeElement.style.padding = '15px';
+            recipeElement.style.border = '1px solid #ddd';
+            recipeElement.style.borderRadius = '8px';
+            recipeElement.style.marginBottom = '10px';
+            recipeElement.style.cursor = 'pointer';
 
+            // Create a text container to stack the title and ingredients vertically
+            const textContainer = document.createElement('div');
+            textContainer.className = 'text-container';
+            textContainer.style.display = 'flex';
+            textContainer.style.flexDirection = 'column';
+            textContainer.style.gap = '4px';
+
+            // Add the title
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title;
+            recipeTitle.style.margin = '0';
 
-            const recipeIngredients = recipe.Ingredients ? `<p>${recipe.Ingredients}</p>` : '';
+            // Add ingredients if available
+            const recipeIngredients = document.createElement('p');
+            recipeIngredients.textContent = recipe.Ingredients || '';
+            recipeIngredients.style.margin = '0';
 
+            // Append the title and ingredients to the text container
+            textContainer.appendChild(recipeTitle);
+            textContainer.appendChild(recipeIngredients);
+
+            // Create a button container for the delete button
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'button-container';
+            buttonContainer.style.display = 'flex';
+
+            // Check if the recipe is uploaded by the current user
             const isUploadedByCurrentUser = userUploadedRecipes.includes(recipe.RecipeID);
-            recipeElement.innerHTML = `
-                <h3>${recipe.Title}</h3>
-                ${recipeIngredients}
-            `;
-
             if (isUploadedByCurrentUser) {
                 const deleteButton = document.createElement('button');
                 deleteButton.innerText = 'Delete';
+                deleteButton.style.padding = '8px 15px';
+                deleteButton.style.border = 'none';
+                deleteButton.style.borderRadius = '5px';
+                deleteButton.style.backgroundColor = '#a72828'; // Green
+                deleteButton.style.color = '#fff';
+                deleteButton.style.cursor = 'pointer';
+                deleteButton.style.fontSize = '0.9em';
+                deleteButton.style.marginLeft = '10px';
                 deleteButton.addEventListener('click', async (event) => {
-                    event.stopPropagation();
+                    event.stopPropagation(); // Prevent triggering the recipe info loading event
                     await deleteRecipe(recipe.RecipeID);
-                    await performAdvancedRecipeSearch(lastSearchTerm, lastFilter); // <-- Here! Call the search function
-                })
-                recipeElement.appendChild(deleteButton);
+                    await loadRecipes(); // Reload recipes after deletion
+                });
+
+                // Append the delete button to the button container
+                buttonContainer.appendChild(deleteButton);
             }
 
-            recipeElement.addEventListener('click', function() {
+            // Add an event listener for loading detailed recipe info
+            recipeElement.addEventListener('click', function () {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
             });
 
+            // Append text and button containers to the main recipe element
+            recipeElement.appendChild(textContainer);
+            recipeElement.appendChild(buttonContainer);
+
+            // Add the main recipe element to the list container
             recipeListContainer.appendChild(recipeElement);
         });
     } catch (error) {
         console.error('Failed to load recipes:', error);
     }
 }
+
 
 
 let friendsSet = new Set();
@@ -119,24 +163,37 @@ async function loadAllUsers() {
         friendsSet = new Set(friends.map(friend => friend.UserID));
 
         for (const user of users) {
-            if (user.UserID === currentUser) continue;
-
             const userName = `${user.FirstName} ${user.LastName}`.toLowerCase();
             if (searchTerm && !userName.includes(searchTerm)) continue;
 
+            // Create the user element
             const userElement = document.createElement('div');
             userElement.className = 'user';
             userElement.style.display = "flex";
             userElement.style.justifyContent = "space-between";
             userElement.style.alignItems = "center";
+            userElement.style.padding = '10px';
 
+            // Check if this is the currently logged-in user
+            if (user.UserID == currentUser) {
+                userElement.style.backgroundColor = '#e0f7fa'; // Light blue background for "Me"
+                const meLabel = document.createElement('span');
+                meLabel.textContent = "Me";
+                meLabel.style.color = '#00796b'; // Teal color for the "Me" label
+                meLabel.style.marginLeft = '10px';
+                userElement.appendChild(meLabel);
+            }
+
+            // Create the user name text node
             const userText = document.createTextNode(`${user.FirstName} ${user.LastName}`);
-            userElement.appendChild(userText);
 
+            if (user.UserID != currentUser) userElement.appendChild(userText);
+
+            // Create a container for the buttons
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
-            // Determine if the user is already followed
+            // Determine if the user is followed
             const isCurrentlyFollowed = friendsSet.has(user.UserID);
             const followButton = createButton(
                 isCurrentlyFollowed ? 'Unfollow' : 'Follow',
@@ -148,22 +205,21 @@ async function loadAllUsers() {
 
                 try {
                     if (isFollowed) {
-                        // Unfollow logic
                         const success = await unfollowUser(currentUser, user.UserID);
                         if (success) {
                             followButton.textContent = 'Follow';
                             followButton.style.backgroundColor = 'green';
-                            friendsSet.delete(user.UserID); // Remove from the friends set
+                            friendsSet.delete(user.UserID); // Update friends set
                         }
                     } else {
-                        // Follow logic
                         const success = await followUser(currentUser, user.UserID);
                         if (success) {
                             followButton.textContent = 'Unfollow';
                             followButton.style.backgroundColor = 'red';
-                            friendsSet.add(user.UserID); // Add to the friends set
+                            friendsSet.add(user.UserID); // Update friends set
                         }
                     }
+
                     await loadWall(); // Optionally refresh the wall
                     await loadFriends(); // Refresh the friends list
 
@@ -174,20 +230,27 @@ async function loadAllUsers() {
                 }
             });
 
+            // Create the profile button
             const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
                 window.location.href = `user.html?userID=${user.UserID}`;
             });
 
+            // Append buttons to the container
             buttonContainer.appendChild(followButton);
             buttonContainer.appendChild(profileButton);
+
+            // Append the button container to the user element
             userElement.appendChild(buttonContainer);
+
+            // Add the user element to the main list
             usersListContainer.appendChild(userElement);
         }
     } catch (error) {
         console.error('Failed to load all users:', error);
     }
 }
+
 
 
 
@@ -214,47 +277,54 @@ function sanitizeSearchTerm(term) {
 async function loadFriends() {
     try {
         // Get search term and sanitize it
-        let searchTerm = document.getElementById('friends-search').value;
+        let searchTerm = document.getElementById('friends-search').value.trim().toLowerCase();
         searchTerm = sanitizeSearchTerm(searchTerm);
 
         const friends = await showFriends();
         const friendsListContainer = document.querySelector('.friend-list');
+        const currentUser = getUserIdFromCookie(); // Ensure this is correctly implemented
         friendsListContainer.innerHTML = '';
 
-        for (let i = 0; i < friends.length; i++) {
-            const friend = friends[i];
-
+        for (const friend of friends) {
             const friendName = `${friend.FirstName} ${friend.LastName}`.toLowerCase();
-            // Skip this friend if the search term does not match or if it's empty
-            if (searchTerm && !friendName.includes(searchTerm)) {
-                return; // Skip this iteration
-            }
+            // Skip friends that don't match the search term
+            if (searchTerm && !friendName.includes(searchTerm)) continue;
 
-
+            // Create the friend element
             const friendElement = document.createElement('div');
             friendElement.className = 'friend';
             friendElement.style.display = "flex";
             friendElement.style.justifyContent = "space-between";
-            friendElement.style.alignItems = "center";    // Centre align items vertically
+            friendElement.style.alignItems = "center";
+            friendElement.style.padding = '10px';
 
+            // Check if the current friend is the logged-in user and add the "Me" label
+            if (friend.UserID == currentUser) {
+                friendElement.style.backgroundColor = '#e0f7fa'; // Light blue background
+                const meLabel = document.createElement('span');
+                meLabel.textContent = "Me";
+                meLabel.style.color = '#00796b'; // Teal color
+                meLabel.style.marginLeft = '10px';
+                friendElement.appendChild(meLabel);
+            }
+
+            // Add the friend's name if they are not the current user
             const friendText = document.createTextNode(`${friend.FirstName} ${friend.LastName}`);
-            friendElement.appendChild(friendText);
+            if (friend.UserID != currentUser) friendElement.appendChild(friendText);
 
+            // Create a container for the buttons
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
-            // Create Delete button for each friend
+            // Create the "Unfollow" button
             const deleteButton = createButton('Unfollow', 'red');
-            deleteButton.addEventListener('click', async function(){
-                // Delete friend code here
-
-
+            deleteButton.addEventListener('click', async () => {
                 try {
-                    const success = await unfollowUser(getUserIdFromCookie(), friend.UserID); // Replace with your actual delete function
+                    const success = await unfollowUser(currentUser, friend.UserID);
                     if (success) {
-                        await loadFriends(); // Reload the friends list after deletion
+                        await loadFriends(); // Reload the friends list after unfollowing
                         await loadWall();
-                        await loadAllUsers();
+                        await loadAllUsers(); // Refresh all users
                     } else {
                         deleteButton.textContent = 'Error';
                         deleteButton.style.backgroundColor = 'gray';
@@ -264,26 +334,28 @@ async function loadFriends() {
                     deleteButton.textContent = 'Error';
                     deleteButton.style.backgroundColor = 'gray';
                 }
-
             });
-            buttonContainer.appendChild(deleteButton);
 
-            // Create Profile button for each friend
+            // Create the "Profile" button
             const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
-                // On click, navigate to user.html
                 window.location.href = `user.html?userID=${friend.UserID}`;
             });
+
+            // Append the buttons to the button container
+            buttonContainer.appendChild(deleteButton);
             buttonContainer.appendChild(profileButton);
 
+            // Append the button container to the friend element
             friendElement.appendChild(buttonContainer);
+
+            // Add the friend element to the friends list container
             friendsListContainer.appendChild(friendElement);
         }
     } catch (error) {
         console.error('Failed to load friends:', error);
     }
 }
-
 
 
 
