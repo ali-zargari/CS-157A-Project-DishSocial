@@ -174,7 +174,7 @@ header button:active {
 /* Review rating styles */
 .review-rating {
     background-color: #ffd700; /* Gold color for the star rating */
-    color: #ffffff;
+    color: #656565;
     padding: 2px 8px;
     border-radius: 4px;
 }
