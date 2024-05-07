@@ -1050,21 +1050,17 @@ async function getAllRecipesWithAuthors() {
     }
 }
 
-async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, maxCalories }) {
+async function loadRecipesWithParams(params) {
     try {
-        // Make an Axios GET request with parameters
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes/search', {
-            params: {
-                searchTerm,
-                filter,
-                userID,
-                minCalories: minCalories ? Number(minCalories) : undefined,
-                maxCalories: maxCalories ? Number(maxCalories) : undefined
-            }
+        // Make an Axios GET request with the provided parameters
+        const response = await axios.get('http://localhost:3002/recipes-with-authors/search', {
+            params: params
         });
+        const recipes = response.data;
 
-        // Get the user's uploaded recipes
-        const userUploadedRecipes = await getRecipesByUser(userID);
+        // Get the current user's uploaded recipes
+        const currentUserId = params.userID;
+        const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const uploadedRecipesSet = new Set(userUploadedRecipes);
 
         // Create a document fragment for efficient DOM updates
@@ -1073,7 +1069,7 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
         const fragment = document.createDocumentFragment();
 
         // Process the fetched recipes
-        for (const recipe of response.data) {
+        for (const recipe of recipes) {
             // Determine if the current user uploaded this recipe
             const isUploadedByCurrentUser = uploadedRecipesSet.has(recipe.RecipeID);
 
@@ -1095,8 +1091,7 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
             infoContainer.style.display = 'flex';
             infoContainer.style.flexDirection = 'row';
             infoContainer.style.justifyContent = 'space-between';
-            //infoContainer.style.gap = '8px';
-            infoContainer.style.flex = '0 0 75%'; // Take up 75% of the width
+            infoContainer.style.flex = '0 0 75%';
 
             // Create a sub-container for the title and ingredients specifically
             const titleAndIngredientsContainer = document.createElement('div');
@@ -1126,15 +1121,15 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
             detailsInfoContainer.style.gap = '4px';
 
             // Prepare the author and ratings information
-            const separator = ' | ';
             const recipeAuthor = `Author: ${recipe.AuthorName || 'Unknown'}`;
             let avgRatingText = 'N/A';
-            if (typeof recipe.AvgRating === 'number') {
-                avgRatingText = recipe.AvgRating.toFixed(1);
+            if (recipe.AvgRating > '0' && recipe.AvgRating < '5.01') {
+                avgRatingText = parseFloat(recipe.AvgRating).toFixed(1);
             }
+
             const avgRating = `Average Rating: ${avgRatingText}`;
-            const numRatings = `Number of Ratings: ${recipe.NumRatings || 0}`;
-            const numReviews = `Number of Reviews: ${recipe.NumReviews || 0}`;
+            const numRatings = `${recipe.NumRatings || 0}`;
+            const numReviews = `${recipe.NumReviews || 0}`;
 
             // Add these lines to paragraphs
             const line1Element = document.createElement('p');
@@ -1146,7 +1141,7 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
             line2Element.style.margin = '0';
 
             const line3Element = document.createElement('p');
-            line3Element.textContent = `${numRatings} | ${numReviews}`;
+            line3Element.textContent = `${numRatings} Ratings \n ${numReviews} Reviews`;
             line3Element.style.margin = '0';
 
             // Append the lines to the extra details container
@@ -1179,6 +1174,7 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
                 deleteButton.addEventListener('click', async (event) => {
                     event.stopPropagation(); // Prevent triggering the recipe info loading event
                     await deleteRecipe(recipe.RecipeID);
+
                     await loadRecipesWithParams({ searchTerm, filter, userID, minCalories, maxCalories });
                     if (selectedRecipeId === recipe.RecipeID){
                         const recipeInfoContainer = document.querySelector('.recipe-description');
@@ -1190,6 +1186,9 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
 
                 // Append the delete button to the button container
                 buttonContainer.appendChild(deleteButton);
+            } else {
+                infoContainer.style.width = '100%';
+                recipeElement.style.justifyContent = 'space-around';
             }
 
             // Add click event to load detailed recipe info
@@ -1218,7 +1217,7 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
         // Append the fragment to the recipe list container
         recipeListContainer.appendChild(fragment);
     } catch (error) {
-        console.error('Failed to load recipes:', error);
+        console.error('Failed to load recipes with parameters:', error);
     }
 }
 
