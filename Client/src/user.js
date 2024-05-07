@@ -31,8 +31,6 @@ async function displayUserContent(userId) {
     // Render user info
     if (userInfo) {
 
-
-
         document.getElementById('user-details').innerHTML = `
             <h2>User Details</h2>
             <p><strong>Name:</strong> ${userInfo.FirstName} ${userInfo.LastName}</p>
