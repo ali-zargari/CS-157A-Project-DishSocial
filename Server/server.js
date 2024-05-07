@@ -269,7 +269,6 @@ app.get('/recipe/:recipeID', async (req, res) => {
         );
 
         connection.release();
-        console.log(ratingStats);
         if (recipeDetails.length > 0) {
             const response = {
                 ...recipeDetails[0],
