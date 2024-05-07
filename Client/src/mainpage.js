@@ -1053,7 +1053,7 @@ async function getAllRecipesWithAuthors() {
 async function loadRecipesWithParams(params) {
     try {
         // Make an Axios GET request with the provided parameters
-        const response = await axios.get('http://localhost:3002/recipes-with-authors/search', {
+        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes-with-authors/search', {
             params: params
         });
         const recipes = response.data;
