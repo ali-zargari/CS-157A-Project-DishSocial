@@ -580,7 +580,7 @@ async function fetchAndDisplayReviews(recipeId) {
                 const deleteButton = reviewItem.querySelector('.delete-button');
                 deleteButton.addEventListener('click', async function() {
                     await deleteReview(review.ReviewID);
-                    await fetchAndDisplayReviews(recipeId);
+                    await loadRecipeInfo(selectedRecipeId)
                 });
             }
         });
@@ -768,7 +768,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         if (response.status === 201) {
             // Append the new review to the list on the page
             const newReview = response.data;
-            await fetchAndDisplayReviews(selectedRecipeId);
+            await loadRecipeInfo(selectedRecipeId)
             //addReviewToPage(newReview);
 
             // Clear the form fields
