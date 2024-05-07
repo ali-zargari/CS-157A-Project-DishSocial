@@ -59,6 +59,8 @@ async function loadRecipes() {
         // Fetch recipes uploaded by the current user and all available recipes
         const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const recipes = await getAllRecipes();
+        let highlightedRecipeElement = null;
+
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
 
@@ -129,6 +131,15 @@ async function loadRecipes() {
             recipeElement.addEventListener('click', function () {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
+
+                // Remove highlighting from the currently highlighted recipe if it exists
+                if (highlightedRecipeElement) {
+                    highlightedRecipeElement.classList.remove('recipe-highlighted');
+                }
+
+                // Add highlight to the clicked recipe and update the reference
+                recipeElement.classList.add('recipe-highlighted');
+                highlightedRecipeElement = recipeElement; // Update the reference to the new highlighted element
             });
 
             // Append text and button containers to the main recipe element
@@ -364,8 +375,6 @@ async function loadRecipeInfo(recipeId) {
         const recipeInfo = await getSelectedRecipeInfo(recipeId);
         const recipeInfoContainer = document.querySelector('.recipe-description');
         const reviewFormSection = document.querySelector('.review-form-section');
-        console.log("loadRecipeInfo");
-        console.log(recipeId);
         const recipeAuthor = await getRecipeAuthor(recipeId);
 
         // Clear out any existing content in the recipe info container
@@ -400,10 +409,6 @@ async function loadRecipeInfo(recipeId) {
             author.textContent = 'Author: DishSocial';
         }else{
             const authorName = await getUserNameById(recipeAuthor.UserID);
-            console.log("recipeAuthor.UserID: ");
-            console.log(recipeAuthor.UserID);
-            console.log("authorName");
-            console.log(authorName);
 
             author.textContent = `Author: ${authorName}`;
         }
@@ -477,10 +482,6 @@ async function loadRecipeInfo(recipeId) {
     // Fetch reviews for the recipe
     await fetchAndDisplayReviews(recipeId);
 }
-
-
-
-
 
 async function sendRecipeToCustomList(recipeId) {
     try {
