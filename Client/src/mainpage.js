@@ -674,6 +674,8 @@ async function performAdvancedRecipeSearch() {
 
     const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
 
+    let highlightedRecipeElement = null;
+
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/search`, {
             params: {
@@ -717,11 +719,19 @@ async function performAdvancedRecipeSearch() {
                 recipeElement.appendChild(deleteButton);
             }
 
-            // Add click event listener to each recipe element
+            // Add an event listener for loading detailed recipe info
             recipeElement.addEventListener('click', function () {
-                const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
-                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
+                selectedRecipeId = recipe.RecipeID;
+                loadRecipeInfo(selectedRecipeId);
 
+                // Remove highlighting from the currently highlighted recipe if it exists
+                if (highlightedRecipeElement) {
+                    highlightedRecipeElement.classList.remove('recipe-highlighted');
+                }
+
+                // Add highlight to the clicked recipe and update the reference
+                recipeElement.classList.add('recipe-highlighted');
+                highlightedRecipeElement = recipeElement; // Update the reference to the new highlighted element
             });
 
             // Append the new element to the container
@@ -876,11 +886,11 @@ function addRecipeToDom(recipe) {
         <p>${recipe.Ingredients}</p>  <!-- You might want to format the ingredients differently -->
     `;
 
-    // Add an event listener to load the recipe details when clicked
-    recipeElement.addEventListener('click', function() {
-        selectedRecipeId = recipe.RecipeID;
-        loadRecipeInfo(selectedRecipeId);
-    });
+    // // Add an event listener to load the recipe details when clicked
+    // recipeElement.addEventListener('click', function() {
+    //     selectedRecipeId = recipe.RecipeID;
+    //     loadRecipeInfo(selectedRecipeId);
+    // });
 
     // Append the new recipe to the list
     recipeListContainer.appendChild(recipeElement);
