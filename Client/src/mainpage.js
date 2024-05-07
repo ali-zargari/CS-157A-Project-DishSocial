@@ -292,7 +292,8 @@ async function loadRecipeInfo(recipeId) {
         const recipeInfo = await getSelectedRecipeInfo(recipeId);
         const recipeInfoContainer = document.querySelector('.recipe-description');
         const reviewFormSection = document.querySelector('.review-form-section');
-
+        console.log("loadRecipeInfo");
+        console.log(recipeId);
         const recipeAuthor = await getRecipeAuthor(recipeId);
 
         // Clear out any existing content in the recipe info container
@@ -327,6 +328,11 @@ async function loadRecipeInfo(recipeId) {
             author.textContent = 'Author: DishSocial';
         }else{
             const authorName = await getUserNameById(recipeAuthor.UserID);
+            console.log("recipeAuthor.UserID: ");
+            console.log(recipeAuthor.UserID);
+            console.log("authorName");
+            console.log(authorName);
+
             author.textContent = `Author: ${authorName}`;
         }
         recipeInfoContainer.appendChild(author);
