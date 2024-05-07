@@ -663,12 +663,23 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function performAdvancedRecipeSearch() {
-    const searchTerm = document.getElementById('general-search').value;
-    lastSearchTerm = searchTerm; // <-- Save the last search term
 
-    const filter = document.getElementById('recipeFilter').value;
-    lastFilter = filter; // <-- Save the last filter
+    let searchTerm;
+    let filter;
+    if(arguments.length === 0) {
+        searchTerm = document.getElementById('general-search').value;
+        filter = document.getElementById('recipeFilter').value;
+    }else
+    {
+        searchTerm = arguments[0];
+        filter = arguments[1];
+    }
 
+    lastSearchTerm = searchTerm;
+    lastFilter = filter;
+
+    console.log(lastSearchTerm);
+    console.log(filter);
     const minCalories = document.getElementById('min-calories').value;
     const maxCalories = document.getElementById('max-calories').value;
 
@@ -821,11 +832,17 @@ async function uploadRecipe(event) {
     // If the new recipe was created successfully
     if (newRecipe) {
         // Call a function to add the new recipe to the list of recipes in the DOM
-        addRecipeToDom(newRecipe);
+        //addRecipeToDom(newRecipe);
         // Optionally clear the form
         event.target.reset();
-
-        await loadRecipes();
+        if(lastFilter.length !== 0 || lastSearchTerm.length !== 0){
+            console.log("this is loaded");
+            await performAdvancedRecipeSearch(lastSearchTerm, lastFilter);
+        }
+        else{
+            console.log("else loaded");
+            await loadRecipes();
+        }
     } else {
         // Handle the error case
         alert('Failed to upload recipe.');
