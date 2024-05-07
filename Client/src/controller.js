@@ -154,7 +154,7 @@ export async function getUserNameById(uID) {
 
 export async function getSelectedRecipeInfo(recipeID) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipe/${recipeID}`);
+        const response = await axios.get(`http://localhost:3002/recipe/${recipeID}`);
         return response.data; // Returning the data for further use
     } catch (error) {
         console.error(`Failed to get selected recipe info: ${error}`);
@@ -163,10 +163,7 @@ export async function getSelectedRecipeInfo(recipeID) {
 
 export async function getRecipeAuthor(recipeID) {
     try {
-        console.log("controller recipe id: ");
-        console.log(recipeID);
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/getRecipeAuthor/${recipeID}`);
-        console.log(response.data);
         return response.data; // Returning the data for further use
     } catch (error) {
         console.error(`Failed to get selected recipe author: ${error}`);

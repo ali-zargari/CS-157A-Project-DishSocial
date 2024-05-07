@@ -59,6 +59,8 @@ async function loadRecipes() {
         // Fetch recipes uploaded by the current user and all available recipes
         const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const recipes = await getAllRecipes();
+        let highlightedRecipeElement = null;
+
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
 
@@ -129,6 +131,15 @@ async function loadRecipes() {
             recipeElement.addEventListener('click', function () {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
+
+                // Remove highlighting from the currently highlighted recipe if it exists
+                if (highlightedRecipeElement) {
+                    highlightedRecipeElement.classList.remove('recipe-highlighted');
+                }
+
+                // Add highlight to the clicked recipe and update the reference
+                recipeElement.classList.add('recipe-highlighted');
+                highlightedRecipeElement = recipeElement; // Update the reference to the new highlighted element
             });
 
             // Append text and button containers to the main recipe element
@@ -364,8 +375,6 @@ async function loadRecipeInfo(recipeId) {
         const recipeInfo = await getSelectedRecipeInfo(recipeId);
         const recipeInfoContainer = document.querySelector('.recipe-description');
         const reviewFormSection = document.querySelector('.review-form-section');
-        console.log("loadRecipeInfo");
-        console.log(recipeId);
         const recipeAuthor = await getRecipeAuthor(recipeId);
 
         // Clear out any existing content in the recipe info container
@@ -395,15 +404,27 @@ async function loadRecipeInfo(recipeId) {
         ingredients.textContent = `Ingredients: ${recipeInfo.Ingredients}`;
         recipeInfoContainer.appendChild(ingredients);
 
+        const reviewCount = document.createElement('p');
+        reviewCount.textContent = `Total Reviews: ${recipeInfo.ReviewCount}`;
+        recipeInfoContainer.appendChild(reviewCount);
+
+        const ratingCount = document.createElement('p');
+        ratingCount.textContent = `Total Ratings: ${recipeInfo.RatingCount}`;
+        recipeInfoContainer.appendChild(ratingCount);
+
+        const avgRating = document.createElement('p');
+        if(recipeInfo.AverageRating != null) {
+            avgRating.textContent = `Average Rating: ${recipeInfo.AverageRating}`;
+        }else{
+            avgRating.textContent = `Average Rating: 0`;
+        }
+        recipeInfoContainer.appendChild(avgRating);
+
         const author = document.createElement('p');
         if(recipeAuthor === 0 ){
             author.textContent = 'Author: DishSocial';
         }else{
             const authorName = await getUserNameById(recipeAuthor.UserID);
-            console.log("recipeAuthor.UserID: ");
-            console.log(recipeAuthor.UserID);
-            console.log("authorName");
-            console.log(authorName);
 
             author.textContent = `Author: ${authorName}`;
         }
@@ -477,10 +498,6 @@ async function loadRecipeInfo(recipeId) {
     // Fetch reviews for the recipe
     await fetchAndDisplayReviews(recipeId);
 }
-
-
-
-
 
 async function sendRecipeToCustomList(recipeId) {
     try {
@@ -563,7 +580,7 @@ async function fetchAndDisplayReviews(recipeId) {
                 const deleteButton = reviewItem.querySelector('.delete-button');
                 deleteButton.addEventListener('click', async function() {
                     await deleteReview(review.ReviewID);
-                    await fetchAndDisplayReviews(recipeId);
+                    await loadRecipeInfo(selectedRecipeId)
                 });
             }
         });
@@ -646,16 +663,29 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function performAdvancedRecipeSearch() {
-    const searchTerm = document.getElementById('general-search').value;
-    lastSearchTerm = searchTerm; // <-- Save the last search term
 
-    const filter = document.getElementById('recipeFilter').value;
-    lastFilter = filter; // <-- Save the last filter
+    let searchTerm;
+    let filter;
+    if(arguments.length === 0) {
+        searchTerm = document.getElementById('general-search').value;
+        filter = document.getElementById('recipeFilter').value;
+    }else
+    {
+        searchTerm = arguments[0];
+        filter = arguments[1];
+    }
 
+    lastSearchTerm = searchTerm;
+    lastFilter = filter;
+
+    console.log(lastSearchTerm);
+    console.log(filter);
     const minCalories = document.getElementById('min-calories').value;
     const maxCalories = document.getElementById('max-calories').value;
 
     const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from cookie
+
+    let highlightedRecipeElement = null;
 
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/search`, {
@@ -700,11 +730,19 @@ async function performAdvancedRecipeSearch() {
                 recipeElement.appendChild(deleteButton);
             }
 
-            // Add click event listener to each recipe element
+            // Add an event listener for loading detailed recipe info
             recipeElement.addEventListener('click', function () {
-                const selectedRecipeId = recipe.RecipeID; // Assuming 'RecipeID' is the attribute from your database
-                loadRecipeInfo(selectedRecipeId); // This function should handle loading the detailed info for the selected recipe
+                selectedRecipeId = recipe.RecipeID;
+                loadRecipeInfo(selectedRecipeId);
 
+                // Remove highlighting from the currently highlighted recipe if it exists
+                if (highlightedRecipeElement) {
+                    highlightedRecipeElement.classList.remove('recipe-highlighted');
+                }
+
+                // Add highlight to the clicked recipe and update the reference
+                recipeElement.classList.add('recipe-highlighted');
+                highlightedRecipeElement = recipeElement; // Update the reference to the new highlighted element
             });
 
             // Append the new element to the container
@@ -751,7 +789,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         if (response.status === 201) {
             // Append the new review to the list on the page
             const newReview = response.data;
-            await fetchAndDisplayReviews(selectedRecipeId);
+            await loadRecipeInfo(selectedRecipeId)
             //addReviewToPage(newReview);
 
             // Clear the form fields
@@ -794,11 +832,17 @@ async function uploadRecipe(event) {
     // If the new recipe was created successfully
     if (newRecipe) {
         // Call a function to add the new recipe to the list of recipes in the DOM
-        addRecipeToDom(newRecipe);
+        //addRecipeToDom(newRecipe);
         // Optionally clear the form
         event.target.reset();
-
-        await loadRecipes();
+        if(lastFilter.length !== 0 || lastSearchTerm.length !== 0){
+            console.log("this is loaded");
+            await performAdvancedRecipeSearch(lastSearchTerm, lastFilter);
+        }
+        else{
+            console.log("else loaded");
+            await loadRecipes();
+        }
     } else {
         // Handle the error case
         alert('Failed to upload recipe.');
@@ -859,11 +903,11 @@ function addRecipeToDom(recipe) {
         <p>${recipe.Ingredients}</p>  <!-- You might want to format the ingredients differently -->
     `;
 
-    // Add an event listener to load the recipe details when clicked
-    recipeElement.addEventListener('click', function() {
-        selectedRecipeId = recipe.RecipeID;
-        loadRecipeInfo(selectedRecipeId);
-    });
+    // // Add an event listener to load the recipe details when clicked
+    // recipeElement.addEventListener('click', function() {
+    //     selectedRecipeId = recipe.RecipeID;
+    //     loadRecipeInfo(selectedRecipeId);
+    // });
 
     // Append the new recipe to the list
     recipeListContainer.appendChild(recipeElement);

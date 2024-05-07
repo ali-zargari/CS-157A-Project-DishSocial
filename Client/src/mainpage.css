@@ -984,3 +984,7 @@ label:hover {
     background-color: #218838;
 }
 
+.recipe-highlighted {
+    background-color: powderblue; /* Light grey background for the highlighted recipe */
+    border-color: black; /* Blue border color for emphasis */
+}
