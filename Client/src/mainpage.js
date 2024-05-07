@@ -1180,6 +1180,12 @@ async function loadRecipesWithParams({ searchTerm, filter, userID, minCalories, 
                     event.stopPropagation(); // Prevent triggering the recipe info loading event
                     await deleteRecipe(recipe.RecipeID);
                     await loadRecipesWithParams({ searchTerm, filter, userID, minCalories, maxCalories });
+                    if (selectedRecipeId === recipe.RecipeID){
+                        const recipeInfoContainer = document.querySelector('.recipe-description');
+                        const reviewFormSection = document.querySelector('.review-form-section');
+                        recipeInfoContainer.innerHTML = '';
+                        reviewFormSection.innerHTML = '';
+                    }
                 });
 
                 // Append the delete button to the button container
