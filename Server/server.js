@@ -994,7 +994,7 @@ app.get('/recipes-with-authors', async (req, res) => {
         // Establish a database connection
         const connection = await pool.getConnection();
 
-        // SQL query to join recipes with their authors' information
+        // SQL query to join recipes with their authors' information including upload date
         const query = `
             SELECT 
                 r.RecipeID,
@@ -1003,6 +1003,7 @@ app.get('/recipes-with-authors', async (req, res) => {
                 r.TotalCalories,
                 r.Ingredients,
                 CONCAT(u.FirstName, ' ', u.LastName) AS AuthorName,
+                ur.UploadDate,
                 COUNT(re.ReviewID) AS NumReviews,
                 COUNT(re.Rating) AS NumRatings,
                 AVG(re.Rating) AS AvgRating
@@ -1017,7 +1018,9 @@ app.get('/recipes-with-authors', async (req, res) => {
             LEFT JOIN
                 Review re ON rr.ReviewID = re.ReviewID
             GROUP BY
-                r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients, u.FirstName, u.LastName
+                r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients, u.FirstName, u.LastName, ur.UploadDate
+            ORDER BY
+                ur.UploadDate DESC
         `;
 
         // Execute the query
@@ -1033,6 +1036,7 @@ app.get('/recipes-with-authors', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 
 

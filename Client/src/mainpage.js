@@ -56,7 +56,7 @@ document.querySelector('.filter-button').addEventListener('click', async functio
 async function loadRecipes() {
     try {
         // Make an Axios GET request to fetch all recipes with authors
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes-with-authors');
+        const response = await axios.get('http://localhost:3002/recipes-with-authors');
         const recipesWithAuthors = response.data;
 
         // Get the current user's uploaded recipes
@@ -132,6 +132,7 @@ async function loadRecipes() {
             const avgRating = `Average Rating: ${avgRatingText}`;
             const numRatings = `${recipe.NumRatings || 0}`;
             const numReviews = `${recipe.NumReviews || 0}`;
+            const uploadDate = `Uploaded on: ${new Date(recipe.UploadDate).toLocaleDateString()}`;
 
             // Add these lines to paragraphs
             const line1Element = document.createElement('p');
@@ -146,11 +147,15 @@ async function loadRecipes() {
             line3Element.textContent = `${numRatings} Ratings \n ${numReviews} Reviews`;
             line3Element.style.margin = '0';
 
+            const line4Element = document.createElement('p');
+            line4Element.textContent = uploadDate;
+            line4Element.style.margin = '0';
 
             // Append the lines to the extra details container
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
+            detailsInfoContainer.appendChild(line4Element);
 
             // Append both the title-ingredients and extra details containers to the main info container
             infoContainer.appendChild(titleAndIngredientsContainer);
