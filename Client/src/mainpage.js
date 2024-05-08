@@ -132,7 +132,9 @@ async function loadRecipes() {
             const avgRating = `Average Rating: ${avgRatingText}`;
             const numRatings = `${recipe.NumRatings || 0}`;
             const numReviews = `${recipe.NumReviews || 0}`;
-            const uploadDate = `Uploaded on: ${new Date(recipe.UploadDate).toLocaleDateString()}`;
+            const date = new Date(recipe.UploadDate);
+            date.setHours(date.getHours() - 8);
+            const uploadDate = `Uploaded on: ${date.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`;
 
             // Add these lines to paragraphs
             const line1Element = document.createElement('p');
@@ -523,6 +525,13 @@ async function loadRecipeInfo(recipeId) {
         }
         recipeInfoContainer.appendChild(author);
 
+        // Display the upload date
+        const uploadDate = document.createElement('p');
+        const date = new Date(recipeInfo.UploadDate);
+        date.setHours(date.getHours() - 8);
+        uploadDate.textContent = `Uploaded on: ${date.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`;
+        recipeInfoContainer.appendChild(uploadDate);
+
         // Create and append 'Add to Custom List' button
         let isInList = await checkRecipeInList(recipeId);
         const addButton = document.createElement('button');
@@ -719,21 +728,20 @@ async function loadWall() {
             reviewContainer.appendChild(reviewText);
 
             const reviewDate = document.createElement('p');
-            const dateObject = new Date(review.PublishDate); // Convert the string to a Date object
-            const formattedDate = dateObject.toISOString().split('T')[0]; // Extract only the date part
+            const dateObject = new Date(review.PublishDate);
+            const formattedDate = dateObject.toLocaleDateString('en-US', {
+                timeZone: 'America/Los_Angeles', // Set timezone to Pacific Standard Time
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
             reviewDate.textContent = `Date: ${formattedDate}`;
             reviewDate.className = 'review-date';
             reviewContainer.appendChild(reviewDate);
 
-
             const reviewRating = document.createElement('div'); // Changed to div for better styling control
             reviewRating.textContent = `${review.Rating} Stars`;
-            if (review.Rating === 5) {
-                reviewRating.className = 'gold-rating';
-            }
-            else{
-                reviewRating.className = 'review-rating';
-            }
+            reviewRating.className = review.Rating === 5 ? 'gold-rating' : 'review-rating';
             reviewContainer.appendChild(reviewRating);
 
             reviewContainer.addEventListener('click', function() {
@@ -758,6 +766,7 @@ async function loadWall() {
         console.error('Failed to load wall:', error);
     }
 }
+
 
 
 document.addEventListener('DOMContentLoaded', async function() {

@@ -241,15 +241,17 @@ app.get('/recipe', async (req, res) => {
     }
 });
 
-// Get recipe info with review statistics including total reviews, total ratings, and average rating
+// Get recipe info with review statistics including total reviews, total ratings, and average rating, plus the upload date
 app.get('/recipe/:recipeID', async (req, res) => {
     try {
         const { recipeID } = req.params;
         const connection = await pool.getConnection();
 
-        // Query to get recipe details
+        // Query to get recipe details along with the upload date
         const [recipeDetails] = await connection.execute(
-            'SELECT * FROM Recipe WHERE RecipeID = ?',
+            `SELECT Recipe.*, User_Uploads_Recipe.UploadDate FROM Recipe
+             LEFT JOIN User_Uploads_Recipe ON Recipe.RecipeID = User_Uploads_Recipe.RecipeID
+             WHERE Recipe.RecipeID = ?`,
             [recipeID]
         );
 
@@ -274,8 +276,10 @@ app.get('/recipe/:recipeID', async (req, res) => {
                 ...recipeDetails[0],
                 ReviewCount: reviewStats[0].ReviewCount,
                 RatingCount: ratingStats[0].RatingCount,
-                AverageRating: ratingStats[0].AverageRating
+                AverageRating: ratingStats[0].AverageRating ? parseFloat(ratingStats[0].AverageRating).toFixed(2) : null,
+                UploadDate: recipeDetails[0].UploadDate ? new Date(recipeDetails[0].UploadDate).toISOString().split('T')[0] : null  // Format the upload date as YYYY-MM-DD
             };
+            console.log(recipeDetails[0].UploadDate);
             res.json(response);
         } else {
             res.status(404).send('Recipe not found');
@@ -286,45 +290,6 @@ app.get('/recipe/:recipeID', async (req, res) => {
     }
 });
 
-
-// Get friend reviews for a user
-app.get('/user/friendReviews/:userID', async (req, res) => {
-    try {
-        const { userID } = req.params;
-        const connection = await pool.getConnection();
-
-        const sqlQuery = `
-            SELECT
-                r.RecipeID, r.Title,  r.Steps, r.TotalCalories, r.Ingredients,
-                rv.ReviewID, rv.PublishDate, rv.Rating, rv.ReviewText,
-                friendUser.FirstName as FriendName  -- Assuming the Users table has a Name column
-            FROM
-                Users u
-                    JOIN
-                Follows fw ON u.UserID = fw.UserID1
-                    JOIN
-                Users friendUser ON fw.UserID2 = friendUser.UserID  -- Join to get the friend's name
-                    JOIN
-                User_Leaves_Review ulr ON ulr.UserID = fw.UserID2
-                    JOIN
-                Review rv ON ulr.ReviewID = rv.ReviewID
-                    JOIN
-                Recipe_Has_Review rhr ON rhr.ReviewID = rv.ReviewID
-                    JOIN
-                Recipe r ON r.RecipeID = rhr.RecipeID
-            WHERE
-                u.UserID = ?;
-        `;
-
-        const [rows] = await connection.execute(sqlQuery, [userID]);
-
-        connection.release();
-        res.send(rows);
-    } catch (error) {
-        console.error(`Failed to get user friend reviews: ${error}`);
-        res.status(500).send(error);
-    }
-});
 
 
 // log in user.
