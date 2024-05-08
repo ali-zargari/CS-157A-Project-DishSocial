@@ -279,7 +279,6 @@ app.get('/recipe/:recipeID', async (req, res) => {
                 AverageRating: ratingStats[0].AverageRating ? parseFloat(ratingStats[0].AverageRating).toFixed(2) : null,
                 UploadDate: recipeDetails[0].UploadDate ? new Date(recipeDetails[0].UploadDate).toISOString().split('T')[0] : null  // Format the upload date as YYYY-MM-DD
             };
-            console.log(recipeDetails[0].UploadDate);
             res.json(response);
         } else {
             res.status(404).send('Recipe not found');

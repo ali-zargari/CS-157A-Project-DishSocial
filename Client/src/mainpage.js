@@ -658,19 +658,20 @@ async function fetchAndDisplayReviews(recipeId) {
         reviewsList.innerHTML = ''; // Clear existing reviews before displaying the latest ones
 
         reviews.forEach(review => {
+            // Convert and format the publish date
+            const publishDate = new Date(review.PublishDate);
+            const formattedDate = publishDate.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: 'long', day: 'numeric' });
+
             // Create and append review items to the reviews list
             const reviewItem = document.createElement('div');
             const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
-            let isFiveStars = false;
-
-            if(review.Rating === 5){
-                isFiveStars = true;
-            }
+            let isFiveStars = review.Rating === 5;
             reviewItem.className = 'review-item';
             reviewItem.innerHTML = `
                 <p class="review-text">"${review.ReviewText}"</p>
                 <div class="review-details">
                     <span class="review-author">- ${review.FirstName} ${review.LastName}</span>
+                    <span class="review-date">Reviewed on: ${formattedDate}</span>
                     ${isFiveStars ? `
                         <span class="gold-rating">Rating: ${review.Rating} Stars</span>
                     ` : `<span class="review-rating">Rating: ${review.Rating} Stars</span>`}
