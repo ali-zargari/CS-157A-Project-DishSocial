@@ -193,8 +193,12 @@ async function loadRecipes() {
 
                 // Remove highlighting from the currently highlighted recipe if it exists
                 const highlightedElement = document.querySelector('.recipe-highlighted');
+                const wallListHighLightedElement = document.querySelector('.wall-recipe-highlighted');
                 if (highlightedElement) {
                     highlightedElement.classList.remove('recipe-highlighted');
+                }
+                if(wallListHighLightedElement){
+                    wallListHighLightedElement.classList.remove('wall-recipe-highlighted');
                 }
 
                 // Add highlight to the clicked recipe and update the reference
@@ -722,6 +726,18 @@ async function loadWall() {
 
             reviewContainer.addEventListener('click', function() {
                 loadRecipeInfo(review.RecipeID);
+                // Remove highlighting from the currently highlighted recipe if it exists
+                const highlightedElement = document.querySelector('.wall-recipe-highlighted');
+                const recipeListHighlightedElement = document.querySelector('.recipe-highlighted');
+                if (highlightedElement) {
+                    highlightedElement.classList.remove('wall-recipe-highlighted');
+                }
+                if(recipeListHighlightedElement){
+                    recipeListHighlightedElement.classList.remove('recipe-highlighted');
+                }
+
+                // Add highlight to the clicked recipe and update the reference
+                reviewContainer.classList.add('wall-recipe-highlighted');
             });
 
             reviewWallContainer.appendChild(reviewContainer);
