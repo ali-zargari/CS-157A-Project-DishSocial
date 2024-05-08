@@ -687,6 +687,10 @@ async function fetchAndDisplayReviews(recipeId) {
 async function loadWall() {
     try {
         const reviews = await getUserFriendReviews(getUserIdFromCookie());
+
+        // Sort reviews by publish date in descending order (most recent first)
+        reviews.sort((a, b) => new Date(b.PublishDate) - new Date(a.PublishDate));
+
         const reviewWallContainer = document.querySelector('.wall-content');
         reviewWallContainer.innerHTML = '';
 
@@ -710,9 +714,12 @@ async function loadWall() {
             reviewContainer.appendChild(reviewText);
 
             const reviewDate = document.createElement('p');
-            reviewDate.textContent = `Date: ${review.PublishDate}`;
+            const dateObject = new Date(review.PublishDate); // Convert the string to a Date object
+            const formattedDate = dateObject.toISOString().split('T')[0]; // Extract only the date part
+            reviewDate.textContent = `Date: ${formattedDate}`;
             reviewDate.className = 'review-date';
             reviewContainer.appendChild(reviewDate);
+
 
             const reviewRating = document.createElement('div'); // Changed to div for better styling control
             reviewRating.textContent = `${review.Rating} Stars`;
