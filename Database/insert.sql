@@ -1,123 +1,193 @@
--- Inserting dummy data into Users
--- Assuming a trigger exists to automatically create a Wall entry for each new User
-INSERT INTO Users (FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password)
-VALUES
-('John', 'Doe', 'Male', 'john.doe@example.com', 'San Francisco', '1990-05-15', 'johnsPassword123'),
-('Jane', 'Smith', 'Female', 'jane.smith@example.com', 'Los Angeles', '1988-08-23', 'janesPassword123'),
-('Alice', 'Wong', 'Female', 'alice.wong@example.com', 'Seattle', '1992-11-08', 'alicesPassword456'),
-('Ethan', 'Hunt', 'Male', 'ethan.hunt@example.com', 'Chicago', '1987-04-12', 'ethansPassword789'),
-('Nora', 'Jones', 'Female', 'nora.jones@example.com', 'Austin', '1993-02-24', 'norasPassword012');
-
-
--- Inserting dummy data into Review
-INSERT INTO Review (PublishDate,  Rating, ReviewText) VALUES
-('2023-12-01',  4, 'Really enjoyed this recipe! Easy to follow.'),
-('2023-12-05',  5, 'Delicious! Will make again.'),
-('2023-11-15',  5, 'This is now a family favorite. Highly recommend.'),
-('2023-11-20',  3, 'Good, but a bit time-consuming.'),
-('2023-12-03',  2, 'Not what I expected, needs more flavor.');
-
--- Inserting dummy data into Recipe
-INSERT INTO Recipe (Title,  Steps, TotalCalories, Ingredients)
-VALUES
-('Spaghetti Bolognese',   '1. Boil pasta...\n2. Cook sauce...', 850, 10),
-('Classic Cheeseburger',  '1. Grill patties...\n2. Assemble burger...', 650, 7),
-('Vegetarian Pizza',   '1. Prepare dough...\n2. Add toppings...', 750, 8),
-('Chicken Caesar Salad',   '1. Grill chicken...\n2. Toss salad...', 550, 7),
-('Beef Stroganoff',   '1. Sauté beef...\n2. Prepare sauce...', 900, 12),
-('Quinoa Salad',   '1. Cook quinoa...\n2. Mix ingredients...', 400, 5),
-('Chocolate Chip Cookies',   '1. Mix dough...\n2. Bake cookies...', 300, 6);
-
-
-
--- Inserting dummy data into relationship tables
--- Note: For relationship tables, data is inserted based on existing entries in the referenced tables
-
--- Follows
-INSERT INTO Follows (UserID1, UserID2)
-VALUES
-(1, 2),
-(2, 1),
-(1, 3),
-(3, 1),
-(2, 4),
-(4, 2),
-(3, 5),
-(5, 3),
-(4, 1),
-(1, 4),
-(5, 2),
-(2, 5);
-
--- User_Uploads_Recipe
-INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate)
-VALUES
-(1, 1, '2023-12-10'),
-(2, 2, '2023-12-15'),
-(3, 3, '2023-12-12'),
-(4, 4, '2023-12-14'),
-(5, 5, '2023-12-16');
-
--- User_Likes_Recipe
-INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES
-(1, 5),
-(2, 4),
-(3, 3),
-(4, 2),
-(5, 1),
-(1, 2),
-(2, 3),
-(3, 4),
-(4, 5);
-
--- User_Leaves_Review
-INSERT INTO User_Leaves_Review (UserID, ReviewID)
-VALUES
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5);
-
-
-
--- Wall_Displays_Review, Recipe_Has_Review, Recipe_Contains_Ingredient
--- Assuming these don't have triggers and need manual insertion
--- Using a trigger for this.
-
-INSERT INTO Recipe_Has_Review (RecipeID, ReviewID)
-VALUES
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5);
-
-
-
--- Recipes added to list by user.
-INSERT INTO Custom_List_Recipes (UserID, RecipeID) VALUES
-(1, 3),
-(2, 4),
-(3, 5),
-(4, 1),
-(5, 2);
-
-
--- USING TRIGGER FOR THIS.
--- INSERT INTO Liked_By_Friends_Recipes (RecipeID, FriendID)
--- VALUES
--- (2, 1),
--- (1, 2);
-
--- USING TRIGGER FOR THIS.
--- INSERT INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID)
--- VALUES
--- (1, 2),
--- (2, 1);
-
--- USING TRIGGER FOR THIS.
--- INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
--- VALUES
--- (1, 2, 1),
--- (2, 1, 2);
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (1, 'Calvin', 'Price', 'Other', 'Calvin.Price1@example.com', 'East Williamport', '2001-03-04', '_MC2Q0spE$');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (2, 'Michael', 'Johnson', 'Male', 'Michael.Johnson2@example.com', 'Davidborough', '1987-09-10', 'U(6K+aB#L4');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (3, 'Jenna', 'Smith', 'Female', 'Jenna.Smith3@example.com', 'Lopezfurt', '1966-01-17', '&a2hN3twoz');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (4, 'Victor', 'Mendez', 'Female', 'Victor.Mendez4@example.com', 'Elliotttown', '1965-02-27', '#2n$rbKf4y');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (5, 'Phillip', 'May', 'Female', 'Phillip.May5@example.com', 'East Michael', '2000-05-15', 'spWQKSbr)3');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (6, 'Katherine', 'Wilson', 'Female', 'Katherine.Wilson6@example.com', 'West Michaelmouth', '1977-11-11', '#(3HJvJo18');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (7, 'Brittany', 'Lambert', 'Female', 'Brittany.Lambert7@example.com', 'Port Jeffrey', '1998-03-07', '*UtH_S4wG9');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (8, 'Amy', 'Huff', 'Female', 'Amy.Huff8@example.com', 'Ravenberg', '1967-08-08', '@lUp8(HF1f');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (9, 'Brenda', 'Johnson', 'Male', 'Brenda.Johnson9@example.com', 'Jamesmouth', '1989-10-04', 'tQ1iVIBx_l');
+INSERT INTO Users (UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) VALUES (10, 'Jeremy', 'Lawrence', 'Female', 'Jeremy.Lawrence10@example.com', 'West Joshua', '2000-05-08', ')KCs&ismS0');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (1, 'Style woman deep', 'Candidate weight step recently ground doctor. Image different apply artist change. Education national knowledge spring computer area. Environment lawyer article second speak land gas.', 859, 'partner, discussion, sign, different, town');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (2, 'Late parent land', 'Year strategy concern dark. Mind speak fear prepare act when. Somebody thank serve through receive. Resource high minute apply page green religious. Name everyone record individual office. Per support picture if executive truth leader open. Foreign large reason produce run time.', 119, 'trial, professional, huge, home, recent');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (3, 'Quickly network', 'And third with at eye on. Church interview not adult. Attention teacher strategy black challenge. Message bill their green finish.', 576, 'heavy, example, again, white, control');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (4, 'Street peace nice actually', 'Determine hope traditional check without worker. Term available experience people. Indeed final view great why red. Open send find theory actually miss gas. Enough hospital expect cause follow industry. Another each so moment.', 702, 'discussion, whole, performance, the, risk');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (5, 'Foreign street member', 'Even business little unit move know partner. Official manage style surface animal. Bill million majority yard once. These hair girl process know. Eat style here sister. Right notice have course sing enjoy.', 201, 'attention, size, agreement, public, write');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (6, 'Serious college hand', 'Debate effort leave street sea manager. Create collection not statement recent describe. Far leader recently.', 342, 'senior, measure, person, out, once');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (7, 'Accept character blue', 'Decision market small candidate serious official. When part reflect kitchen since tax series. Vote local start hotel issue. Left key section grow season. None fire myself news health learn him. Probably individual return try music though.', 898, 'alone, box, I, item, human');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (8, 'Service painting', 'Suddenly vote add space tough although beyond. Standard interesting of throughout first source point. All us hundred should daughter.', 437, 'opportunity, cause, fill, class, me');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (9, 'Score oil', 'Military good realize nothing stuff. Interview people sister model which lay suffer. Thing sound value difference last his father us. Young her response cover where.', 332, 'ahead, character, person, reach, military');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (10, 'Various all', 'Name cut lawyer. Second imagine him score part. Question account body participant positive. Congress good window itself thus. Take quality great center own own sign.', 514, 'could, training, happy, speech, state');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (11, 'Company avoid', 'Old wait bar man happen defense. You guy election. Computer worry will rise deal letter. Process race history computer hotel development. Couple remember news college.', 998, 'population, up, growth, up, majority');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (12, 'New wait', 'Hospital film writer. Fall will probably on seem professional. Drop move hard. Week win mind director.', 528, 'administration, less, science, former, build');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (13, 'Official site same', 'Soon fire whose against way people. Relate man clearly reality story. Mrs school school security. Especially range music soldier reveal partner want. Direction could senior sign protect. Deal really drop never.', 956, 'I, network, offer, politics, least');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (14, 'Matter learn weight', 'Might party knowledge walk bag country occur. Spring however agree front. Me important her fear civil for individual. Government happen agreement blood none long staff. Air example career someone spend reflect. Purpose prepare charge unit scene clearly director sometimes.', 105, 'part, truth, send, range, he');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (15, 'Behind morning much live', 'Themselves strong drop keep current eight produce. Organization sense simply treatment official I trouble watch. Use probably reduce. Yourself bank push feel subject. Ball appear rock computer knowledge.', 514, 'throughout, institution, home, pick, son');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (16, 'Father movie fish', 'Book pick about southern. Begin down join start employee why become. If agency contain ability conference nothing. Body late history rule their unit leader.', 882, 'image, stage, street, ball, hand');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (17, 'Course deep', 'Condition all business indeed often. Education than collection let write exactly public stuff. Know exist expert according fact.', 155, 'weight, item, industry, could, century');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (18, 'Rather back', 'Discover door speech. Offer reason today themselves leader. Police game whose when. Writer organization treat number wide state. Despite recent effort standard that expect.', 969, 'should, perform, common, item, into');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (19, 'Speak of', 'Organization inside area operation network boy. Study rate result Mr fall well live baby. Science network positive report sometimes four. Avoid standard dream national eat. Must continue central best.', 192, 'during, own, growth, apply, series');
+INSERT INTO Recipe (RecipeID, Title, Steps, TotalCalories, Ingredients) VALUES (20, 'Dark story arm', 'Approach south claim. Data fight finally position single. Send face Mr chair local. Small trade relate letter sea easy. Somebody six PM within.', 544, 'learn, consider, challenge, weight, establish');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (1, '2021-12-07', 3, 'Performance produce week measure. Into audience strategy remain.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (2, '2021-11-16', 4, 'Seat however region call home worry. Life board share standard chair.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (3, '2021-01-16', 2, 'Major network world head research stuff. Type company authority four everything.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (4, '2022-09-08', 4, 'Age writer matter who moment. Trial according body inside peace hit. Guy explain class research production class per.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (5, '2023-05-05', 2, 'Drop story argue image enter. We side light smile out understand listen morning.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (6, '2022-10-07', 3, 'Resource school never. Apply there across word put that.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (7, '2023-11-09', 2, 'Side beat section reality hair very space. Energy throw law commercial tax. Adult another gun major four three. Film anyone watch why its.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (8, '2022-10-11', 4, 'Hope peace team wide. Represent general begin clearly rise own. Occur local still ball.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (9, '2020-04-12', 2, 'Tax water data rule during night. Drug approach leader against really I. Red local live special write nation.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (10, '2023-12-22', 1, 'Occur vote structure project. Unit two natural home chair where.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (11, '2023-06-30', 4, 'Explain step nation picture. Information product conference sound citizen lawyer make thank.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (12, '2020-11-24', 4, 'People structure strategy most thus more evening. About perhaps yard business reflect be keep.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (13, '2024-04-08', 4, 'Sometimes century environment account. Foreign newspaper free physical.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (14, '2021-06-28', 3, 'Film hold country trial claim. Born write such.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (15, '2021-05-04', 1, 'Fill what more partner. Many the read gun.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (16, '2022-12-20', 2, 'Sign too onto left close leg leg. Special difference charge place heavy. Your race stop than run.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (17, '2024-01-28', 3, 'Remember board design investment. Nation tell year.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (18, '2020-02-29', 2, 'Clearly perhaps political water most. Inside amount weight none onto and.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (19, '2020-04-09', 2, 'Sister Republican analysis young finish movie wide. Strategy film behavior live generation account walk few. Information perhaps single move identify.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (20, '2022-09-16', 1, 'Well pay stage share clearly. Night bad in sure.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (21, '2021-03-22', 3, 'Hear level save. Pick every response away. Worry house level.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (22, '2024-01-26', 1, 'Eat ever class father as staff worry. Forward both relationship mouth. Power cup sea finish worry report process different.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (23, '2020-11-24', 2, 'Return of traditional red over product draw office. Painting watch trial mind line else. History her necessary rather interesting skill north.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (24, '2021-05-07', 4, 'Personal them thousand fight.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (25, '2022-12-31', 5, 'Sister year language professor night example become. Note war with interview realize speak bar. Who seem agency short.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (26, '2024-01-24', 1, 'Develop foreign investment position course.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (27, '2022-09-30', 2, 'Fund range real employee control dark program. Media girl church. Hundred see consumer may from smile apply occur.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (28, '2020-09-09', 2, 'Attention senior green hold character dog wide. Office student there.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (29, '2020-01-16', 2, 'Need check full site ground I. Assume wrong policy yourself management single plant. Experience impact especially billion early.');
+INSERT INTO Review (ReviewID, PublishDate, Rating, ReviewText) VALUES (30, '2021-12-20', 1, 'Brother subject environment make teacher. Many measure alone thing arrive. Whom tend reveal them traditional far. Administration success somebody black trial.');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (6, 1, '2024-04-12');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (10, 2, '2024-02-09');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (5, 3, '2024-03-15');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (9, 4, '2024-01-12');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (2, 5, '2024-02-11');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (7, 6, '2024-02-26');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (4, 7, '2024-05-05');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (3, 8, '2024-02-27');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (7, 9, '2024-03-31');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (4, 10, '2024-05-03');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (4, 11, '2024-03-02');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (5, 12, '2024-03-25');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (4, 13, '2024-03-15');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (6, 14, '2024-01-08');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (4, 15, '2024-02-28');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (8, 16, '2024-03-02');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (2, 17, '2024-02-02');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (9, 18, '2024-03-05');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (7, 19, '2024-01-14');
+INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (8, 20, '2024-05-02');
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (9, 1);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (3, 2);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (3, 3);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (4, 4);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (6, 5);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (5, 6);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (5, 7);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (3, 8);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (6, 9);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (3, 10);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (7, 11);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (10, 12);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (3, 13);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (3, 14);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (4, 15);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (10, 16);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (8, 17);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (6, 18);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (4, 19);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (5, 20);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (2, 21);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (1, 22);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (8, 23);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (5, 24);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (2, 25);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (10, 26);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (10, 27);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (5, 28);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (6, 29);
+INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (10, 30);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (9, 1);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (11, 2);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (9, 3);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (9, 4);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (10, 5);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (5, 6);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (6, 7);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (4, 8);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (14, 9);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (4, 10);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (15, 11);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (15, 12);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (17, 13);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (1, 14);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (9, 15);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (2, 16);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (7, 17);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (14, 18);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (1, 19);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (10, 20);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (16, 21);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (16, 22);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (1, 23);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (8, 24);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (6, 25);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (18, 26);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (1, 27);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (19, 28);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (11, 29);
+INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (7, 30);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (2, 12);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (2, 20);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (5, 19);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (1, 14);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (8, 1);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (1, 7);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (1, 19);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (3, 5);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (10, 10);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (3, 12);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (8, 7);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (9, 4);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (3, 14);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (9, 8);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (8, 10);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (8, 12);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (6, 19);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (8, 5);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (4, 16);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (3, 11);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (3, 13);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (9, 18);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (6, 9);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (3, 3);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (1, 6);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (6, 1);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (9, 14);
+INSERT INTO User_Likes_Recipe (UserID, RecipeID) VALUES (4, 4);
+INSERT INTO Follows (UserID1, UserID2) VALUES (4, 9);
+INSERT INTO Follows (UserID1, UserID2) VALUES (6, 5);
+INSERT INTO Follows (UserID1, UserID2) VALUES (2, 10);
+INSERT INTO Follows (UserID1, UserID2) VALUES (5, 2);
+INSERT INTO Follows (UserID1, UserID2) VALUES (4, 5);
+INSERT INTO Follows (UserID1, UserID2) VALUES (1, 6);
+INSERT INTO Follows (UserID1, UserID2) VALUES (9, 1);
+INSERT INTO Follows (UserID1, UserID2) VALUES (4, 1);
+INSERT INTO Follows (UserID1, UserID2) VALUES (10, 7);
+INSERT INTO Follows (UserID1, UserID2) VALUES (8, 1);
+INSERT INTO Follows (UserID1, UserID2) VALUES (6, 10);
+INSERT INTO Follows (UserID1, UserID2) VALUES (8, 10);
+INSERT INTO Follows (UserID1, UserID2) VALUES (8, 7);
+INSERT INTO Follows (UserID1, UserID2) VALUES (4, 3);
+INSERT INTO Follows (UserID1, UserID2) VALUES (7, 3);
+INSERT INTO Follows (UserID1, UserID2) VALUES (2, 6);
+INSERT INTO Follows (UserID1, UserID2) VALUES (3, 4);
+INSERT INTO Follows (UserID1, UserID2) VALUES (7, 6);
+INSERT INTO Follows (UserID1, UserID2) VALUES (2, 4);
+INSERT INTO Follows (UserID1, UserID2) VALUES (9, 3);
+INSERT INTO Follows (UserID1, UserID2) VALUES (2, 9);
+INSERT INTO Follows (UserID1, UserID2) VALUES (8, 4);
+INSERT INTO Follows (UserID1, UserID2) VALUES (3, 2);
+INSERT INTO Follows (UserID1, UserID2) VALUES (5, 7);
+INSERT INTO Follows (UserID1, UserID2) VALUES (1, 8);

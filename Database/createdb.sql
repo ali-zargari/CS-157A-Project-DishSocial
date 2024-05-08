@@ -1,6 +1,6 @@
--- CREATE SCHEMA CS_157A_Project;
+CREATE SCHEMA 157Test;
+USE 157Test;
 
-USE CS_157A_Project;
 
 -- Entities
 
@@ -131,8 +131,6 @@ CREATE TABLE Liked_By_Friends_Recipes
     PRIMARY KEY (FriendID, RecipeID),
     FOREIGN KEY (FriendID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (UploaderID, RecipeID) REFERENCES User_Likes_Recipe(UserID, RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
-
-
 );
 
 CREATE TABLE Uploaded_By_Friends_Recipes
@@ -141,20 +139,19 @@ CREATE TABLE Uploaded_By_Friends_Recipes
     FriendID INT,
     UploaderID INT,
     PRIMARY KEY (FriendID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES Follows(UserID2) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (FriendID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (UploaderID, RecipeID) REFERENCES User_Uploads_Recipe(UserID, RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE Reviewed_By_Friends_Recipes(
+CREATE TABLE Reviewed_By_Friends_Recipes
+(
     RecipeID INT,
     ReviewID INT,
     FriendID INT,
     PRIMARY KEY (FriendID, ReviewID, RecipeID),
-    FOREIGN KEY (FriendID) REFERENCES User_Leaves_Review(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (FriendID) REFERENCES Follows(UserID2) ON DELETE CASCADE ON UPDATE CASCADE, -- To make sure the friend is actually a friend
+    FOREIGN KEY (FriendID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (ReviewID) REFERENCES User_Leaves_Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (RecipeID) REFERENCES Recipe_Has_Review(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
-
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -268,7 +265,7 @@ BEGIN
     ) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User has already uploaded this recipe';
     END IF;
-END;
+END //
 
 
 
@@ -301,6 +298,41 @@ BEGIN
         WHERE UserID = OLD.UserID2
     );
 END //
+
+-- Trigger to add recipes to Uploaded_By_Friends_Recipes when a user follows another user
+CREATE TRIGGER After_User_Follows_Uploads
+    AFTER INSERT ON Follows
+    FOR EACH ROW
+BEGIN
+    INSERT IGNORE INTO Uploaded_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
+    SELECT RecipeID, NEW.UserID1, UserID
+    FROM User_Uploads_Recipe
+    WHERE UserID = NEW.UserID2;
+END //
+
+-- Trigger to add reviews to Reviewed_By_Friends_Recipes when a user follows another user
+CREATE TRIGGER After_User_Follows_Reviews
+    AFTER INSERT ON Follows
+    FOR EACH ROW
+BEGIN
+    INSERT IGNORE INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
+    SELECT rhr.RecipeID, ulr.ReviewID, NEW.UserID1
+    FROM Recipe_Has_Review rhr
+    JOIN User_Leaves_Review ulr ON ulr.ReviewID = rhr.ReviewID
+    WHERE ulr.UserID = NEW.UserID2;
+END //
+
+-- Trigger to add liked recipes to Liked_By_Friends_Recipes when a user follows another user
+CREATE TRIGGER After_User_Follows_Likes
+    AFTER INSERT ON Follows
+    FOR EACH ROW
+BEGIN
+    INSERT IGNORE INTO Liked_By_Friends_Recipes (RecipeID, FriendID, UploaderID)
+    SELECT ulr.RecipeID, NEW.UserID1, ulr.UserID
+    FROM User_Likes_Recipe ulr
+    WHERE ulr.UserID = NEW.UserID2;
+END //
+
 
 
 DELIMITER ;
