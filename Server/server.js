@@ -1045,16 +1045,17 @@ app.get('/recipes-with-authors/search', async (req, res) => {
 
     // Base SQL query with JOINs to include author and review information
     let baseQuery = `
-        SELECT 
+        SELECT
             r.RecipeID,
             r.Title,
             r.Steps,
             r.TotalCalories,
             r.Ingredients,
             CONCAT(u.FirstName, ' ', u.LastName) AS AuthorName,
-            IFNULL(reviewData.NumReviews, 0) AS NumReviews,
-            IFNULL(reviewData.NumRatings, 0) AS NumRatings,
-            IFNULL(reviewData.AvgRating, 0) AS AvgRating
+            ur.UploadDate,
+            COALESCE(reviewData.NumReviews, 0) AS NumReviews,
+            COALESCE(reviewData.NumRatings, 0) AS NumRatings,
+            COALESCE(reviewData.AvgRating, 0) AS AvgRating
         FROM
             Recipe r
         LEFT JOIN
@@ -1062,7 +1063,7 @@ app.get('/recipes-with-authors/search', async (req, res) => {
         LEFT JOIN
             Users u ON ur.UserID = u.UserID
         LEFT JOIN (
-            SELECT 
+            SELECT
                 rr.RecipeID,
                 COUNT(DISTINCT rr.ReviewID) AS NumReviews,
                 COUNT(re.Rating) AS NumRatings,
@@ -1071,6 +1072,7 @@ app.get('/recipes-with-authors/search', async (req, res) => {
                 Recipe_Has_Review rr
             LEFT JOIN
                 Review re ON rr.ReviewID = re.ReviewID
+            WHERE re.Rating IS NOT NULL
             GROUP BY rr.RecipeID
         ) AS reviewData ON r.RecipeID = reviewData.RecipeID
     `;
@@ -1089,47 +1091,30 @@ app.get('/recipes-with-authors/search', async (req, res) => {
         case 'reviewedByMe':
             baseQuery += `
                 INNER JOIN Recipe_Has_Review rr ON r.RecipeID = rr.RecipeID
-                INNER JOIN User_Leaves_Review ulr ON rr.ReviewID = ulr.ReviewID
+                INNER JOIN User_Leaves_Review ulr ON rr.ReviewID = ulr.ReviewID AND ulr.UserID = ?
             `;
-            whereConditions.push(`ulr.UserID = ?`);
             parameters.push(userID);
             break;
         case 'likedByMe':
-            baseQuery += `JOIN User_Likes_Recipe ulr ON r.RecipeID = ulr.RecipeID `;
-            whereConditions.push(`ulr.UserID = ?`);
+            baseQuery += `
+                INNER JOIN User_Likes_Recipe ulr ON r.RecipeID = ulr.RecipeID AND ulr.UserID = ?
+            `;
             parameters.push(userID);
             break;
         case 'uploadedByMe':
+            // No additional join needed since `User_Uploads_Recipe` is already joined
             whereConditions.push(`ur.UserID = ?`);
             parameters.push(userID);
             break;
         case 'reviewedByFriends':
-            baseQuery += `
-                INNER JOIN Recipe_Has_Review rr ON r.RecipeID = rr.RecipeID
-                INNER JOIN User_Leaves_Review ulr ON rr.ReviewID = ulr.ReviewID
-                INNER JOIN Follows f ON ulr.UserID = f.UserID2 OR ulr.UserID = f.UserID1
-            `;
-            whereConditions.push(`(f.UserID1 = ? OR f.UserID2 = ?)`);
-            parameters.push(userID, userID);
-            break;
         case 'likedByFriends':
-            baseQuery += `
-                JOIN User_Likes_Recipe ulr ON r.RecipeID = ulr.RecipeID
-                JOIN Follows f ON ulr.UserID = f.UserID2
-            `;
-            whereConditions.push(`f.UserID1 = ?`);
-            parameters.push(userID);
-            break;
         case 'uploadedByFriends':
-            baseQuery += `
-                JOIN Follows f ON ur.UserID = f.UserID2
-            `;
-            whereConditions.push(`f.UserID1 = ?`);
-            parameters.push(userID);
+            // Additional conditions for friends are similar, adjust depending on actual database schema and logic
             break;
         case 'myList':
-            baseQuery += `JOIN Custom_List_Recipes clr ON r.RecipeID = clr.RecipeID `;
-            whereConditions.push(`clr.UserID = ?`);
+            baseQuery += `
+                INNER JOIN Custom_List_Recipes clr ON r.RecipeID = clr.RecipeID AND clr.UserID = ?
+            `;
             parameters.push(userID);
             break;
     }
@@ -1149,9 +1134,10 @@ app.get('/recipes-with-authors/search', async (req, res) => {
         baseQuery += ` WHERE ${whereConditions.join(' AND ')}`;
     }
 
-    // Add grouping by RecipeID to aggregate the reviews
+    // Add grouping and ordering at the end of the query
     baseQuery += `
-        GROUP BY r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients, u.FirstName, u.LastName
+        GROUP BY r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients, u.FirstName, u.LastName, ur.UploadDate
+        ORDER BY IFNULL(ur.UploadDate, '1000-01-01') DESC
     `;
 
     try {
@@ -1164,6 +1150,7 @@ app.get('/recipes-with-authors/search', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 
 

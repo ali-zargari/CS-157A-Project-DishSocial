@@ -842,7 +842,11 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         if (response.status === 201) {
             // Append the new review to the list on the page
             const newReview = response.data;
-            await loadRecipeInfo(selectedRecipeId)
+            await loadRecipeInfo(selectedRecipeId);
+            console.log(lastSearchTerm);
+            console.log(lastFilter);
+
+            await performAdvancedRecipeSearch(lastSearchTerm,lastFilter);
             //addReviewToPage(newReview);
 
             // Clear the form fields
@@ -1081,7 +1085,7 @@ async function getAllRecipesWithAuthors() {
 async function loadRecipesWithParams(params) {
     try {
         // Make an Axios GET request with the provided parameters
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes-with-authors/search', {
+        const response = await axios.get('http://localhost:3002/recipes-with-authors/search', {
             params: params
         });
         const recipes = response.data;
@@ -1158,6 +1162,7 @@ async function loadRecipesWithParams(params) {
             const avgRating = `Average Rating: ${avgRatingText}`;
             const numRatings = `${recipe.NumRatings || 0}`;
             const numReviews = `${recipe.NumReviews || 0}`;
+            const uploadDate = `Uploaded on: ${new Date(recipe.UploadDate).toLocaleDateString()}`;
 
             // Add these lines to paragraphs
             const line1Element = document.createElement('p');
@@ -1172,10 +1177,15 @@ async function loadRecipesWithParams(params) {
             line3Element.textContent = `${numRatings} Ratings \n ${numReviews} Reviews`;
             line3Element.style.margin = '0';
 
+            const line4Element = document.createElement('p');
+            line4Element.textContent = uploadDate;
+            line4Element.style.margin = '0';
+
             // Append the lines to the extra details container
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
+            detailsInfoContainer.appendChild(line4Element);
 
             // Append both the title-ingredients and extra details containers to the main info container
             infoContainer.appendChild(titleAndIngredientsContainer);
