@@ -15,19 +15,15 @@ async function displayUserContent(userId) {
     const userInfo = await getUserInfoById(userId);
     const myList= await getMyList(userId);
 
-    console.log(myList);
-
     document.querySelector('.recipe-list').innerHTML = '';
     document.querySelector('.reviews-list').innerHTML = '';
     document.querySelector('.my-list-recipes-list').innerHTML = '';
-
 
     if (userInfo) {
         document.getElementById('profileName').textContent = `Profile of ${userInfo.FirstName} ${userInfo.LastName}`;
     } else {
         document.getElementById('profileName').textContent = 'User Profile';
     }
-
 
     if (userInfo) {
 

@@ -456,7 +456,6 @@ app.get('/users/:userID', async (req, res) => {
         );
 
         connection.release();
-
         if (rows.length > 0) {
             res.json(rows[0]);
         } else {
