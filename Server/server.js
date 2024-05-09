@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = process.env.PORT || 3002;
+const port = 3002;
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,14 +25,14 @@ app.use(bodyParser.json())
 const pool = mysql.createPool({
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',
     user: 'avnadmin',
-   
+
     database: 'CS_157A_Project', //database name
     password: 'AVNS_KPqKJ44iZGhPb5xCUgA',
     port: 19243,
     ssl: {
-       
+
         rejectUnauthorized: true,
-       
+
         ca: readFileSync('./ca.crt'),
     }
 });
@@ -251,7 +251,8 @@ app.get('/recipe/:recipeID', async (req, res) => {
             [recipeID]
         );
 
-       
+
+
         const [ratingStats] = await connection.execute(
             `SELECT COUNT(Rating) AS RatingCount, AVG(Rating) AS AverageRating FROM Review
              JOIN Recipe_Has_Review ON Review.ReviewID = Recipe_Has_Review.ReviewID

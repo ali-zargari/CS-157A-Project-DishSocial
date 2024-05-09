@@ -38,11 +38,11 @@ document.getElementById('profileButton').addEventListener('click', function (eve
 
     const userID = getUserIdFromCookie();
 
-   
+
     if (userID !== null) {
         window.location.href = `settings.html?userID=${encodeURIComponent(userID)}`;
     } else {
-       
+
         window.location.href = 'settings.html';
     }
 });
@@ -56,26 +56,26 @@ document.querySelector('.filter-button').addEventListener('click', async functio
 
 async function loadRecipes() {
     try {
-       
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipes-with-authors');
+
+        const response = await axios.get('http://localhost:3002/recipes-with-authors');
         const recipesWithAuthors = response.data;
 
-       
+
         const currentUserId = getUserIdFromCookie();
         const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const uploadedRecipesSet = new Set(userUploadedRecipes);
 
-       
+
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-       
+
         for (const recipe of recipesWithAuthors) {
-           
+
             const isUploadedByCurrentUser = uploadedRecipesSet.has(recipe.RecipeID);
 
-           
+
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
             recipeElement.style.display = 'flex';
@@ -87,23 +87,23 @@ async function loadRecipes() {
             recipeElement.style.marginBottom = '10px';
             recipeElement.style.cursor = 'pointer';
 
-           
+
             const infoContainer = document.createElement('div');
             infoContainer.className = 'info-container';
             infoContainer.style.display = 'flex';
             infoContainer.style.flexDirection = 'row';
             infoContainer.style.justifyContent = 'space-between';
-           
+
             infoContainer.style.flex = '0 0 75%';
 
-           
+
             const titleAndIngredientsContainer = document.createElement('div');
             titleAndIngredientsContainer.className = 'title-ingredients-container';
             titleAndIngredientsContainer.style.display = 'flex';
             titleAndIngredientsContainer.style.flexDirection = 'column';
             titleAndIngredientsContainer.style.gap = '4px';
 
-           
+
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title;
             recipeTitle.style.margin = '0';
@@ -112,18 +112,18 @@ async function loadRecipes() {
             recipeIngredients.textContent = recipe.Ingredients || '';
             recipeIngredients.style.margin = '0';
 
-           
+
             titleAndIngredientsContainer.appendChild(recipeTitle);
             titleAndIngredientsContainer.appendChild(recipeIngredients);
 
-           
+
             const detailsInfoContainer = document.createElement('div');
             detailsInfoContainer.className = 'details-info-container';
             detailsInfoContainer.style.display = 'flex';
             detailsInfoContainer.style.flexDirection = 'column';
             detailsInfoContainer.style.gap = '4px';
 
-           
+
             const recipeAuthor = `Author: ${recipe.AuthorName || 'Unknown'}`;
             let avgRatingText = 'N/A';
             if (recipe.AvgRating > '0' && recipe.AvgRating < '5.01') {
@@ -134,7 +134,7 @@ async function loadRecipes() {
             const numRatings = `${recipe.NumRatings || 0}`;
             const numReviews = `${recipe.NumReviews || 0}`;
 
-           
+
             const line1Element = document.createElement('p');
             line1Element.textContent = recipeAuthor;
             line1Element.style.margin = '0';
@@ -148,22 +148,22 @@ async function loadRecipes() {
             line3Element.style.margin = '0';
 
 
-           
+
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
 
-           
+
             infoContainer.appendChild(titleAndIngredientsContainer);
             infoContainer.appendChild(detailsInfoContainer);
 
-           
+
             const buttonContainer = document.createElement('div');
             buttonContainer.className = 'button-container';
             buttonContainer.style.display = 'flex';
             buttonContainer.style.gap = '8px';
 
-           
+
             if (isUploadedByCurrentUser) {
                 const deleteButton = document.createElement('button');
                 deleteButton.innerText = 'Delete';
@@ -181,36 +181,36 @@ async function loadRecipes() {
                     await loadRecipes();
                 });
 
-               
+
                 buttonContainer.appendChild(deleteButton);
             } else {
                 infoContainer.style.width = '100%';
                 recipeElement.style.justifyContent = 'space-around';
             }
-           
+
             recipeElement.addEventListener('click', () => {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
 
-               
+
                 const highlightedElement = document.querySelector('.recipe-highlighted');
                 if (highlightedElement) {
                     highlightedElement.classList.remove('recipe-highlighted');
                 }
 
-               
+
                 recipeElement.classList.add('recipe-highlighted');
             });
 
-           
+
             recipeElement.appendChild(infoContainer);
             recipeElement.appendChild(buttonContainer);
 
-           
+
             fragment.appendChild(recipeElement);
         }
 
-       
+
         recipeListContainer.appendChild(fragment);
     } catch (error) {
         console.error('Failed to load recipes:', error);
@@ -226,13 +226,13 @@ async function loadAllUsers() {
         let searchTerm = document.getElementById('all-users-search').value.trim().toLowerCase();
         searchTerm = sanitizeSearchTerm(searchTerm);
 
-       
+
         const [users, friends] = await Promise.all([showAllUser(), showFriends()]);
         const usersListContainer = document.querySelector('.All-list');
         const currentUser = getUserIdFromCookie();
         usersListContainer.innerHTML = '';
 
-       
+
         friendsSet = new Set(friends.map(friend => friend.UserID));
 
         let currentUserElement = null;
@@ -241,7 +241,7 @@ async function loadAllUsers() {
             const userName = `${user.FirstName} ${user.LastName}`.toLowerCase();
             if (searchTerm && !userName.includes(searchTerm)) continue;
 
-           
+
             const userElement = document.createElement('div');
             userElement.className = 'user';
             userElement.style.display = "flex";
@@ -249,7 +249,7 @@ async function loadAllUsers() {
             userElement.style.alignItems = "center";
             userElement.style.padding = '10px';
 
-           
+
             if (user.UserID == currentUser) {
                 userElement.style.backgroundColor = '#e0f7fa';
                 const meLabel = document.createElement('span');
@@ -259,16 +259,16 @@ async function loadAllUsers() {
                 userElement.appendChild(meLabel);
                 currentUserElement = userElement;
             } else {
-               
+
                 const userText = document.createTextNode(`${user.FirstName} ${user.LastName}`);
                 userElement.appendChild(userText);
             }
 
-           
+
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
-           
+
             const isCurrentlyFollowed = friendsSet.has(user.UserID);
             const followButton = createButton(
                 isCurrentlyFollowed ? 'Unfollow' : 'Follow',
@@ -305,26 +305,26 @@ async function loadAllUsers() {
                 }
             });
 
-           
+
             const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
                 window.location.href = `user.html?userID=${user.UserID}`;
             });
 
-           
+
             buttonContainer.appendChild(followButton);
             buttonContainer.appendChild(profileButton);
 
-           
+
             userElement.appendChild(buttonContainer);
 
-           
+
             if (user.UserID !== currentUser) {
                 usersListContainer.appendChild(userElement);
             }
         }
 
-       
+
         if (currentUserElement) {
             usersListContainer.prepend(currentUserElement);
         }
@@ -341,13 +341,13 @@ async function loadFriends() {
         let searchTerm = document.getElementById('friends-search').value.trim().toLowerCase();
         searchTerm = sanitizeSearchTerm(searchTerm);
 
-       
+
         const [users, friends] = await Promise.all([showAllUser(), showFriends()]);
         const friendsListContainer = document.querySelector('.friend-list');
         const currentUser = getUserIdFromCookie();
         friendsListContainer.innerHTML = '';
 
-       
+
         friendsSet = new Set(friends.map(friend => friend.UserID));
 
         let currentUserElement = null;
@@ -356,15 +356,15 @@ async function loadFriends() {
             const friendName = `${friend.FirstName} ${friend.LastName}`.toLowerCase();
             if (searchTerm && !friendName.includes(searchTerm)) continue;
 
-           
+
             const friendElement = document.createElement('div');
             friendElement.className = 'friend';
             friendElement.style.display = "flex";
             friendElement.style.justifyContent = "space-between";
             friendElement.style.alignItems = "center";
-           
 
-           
+
+
             if (friend.UserID == currentUser) {
                 friendElement.style.backgroundColor = '#e0f7fa';
                 const meLabel = document.createElement('span');
@@ -374,16 +374,16 @@ async function loadFriends() {
                 friendElement.appendChild(meLabel);
                 currentUserElement = friendElement;
             } else {
-               
+
                 const friendText = document.createTextNode(`${friend.FirstName} ${friend.LastName}`);
                 friendElement.appendChild(friendText);
             }
 
-           
+
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
-           
+
             const deleteButton = createButton('Unfollow', 'red');
             deleteButton.addEventListener('click', async () => {
                 try {
@@ -403,26 +403,26 @@ async function loadFriends() {
                 }
             });
 
-           
+
             const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
                 window.location.href = `user.html?userID=${friend.UserID}`;
             });
 
-           
+
             buttonContainer.appendChild(deleteButton);
             buttonContainer.appendChild(profileButton);
 
-           
+
             friendElement.appendChild(buttonContainer);
 
-           
+
             if (friend.UserID !== currentUser) {
                 friendsListContainer.appendChild(friendElement);
             }
         }
 
-       
+
         if (currentUserElement) {
             friendsListContainer.prepend(currentUserElement);
         }
@@ -448,7 +448,7 @@ function createButton(text, backgroundColor) {
 
 
 function sanitizeSearchTerm(term) {
-   
+
     return term.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
 }
 
@@ -461,20 +461,20 @@ async function loadRecipeInfo(recipeId) {
         const reviewFormSection = document.querySelector('.review-form-section');
         const recipeAuthor = await getRecipeAuthor(recipeId);
         const likesData = await totalLikes(recipeId);
-       
+
         recipeInfoContainer.innerHTML = '';
 
-       
+
         if (recipeInfo) {
             reviewFormSection.style.display = 'flex';
         }
 
-       
+
         const recipeTitle = document.createElement('h3');
         recipeTitle.textContent = recipeInfo.Title;
         recipeInfoContainer.appendChild(recipeTitle);
 
-       
+
 
         const steps = document.createElement('p');
         steps.textContent = `Steps: ${recipeInfo.Steps}`;
@@ -514,19 +514,19 @@ async function loadRecipeInfo(recipeId) {
         }
         recipeInfoContainer.appendChild(author);
 
-       
+
         let isInList = await checkRecipeInList(recipeId);
         const addButton = document.createElement('button');
         addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
 
 
-       
+
         const buttonContainer = document.createElement('div');
         buttonContainer.style.display = 'flex';
         buttonContainer.style.marginTop = '10px';
         buttonContainer.id = 'laButtons';
 
-       
+
         addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
         addButton.id = 'addButton';
         addButton.addEventListener('click', async function() {
@@ -536,17 +536,17 @@ async function loadRecipeInfo(recipeId) {
                 await sendRecipeToCustomList(recipeId);
             }
 
-           
+
             isInList = await checkRecipeInList(recipeId);
             addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
 
-           
+
             addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
         });
 
 
 
-       
+
         let isLiked = await checkIfRecipeIsLiked(recipeId);
         const likeButton = document.createElement('button');
         likeButton.textContent = isLiked ? "Unlike" : "Like";
@@ -560,7 +560,7 @@ async function loadRecipeInfo(recipeId) {
             } else {
                 await likeRecipe(recipeId);
             }
-           
+
             isLiked = !isLiked;
             likeButton.textContent = isLiked ? "Unlike" : "Like";
             likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff";
@@ -580,14 +580,14 @@ async function loadRecipeInfo(recipeId) {
         const reviewFormSection = document.querySelector('.review-form-section');
     }
 
-   
+
     await fetchAndDisplayReviews(recipeId);
 }
 
 async function sendRecipeToCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        await axios.post('https://cs-157a-project.wl.r.appspot.com/addToCustomList', { userId, recipeId });
+        await axios.post('http://localhost:3002/addToCustomList', { userId, recipeId });
     }
     catch (error) {
         console.error('Failed to add recipe to a custom list:', error);
@@ -597,7 +597,7 @@ async function sendRecipeToCustomList(recipeId) {
 async function removeFromCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete('https://cs-157a-project.wl.r.appspot.com/removeFromCustomList', { data: { userId, recipeId } });
+        const response = await axios.delete('http://localhost:3002/removeFromCustomList', { data: { userId, recipeId } });
 
         if (response.status === 200) {
         } else {
@@ -612,7 +612,7 @@ async function removeFromCustomList(recipeId) {
 
 async function checkRecipeInList(recipeId) {
     try {
-        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/isInCustomList`, {
+        const response = await axios.get(`http://localhost:3002/isInCustomList`, {
             params: {
                 userId: getUserIdFromCookie(),
                 recipeId: recipeId
@@ -634,14 +634,14 @@ async function fetchAndDisplayReviews(recipeId) {
     try {
         const currentUserId = getUserIdFromCookie();
         const reviewedByUser = await getReviewsByUser(currentUserId);
-        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/reviews/${recipeId}`);
+        const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
         const reviews = response.data;
 
         const reviewsList = document.querySelector('.reviews-list');
         reviewsList.innerHTML = '';
 
         reviews.forEach(review => {
-           
+
             const reviewItem = document.createElement('div');
             const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
             let isFiveStars = false;
@@ -789,7 +789,7 @@ async function performAdvancedRecipeSearch() {
 document.getElementById('postReviewForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
-   
+
     const reviewText = document.getElementById('reviewText').value;
     const reviewRating = document.getElementById('reviewRating').value;
     const userID = getUserIdFromCookie();
@@ -809,16 +809,16 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
             ReviewText: reviewText
         };
 
-       
-        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/review/addReview', postData);
+
+        const response = await axios.post('http://localhost:3002/review/addReview', postData);
 
         if (response.status === 201) {
-           
+
             const newReview = response.data;
             await loadRecipeInfo(selectedRecipeId)
-           
 
-           
+
+
             document.getElementById('reviewText').value = '';
             document.getElementById('reviewRating').value = '1';
             alert('Review successfully added.');
@@ -838,13 +838,13 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
 async function uploadRecipe(event) {
     event.preventDefault();
 
-   
+
     const title = document.getElementById('title').value;
     const ingredients = document.getElementById('ingredients').value;
     const totalCalories = document.getElementById('totalCalories').value;
     const cookingSteps = document.getElementById('cookingSteps').value;
 
-   
+
     const recipeData = {
         Title: title,
         Ingredients: ingredients,
@@ -852,14 +852,14 @@ async function uploadRecipe(event) {
         Steps: cookingSteps
     };
 
-   
+
     const newRecipe = await userUploadRecipe(recipeData);
 
-   
+
     if (newRecipe) {
-       
-       
-       
+
+
+
         event.target.reset();
         if(lastFilter.length !== 0 || lastSearchTerm.length !== 0){
             console.log("this is loaded");
@@ -870,7 +870,7 @@ async function uploadRecipe(event) {
             await loadRecipes();
         }
     } else {
-       
+
         alert('Failed to upload recipe.');
     }
 }
@@ -878,17 +878,17 @@ async function uploadRecipe(event) {
 
 
 async function userUploadRecipe(recipeData) {
-   
+
     const uid = getUserIdFromCookie();
 
-   
+
     const fullRecipeData = { ...recipeData, uid };
 
     try {
-       
-        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/recipe/userUploadRecipe', fullRecipeData);
 
-       
+        const response = await axios.post('http://localhost:3002/recipe/userUploadRecipe', fullRecipeData);
+
+
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation: user upload recipe', error);
@@ -902,7 +902,7 @@ async function showFriends() {
     const uid = getUserIdFromCookie();
 
     try {
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/users/friends', {
+        const response = await axios.get('http://localhost:3002/users/friends', {
             params: { uid }
         });
         return response.data;
@@ -918,7 +918,7 @@ function addRecipeToDom(recipe) {
     const recipeListContainer = document.querySelector('.recipe-list');
 
 
-   
+
     const recipeElement = document.createElement('div');
     recipeElement.className = 'recipe';
 
@@ -927,13 +927,13 @@ function addRecipeToDom(recipe) {
         <p>${recipe.Ingredients}</p>  <!-- You might want to format the ingredients differently -->
     `;
 
-   
-   
-   
-   
-   
 
-   
+
+
+
+
+
+
     recipeListContainer.appendChild(recipeElement);
 }
 
@@ -942,10 +942,10 @@ function addRecipeToDom(recipe) {
 async function checkIfRecipeIsLiked(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/recipes/liked`, {
+        const response = await axios.get(`http://localhost:3002/recipes/liked`, {
             params: { userId, recipeId }
         });
-        return response.status === 200; 
+        return response.status === 200;
     } catch (error) {
         console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);
         return false;
@@ -955,20 +955,20 @@ async function checkIfRecipeIsLiked(recipeId) {
 
 async function likeRecipe(recipeId) {
     try {
-       
+
         let userId = getUserIdFromCookie();
-       
+
         userId = parseInt(userId, 10);
         recipeId = parseInt(recipeId, 10);
 
 
-       
+
         if (isNaN(userId) || isNaN(recipeId)) {
             console.error('User ID or Recipe ID is not a valid number');
             return false;
         }
 
-        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/recipes/like', {
+        const response = await axios.post('http://localhost:3002/recipes/like', {
             userId, recipeId
         });
 
@@ -984,7 +984,7 @@ async function likeRecipe(recipeId) {
 async function unlikeRecipe(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete(`https://cs-157a-project.wl.r.appspot.com/recipes/unlike`, {
+        const response = await axios.delete(`http://localhost:3002/recipes/unlike`, {
             data: { userId, recipeId }
         });
         return response.status === 200;
@@ -1005,7 +1005,7 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
             return false;
         }
 
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/followed', {
+        const response = await axios.get('http://localhost:3002/followed', {
             params: { userId, friendId }
         });
 
@@ -1026,7 +1026,7 @@ document.getElementById('reviewRating').addEventListener('change', function() {
     const reviewRating = this;
     const reviewFormSection = document.querySelector('.review-form-section');
 
-   
+
     if (reviewRating.value === '5') {
         reviewFormSection.classList.add('post-gold-rating');
     } else {
@@ -1037,10 +1037,10 @@ document.getElementById('reviewRating').addEventListener('change', function() {
 
 async function getAllRecipesWithAuthors() {
     try {
-       
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipes-with-authors');
 
-       
+        const response = await axios.get('http://localhost:3002/recipes-with-authors');
+
+
         return response.data;
     } catch (error) {
         console.error('Error fetching all recipes with authors:', error);
@@ -1050,28 +1050,28 @@ async function getAllRecipesWithAuthors() {
 
 async function loadRecipesWithParams(params) {
     try {
-       
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipes-with-authors/search', {
+
+        const response = await axios.get('http://localhost:3002/recipes-with-authors/search', {
             params: params
         });
         const recipes = response.data;
 
-       
+
         const currentUserId = params.userID;
         const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const uploadedRecipesSet = new Set(userUploadedRecipes);
 
-       
+
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-       
+
         for (const recipe of recipes) {
-           
+
             const isUploadedByCurrentUser = uploadedRecipesSet.has(recipe.RecipeID);
 
-           
+
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
             recipeElement.style.display = 'flex';
@@ -1083,7 +1083,7 @@ async function loadRecipesWithParams(params) {
             recipeElement.style.marginBottom = '10px';
             recipeElement.style.cursor = 'pointer';
 
-           
+
             const infoContainer = document.createElement('div');
             infoContainer.className = 'info-container';
             infoContainer.style.display = 'flex';
@@ -1091,14 +1091,14 @@ async function loadRecipesWithParams(params) {
             infoContainer.style.justifyContent = 'space-between';
             infoContainer.style.flex = '0 0 75%';
 
-           
+
             const titleAndIngredientsContainer = document.createElement('div');
             titleAndIngredientsContainer.className = 'title-ingredients-container';
             titleAndIngredientsContainer.style.display = 'flex';
             titleAndIngredientsContainer.style.flexDirection = 'column';
             titleAndIngredientsContainer.style.gap = '4px';
 
-           
+
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title;
             recipeTitle.style.margin = '0';
@@ -1107,18 +1107,18 @@ async function loadRecipesWithParams(params) {
             recipeIngredients.textContent = recipe.Ingredients || '';
             recipeIngredients.style.margin = '0';
 
-           
+
             titleAndIngredientsContainer.appendChild(recipeTitle);
             titleAndIngredientsContainer.appendChild(recipeIngredients);
 
-           
+
             const detailsInfoContainer = document.createElement('div');
             detailsInfoContainer.className = 'details-info-container';
             detailsInfoContainer.style.display = 'flex';
             detailsInfoContainer.style.flexDirection = 'column';
             detailsInfoContainer.style.gap = '4px';
 
-           
+
             const recipeAuthor = `Author: ${recipe.AuthorName || 'Unknown'}`;
             let avgRatingText = 'N/A';
             if (recipe.AvgRating > '0' && recipe.AvgRating < '5.01') {
@@ -1129,7 +1129,7 @@ async function loadRecipesWithParams(params) {
             const numRatings = `${recipe.NumRatings || 0}`;
             const numReviews = `${recipe.NumReviews || 0}`;
 
-           
+
             const line1Element = document.createElement('p');
             line1Element.textContent = recipeAuthor;
             line1Element.style.margin = '0';
@@ -1142,22 +1142,22 @@ async function loadRecipesWithParams(params) {
             line3Element.textContent = `${numRatings} Ratings \n ${numReviews} Reviews`;
             line3Element.style.margin = '0';
 
-           
+
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
 
-           
+
             infoContainer.appendChild(titleAndIngredientsContainer);
             infoContainer.appendChild(detailsInfoContainer);
 
-           
+
             const buttonContainer = document.createElement('div');
             buttonContainer.className = 'button-container';
             buttonContainer.style.display = 'flex';
             buttonContainer.style.gap = '8px';
 
-           
+
             if (isUploadedByCurrentUser) {
                 const deleteButton = document.createElement('button');
                 deleteButton.innerText = 'Delete';
@@ -1182,37 +1182,37 @@ async function loadRecipesWithParams(params) {
                     }
                 });
 
-               
+
                 buttonContainer.appendChild(deleteButton);
             } else {
                 infoContainer.style.width = '100%';
                 recipeElement.style.justifyContent = 'space-around';
             }
 
-           
+
             recipeElement.addEventListener('click', () => {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
 
-               
+
                 const highlightedElement = document.querySelector('.recipe-highlighted');
                 if (highlightedElement) {
                     highlightedElement.classList.remove('recipe-highlighted');
                 }
 
-               
+
                 recipeElement.classList.add('recipe-highlighted');
             });
 
-           
+
             recipeElement.appendChild(infoContainer);
             recipeElement.appendChild(buttonContainer);
 
-           
+
             fragment.appendChild(recipeElement);
         }
 
-       
+
         recipeListContainer.appendChild(fragment);
     } catch (error) {
         console.error('Failed to load recipes with parameters:', error);
