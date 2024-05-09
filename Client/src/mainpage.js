@@ -13,7 +13,8 @@ import {
     deleteReview,
     followUser,
     unfollowUser,
-    getRecipeAuthor
+    getRecipeAuthor,
+    totalLikes
 } from './controller';
 import axios from "axios";
 
@@ -460,7 +461,7 @@ async function loadRecipeInfo(recipeId) {
         const recipeInfoContainer = document.querySelector('.recipe-description');
         const reviewFormSection = document.querySelector('.review-form-section');
         const recipeAuthor = await getRecipeAuthor(recipeId);
-
+        const likesData = await totalLikes(recipeId);
         // Clear out any existing content in the recipe info container
         recipeInfoContainer.innerHTML = '';
 
@@ -492,9 +493,9 @@ async function loadRecipeInfo(recipeId) {
         reviewCount.textContent = `Total Reviews: ${recipeInfo.ReviewCount}`;
         recipeInfoContainer.appendChild(reviewCount);
 
-        const ratingCount = document.createElement('p');
-        ratingCount.textContent = `Total Ratings: ${recipeInfo.RatingCount}`;
-        recipeInfoContainer.appendChild(ratingCount);
+        const likes = document.createElement('p');
+        likes.textContent = `Total Likes: ${likesData.totalLikes}`;
+        recipeInfoContainer.appendChild(likes);
 
         const avgRating = document.createElement('p');
         if(recipeInfo.AverageRating != null) {
@@ -560,11 +561,12 @@ async function loadRecipeInfo(recipeId) {
             } else {
                 await likeRecipe(recipeId); // This function needs to be defined to handle liking the recipe
             }
-
             // Toggle the like state and update the button text and color
             isLiked = !isLiked;
             likeButton.textContent = isLiked ? "Unlike" : "Like";
             likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff";
+
+            await loadRecipeInfo(selectedRecipeId);
         });
 
         buttonContainer.appendChild(likeButton);

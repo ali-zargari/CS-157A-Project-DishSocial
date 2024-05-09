@@ -36,7 +36,14 @@ export async function showAllUser() {
     }
 }
 
-
+export async function totalLikes(recipeId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/totalLikes/${recipeId}`);
+        return response.data;
+    } catch (error) {
+        console.error('There was a problem with your axios operation: grabbing total likes', error);
+    }
+}
 
 
 export async function loginUser(email, password) {

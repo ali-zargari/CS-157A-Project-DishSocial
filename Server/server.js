@@ -828,6 +828,27 @@ app.get('/recipes/liked', async (req, res) => {
     }
 });
 
+app.get('/totalLikes/:recipeId', async (req, res) => {
+    const { recipeId } = req.params;
+
+    try {
+        const connection = await pool.getConnection();
+        const [result] = await connection.execute(`
+            SELECT COUNT(UserID) AS totalLikes FROM User_Likes_Recipe WHERE RecipeID = ?
+        `, [recipeId]);
+        connection.release();
+
+        // Extract the total likes from the result
+        const totalLikes = result[0].totalLikes;
+
+        res.status(200).json({ totalLikes });
+    } catch (error) {
+        console.error("Failed to retrieve total likes for recipe:", error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 // like a recipe
 app.post('/recipes/like', async (req, res) => {
     const { userId, recipeId } = req.body;
