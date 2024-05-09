@@ -1,5 +1,5 @@
 import './settings.css'
-import { getUserById, updateUserById } from './controller.js';
+import {deleteUser, getUserById, updateUserById} from './controller.js';
 
 
 function getUserIDFromQuery() {
@@ -30,7 +30,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 para.textContent = `${key}: ${userData[key]}`;
                 userInfoWrapper.appendChild(para);
             });
-        } else {
+
+            const deleteUserButton = document.createElement('button');
+            deleteUserButton.textContent = 'Delete User';
+            deleteUserButton.className = 'delete-user-button';
+            deleteUserButton.style.backgroundColor = 'red';
+            deleteUserButton.style.borderRadius = '5px';
+            deleteUserButton.style.color = 'white';
+            deleteUserButton.style.width = '100px';
+            deleteUserButton.style.height = '30px';
+            deleteUserButton.addEventListener('click', async() => {
+                try {
+                    alert('User Deleted Successfully!');
+                    await deleteUser(userId);
+                    window.location.href = 'index.html';
+
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Error deleting user');
+                }
+
+            })
+            userInfoWrapper.appendChild(deleteUserButton);
+        }else {
             console.log('No user data found');
         }
     } catch (error) {
