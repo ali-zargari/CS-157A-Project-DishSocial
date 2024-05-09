@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export async function getUserById(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${userId}`);
         return response.data;
     } catch (error) {
         console.error('There was a problem fetching the user data:', error);
@@ -11,7 +11,7 @@ export async function getUserById(userId) {
 
 export async function deleteUser(useridToDelete) {
     try {
-        const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/users/${useridToDelete}`);
+        const response = await axios.delete(`https://cs-157a-project.wl.r.appspot.com/users/${useridToDelete}`);
 
     } catch (error) {
         console.error('There was a problem trying to delete a user', error);
@@ -20,7 +20,7 @@ export async function deleteUser(useridToDelete) {
 
 export async function deleteRecipe(recipeID) {
     try {
-        const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/recipe/${recipeID}`);
+        const response = await axios.delete(`https://cs-157a-project.wl.r.appspot.com/recipe/${recipeID}`);
 
     } catch (error) {
         console.error('There was a problem trying to delete a recipe', error);
@@ -29,7 +29,7 @@ export async function deleteRecipe(recipeID) {
 
 export async function showAllUser() {
     try {
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users');
+        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/users');
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation:', error);
@@ -38,7 +38,7 @@ export async function showAllUser() {
 
 export async function totalLikes(recipeId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/totalLikes/${recipeId}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/totalLikes/${recipeId}`);
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation: grabbing total likes', error);
@@ -52,7 +52,7 @@ export async function loginUser(email, password) {
 
     try {
        
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/login', {
+        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/login', {
             email,
             password,
             uid
@@ -87,7 +87,7 @@ export async function logoutUser(email, password) {
 
 export async function addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password) {
     try {
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/users', {
+        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/users', {
             FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password
         });
 
@@ -106,7 +106,7 @@ export async function addUser(FirstName, LastName, Gender, Email, Birthplace, Da
 
 export async function updateUserById(userId, userData) {
     try {
-        const response = await axios.put(`https://ai-council-419503.wl.r.appspot.com/users/${userId}`, userData);
+        const response = await axios.put(`https://cs-157a-project.wl.r.appspot.com/users/${userId}`, userData);
 
        
         if(response.status === 200){
@@ -142,7 +142,7 @@ export async function getUserInfo() {
             return null;
         }
 
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userID}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${userID}`);
         return response.data;
     } catch (error) {
         console.error('Failed to get user info:', error);
@@ -151,7 +151,7 @@ export async function getUserInfo() {
 
 export async function getUserNameById(uID) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${uID}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${uID}`);
 
         return response.data.FirstName + ' ' + response.data.LastName;
     } catch (error) {
@@ -161,7 +161,7 @@ export async function getUserNameById(uID) {
 
 export async function getSelectedRecipeInfo(recipeID) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipe/${recipeID}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/recipe/${recipeID}`);
         return response.data;
     } catch (error) {
         console.error(`Failed to get selected recipe info: ${error}`);
@@ -170,7 +170,7 @@ export async function getSelectedRecipeInfo(recipeID) {
 
 export async function getRecipeAuthor(recipeID) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/getRecipeAuthor/${recipeID}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/getRecipeAuthor/${recipeID}`);
         return response.data;
     } catch (error) {
         console.error(`Failed to get selected recipe author: ${error}`);
@@ -179,7 +179,7 @@ export async function getRecipeAuthor(recipeID) {
 
 export async function getUserFriendReviews(userID) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/user/friendReviews/${userID}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/user/friendReviews/${userID}`);
         return response.data;
     } catch (error) {
         console.error(`Failed to get user friend reviews: ${error}`);
@@ -188,7 +188,7 @@ export async function getUserFriendReviews(userID) {
 
 export async function getAllRecipes() {
     try {
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipe');
+        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipe');
         return response.data;
     } catch (error) {
         console.error('Failed to get all recipes:', error);
@@ -198,7 +198,7 @@ export async function getAllRecipes() {
 
 export async function getRecipesByUser(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/userRecipes/${userId}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/userRecipes/${userId}`);
         return response.data;
     } catch (error) {
         console.error('There was a problem fetching the user upload data:', error);
@@ -208,7 +208,7 @@ export async function getRecipesByUser(userId) {
 
 export async function getAllReviewsByUser(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/reviews`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${userId}/reviews`);
         return response.data;
     } catch (error) {
         console.error('Failed to fetch reviews by user:', error);
@@ -218,7 +218,7 @@ export async function getAllReviewsByUser(userId) {
 
 export async function getAllRecipesUploadedByUser(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/recipes`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${userId}/recipes`);
         return response.data;
     } catch (error) {
         console.error('Failed to fetch recipes uploaded by user:', error);
@@ -228,7 +228,7 @@ export async function getAllRecipesUploadedByUser(userId) {
 
 export async function getUserInfoById(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${userId}`);
         return response.data;
     } catch (error) {
         console.error('Failed to get user info:', error);
@@ -239,7 +239,7 @@ export async function getUserInfoById(userId) {
 
 export async function getFollowers(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/followers`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${userId}/followers`);
         return response.data;
     } catch (error) {
         console.error('Failed to fetch followers:', error);
@@ -249,7 +249,7 @@ export async function getFollowers(userId) {
 
 export async function getFollowing(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/following`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/${userId}/following`);
         return response.data;
     } catch (error) {
         console.error('Failed to fetch following:', error);
@@ -259,7 +259,7 @@ export async function getFollowing(userId) {
 
 export async function followUser(userId, followedUserId) {
     try {
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/users/follow', {
+        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/users/follow', {
             userId,
             followedUserId
         });
@@ -287,7 +287,7 @@ export async function unfollowUser(userId, friendId) {
             return false;
         }
 
-        const response = await axios.delete('https://ai-council-419503.wl.r.appspot.com/unfollow', {
+        const response = await axios.delete('https://cs-157a-project.wl.r.appspot.com/unfollow', {
             data: { userId, friendId }
         });
 
@@ -300,7 +300,7 @@ export async function unfollowUser(userId, friendId) {
 
 export async function getReviewsByUser(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/userReviews/${userId}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/userReviews/${userId}`);
         return response.data;
     } catch (error) {
         console.error('There was a problem fetching the user reviewIds:', error);
@@ -309,7 +309,7 @@ export async function getReviewsByUser(userId) {
 
 export async function deleteReview(reviewIdToDelete) {
     try {
-        const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/review/${reviewIdToDelete}`);
+        const response = await axios.delete(`https://cs-157a-project.wl.r.appspot.com/review/${reviewIdToDelete}`);
 
     } catch (error) {
         console.error('There was a problem trying to delete a review', error);
@@ -318,7 +318,7 @@ export async function deleteReview(reviewIdToDelete) {
 
 export async function getMyList(userId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/customListRecipes/${userId}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/users/customListRecipes/${userId}`);
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation: grabbing user recipe list', error);
