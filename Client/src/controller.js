@@ -318,3 +318,12 @@ export async function deleteReview(reviewIdToDelete) {
         console.error('There was a problem trying to delete a review', error);
     }
 }
+
+export async function getMyList(userId) {
+    try {
+        const response = await axios.get(`http://localhost:3002/users/customListRecipes/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('There was a problem with your axios operation: grabbing user recipe list', error);
+    }
+}

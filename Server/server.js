@@ -848,6 +848,34 @@ app.get('/totalLikes/:recipeId', async (req, res) => {
     }
 });
 
+app.get('/users/customListRecipes/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const connection = await pool.getConnection();
+
+        const query = `
+            SELECT r.* FROM Recipe r
+            JOIN Custom_List_Recipes clr ON r.RecipeID = clr.RecipeID
+            WHERE clr.UserID = ?
+        `;
+
+        const [rows] = await connection.execute(query, [userId]);
+
+        connection.release();
+
+        if (rows.length > 0) {
+            res.json(rows);
+        } else {
+            res.json([]);
+        }
+    } catch (error) {
+        console.error('Error fetching custom list recipes:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 
 // like a recipe
 app.post('/recipes/like', async (req, res) => {

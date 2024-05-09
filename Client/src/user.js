@@ -1,5 +1,5 @@
 import './user.css'
-import {getAllRecipesUploadedByUser, getAllReviewsByUser, getUserInfoById} from "./controller";
+import {getAllRecipesUploadedByUser, getAllReviewsByUser, getMyList, getUserInfoById, getSelectedRecipeInfo} from "./controller";
 import { getFollowers, getFollowing } from "./controller";  // Adjust the path as necessary
 
 
@@ -13,13 +13,13 @@ async function displayUserContent(userId) {
     const userReviews = await getAllReviewsByUser(userId);
     const userRecipes = await getAllRecipesUploadedByUser(userId);
     const userInfo = await getUserInfoById(userId);
+    const myList= await getMyList(userId);
 
-
-
+    console.log(myList);
     // Clear previous content
     document.querySelector('.recipe-list').innerHTML = '';
     document.querySelector('.reviews-list').innerHTML = '';
-
+    document.querySelector('.my-list-recipes-list').innerHTML = '';
 
     // Update the <h1> element with the user's name
     if (userInfo) {
@@ -74,6 +74,21 @@ async function displayUserContent(userId) {
         });
     } else {
         document.querySelector('.reviews-list').innerHTML = '<p>No reviews posted by this user.</p>';
+    }
+
+    if (myList.length > 0) {
+        const customListContainer = document.querySelector('.my-list-recipes-list');
+        myList.forEach(recipe => {
+            const recipeElement = document.createElement('div');
+            recipeElement.className = 'recipe-item';
+            recipeElement.innerHTML = `<h3>${recipe.Title}</h3>
+                                        <p><strong>Calories:</strong> ${recipe.TotalCalories}</p>
+                                        <p><strong>Ingredients:</strong> ${recipe.Ingredients}</p>
+                                        <p><strong>Steps:</strong> ${recipe.Steps}</p>`;
+            customListContainer.appendChild(recipeElement);
+        });
+    } else {
+        document.querySelector('.my-list-recipes-list').innerHTML = '<p>No recipes in your custom list.</p>';
     }
 }
 
