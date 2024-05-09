@@ -3,7 +3,7 @@ import { loginUser, addUser } from "./controller";
 import './index.css';
 
 document.getElementById('registrationForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the form from submitting via the browser
+    event.preventDefault();
 
     const user = {
         FirstName: document.getElementById('regFirstName').value,
@@ -15,7 +15,7 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
         Password: document.getElementById('regPassword').value
     };
 
-    // Destructure the user object into individual variables
+   
     const { FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password } = user;
 
     if(await addUser(FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password)) {
@@ -26,16 +26,16 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
         }
     } else {
         console.log('User NOT ADDED.');
-        // Create an error message element if the user already exists
+       
         let errorMsg = document.createElement('p');
         errorMsg.textContent = "Email already exists!";
-        errorMsg.style.color = "red"; // Style the message with red color
+        errorMsg.style.color = "red";
 
-        // Append the error message to the form
+       
         document.getElementById('registrationForm').appendChild(errorMsg);
 
         setTimeout(() => {
-            // Remove the error message after 5 seconds
+           
             errorMsg.remove();
         }, 5000);
     }
@@ -50,18 +50,18 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     if (await loginUser(email, password)) {
         window.location.href = 'mainpage.html';
     } else {
-        // Display an error message or perform any other action on login failure
+       
         console.log('Login failed');
-        // Create an error message element if login fails
+       
         let errorMsg = document.createElement('p');
         errorMsg.textContent = "Invalid email or password!";
-        errorMsg.style.color = "red"; // Style the message with red color
+        errorMsg.style.color = "red";
 
-        // Append the error message to the form
+       
         document.getElementById('loginForm').appendChild(errorMsg);
 
         setTimeout(() => {
-            // Remove the error message after 5 seconds
+           
             errorMsg.remove();
         }, 5000);
     }
