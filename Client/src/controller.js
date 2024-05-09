@@ -11,7 +11,7 @@ export async function getUserById(userId) {
 
 export async function deleteUser(useridToDelete) {
     try {
-        const response = await axios.delete(`http://localhost:3002/users/${useridToDelete}`);
+        const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/users/${useridToDelete}`);
 
     } catch (error) {
         console.error('There was a problem trying to delete a user', error);
@@ -38,7 +38,7 @@ export async function showAllUser() {
 
 export async function totalLikes(recipeId) {
     try {
-        const response = await axios.get(`http://localhost:3002/totalLikes/${recipeId}`);
+        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/totalLikes/${recipeId}`);
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation: grabbing total likes', error);
@@ -318,7 +318,7 @@ export async function deleteReview(reviewIdToDelete) {
 
 export async function getMyList(userId) {
     try {
-        const response = await axios.get(`http://localhost:3002/users/customListRecipes/${userId}`);
+        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/customListRecipes/${userId}`);
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation: grabbing user recipe list', error);
