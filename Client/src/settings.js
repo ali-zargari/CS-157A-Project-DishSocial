@@ -1,16 +1,16 @@
 import './settings.css'
-import { getUserById, updateUserById } from './controller.js';
+import {deleteUser, getUserById, updateUserById} from './controller.js';
 
 
 function getUserIDFromQuery() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('userID'); // Returns the userID from the URL, or null if not present
+    return urlParams.get('userID');
 }
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const userId = getUserIDFromQuery(); // Set to the user ID you want to fetch data for
-    const messageBox = document.getElementById('messageBox'); // Get the message box element
+    const userId = getUserIDFromQuery();
+    const messageBox = document.getElementById('messageBox');
 
     try {
         const userData = await getUserById(userId);
@@ -30,7 +30,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 para.textContent = `${key}: ${userData[key]}`;
                 userInfoWrapper.appendChild(para);
             });
-        } else {
+
+            const deleteUserButton = document.createElement('button');
+            deleteUserButton.textContent = 'Delete User';
+            deleteUserButton.className = 'delete-user-button';
+            deleteUserButton.style.backgroundColor = 'red';
+            deleteUserButton.style.borderRadius = '5px';
+            deleteUserButton.style.color = 'white';
+            deleteUserButton.style.width = '100px';
+            deleteUserButton.style.height = '30px';
+            deleteUserButton.addEventListener('click', async() => {
+                try {
+                    alert('User Deleted Successfully!');
+                    await deleteUser(userId);
+                    window.location.href = 'index.html';
+
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Error deleting user');
+                }
+
+            })
+            userInfoWrapper.appendChild(deleteUserButton);
+        }else {
             console.log('No user data found');
         }
     } catch (error) {
@@ -57,31 +79,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const updateResponse = await updateUserById(userId, updatedData);
-            messageBox.textContent = 'User updated successfully.'; // Set success message
-            messageBox.className = 'message-box success'; // Additional class for styling success
-            messageBox.style.display = 'block'; // Show the message box
+            messageBox.textContent = 'User updated successfully.';
+            messageBox.className = 'message-box success';
+            messageBox.style.display = 'block';
 
             setTimeout(() => {
-                messageBox.style.display = 'none'; // Optionally hide the message after some time
-                location.reload(); // Refresh the page if update is successful
+                messageBox.style.display = 'none';
+                location.reload();
             }, 4000);
         } catch (error) {
             console.error('Error updating user data:', error);
             messageBox.textContent = 'Error updating user data.';
-            messageBox.className = 'message-box error'; // Additional class for styling errors
-            messageBox.style.display = 'block'; // Show the message box
+            messageBox.className = 'message-box error';
+            messageBox.style.display = 'block';
         }
     });
 });
 
 
-// Select the Logout button using its ID
 const logoutButton = document.getElementById('logoutButton');
 
-// Add an event listener to the Logout button
 logoutButton.addEventListener('click', function () {
     try {
-        // Expire the userID cookie
+       
         document.cookie = "userID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
         console.log("Logged out successfully.");
         window.location.href = 'index.html';
@@ -94,10 +114,9 @@ logoutButton.addEventListener('click', function () {
 
 const dashbordButton = document.getElementById('dashbordButton');
 
-// Add an event listener to the Logout button
 dashbordButton.addEventListener('click', function () {
     try {
-        // Expire the userID cookie
+       
         window.location.href = 'mainpage.html';
 
     } catch (error) {

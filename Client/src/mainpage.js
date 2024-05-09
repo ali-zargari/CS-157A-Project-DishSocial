@@ -13,7 +13,8 @@ import {
     deleteReview,
     followUser,
     unfollowUser,
-    getRecipeAuthor
+    getRecipeAuthor,
+    totalLikes
 } from './controller';
 import axios from "axios";
 
@@ -37,11 +38,11 @@ document.getElementById('profileButton').addEventListener('click', function (eve
 
     const userID = getUserIdFromCookie();
 
-    // If userID is found, pass it as a query parameter to the settings page
+   
     if (userID !== null) {
         window.location.href = `settings.html?userID=${encodeURIComponent(userID)}`;
     } else {
-        // Handle the scenario where no userID is present
+       
         window.location.href = 'settings.html';
     }
 });
@@ -59,22 +60,22 @@ async function loadRecipes() {
         const response = await axios.get('http://localhost:3002/recipes-with-authors');
         const recipesWithAuthors = response.data;
 
-        // Get the current user's uploaded recipes
+       
         const currentUserId = getUserIdFromCookie();
         const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const uploadedRecipesSet = new Set(userUploadedRecipes);
 
-        // Create a document fragment for efficient DOM updates
+       
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-        // Process the fetched recipes
+       
         for (const recipe of recipesWithAuthors) {
-            // Determine if the current user uploaded this recipe
+           
             const isUploadedByCurrentUser = uploadedRecipesSet.has(recipe.RecipeID);
 
-            // Create the main recipe element
+           
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
             recipeElement.style.display = 'flex';
@@ -86,23 +87,23 @@ async function loadRecipes() {
             recipeElement.style.marginBottom = '10px';
             recipeElement.style.cursor = 'pointer';
 
-            // Create a container for the primary and extra info with flexbox layout
+           
             const infoContainer = document.createElement('div');
             infoContainer.className = 'info-container';
             infoContainer.style.display = 'flex';
             infoContainer.style.flexDirection = 'row';
             infoContainer.style.justifyContent = 'space-between';
-            //infoContainer.style.gap = '8px';
-            infoContainer.style.flex = '0 0 75%'; // Take up 75% of the width
+           
+            infoContainer.style.flex = '0 0 75%';
 
-            // Create a sub-container for the title and ingredients specifically
+           
             const titleAndIngredientsContainer = document.createElement('div');
             titleAndIngredientsContainer.className = 'title-ingredients-container';
             titleAndIngredientsContainer.style.display = 'flex';
             titleAndIngredientsContainer.style.flexDirection = 'column';
             titleAndIngredientsContainer.style.gap = '4px';
 
-            // Add the primary recipe details (title and ingredients)
+           
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title;
             recipeTitle.style.margin = '0';
@@ -111,18 +112,18 @@ async function loadRecipes() {
             recipeIngredients.textContent = recipe.Ingredients || '';
             recipeIngredients.style.margin = '0';
 
-            // Append the title and ingredients to their sub-container
+           
             titleAndIngredientsContainer.appendChild(recipeTitle);
             titleAndIngredientsContainer.appendChild(recipeIngredients);
 
-            // Create a container specifically for the extra details (author, ratings, reviews)
+           
             const detailsInfoContainer = document.createElement('div');
             detailsInfoContainer.className = 'details-info-container';
             detailsInfoContainer.style.display = 'flex';
             detailsInfoContainer.style.flexDirection = 'column';
             detailsInfoContainer.style.gap = '4px';
 
-            // Prepare the author and ratings information
+           
             const recipeAuthor = `Author: ${recipe.AuthorName || 'Unknown'}`;
             let avgRatingText = 'N/A';
             if (recipe.AvgRating > '0' && recipe.AvgRating < '5.01') {
@@ -136,7 +137,7 @@ async function loadRecipes() {
             date.setHours(date.getHours() - 8);
             const uploadDate = `Uploaded on: ${date.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`;
 
-            // Add these lines to paragraphs
+           
             const line1Element = document.createElement('p');
             line1Element.textContent = recipeAuthor;
             line1Element.style.margin = '0';
@@ -153,52 +154,52 @@ async function loadRecipes() {
             line4Element.textContent = uploadDate;
             line4Element.style.margin = '0';
 
-            // Append the lines to the extra details container
+           
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
             detailsInfoContainer.appendChild(line4Element);
 
-            // Append both the title-ingredients and extra details containers to the main info container
+           
             infoContainer.appendChild(titleAndIngredientsContainer);
             infoContainer.appendChild(detailsInfoContainer);
 
-            // Create a container for the buttons to the right of both the main and extra info
+           
             const buttonContainer = document.createElement('div');
             buttonContainer.className = 'button-container';
             buttonContainer.style.display = 'flex';
             buttonContainer.style.gap = '8px';
 
-            // If uploaded by the current user, provide a delete button
+           
             if (isUploadedByCurrentUser) {
                 const deleteButton = document.createElement('button');
                 deleteButton.innerText = 'Delete';
                 deleteButton.style.padding = '8px 15px';
                 deleteButton.style.border = 'none';
                 deleteButton.style.borderRadius = '5px';
-                deleteButton.style.backgroundColor = '#a72828'; // Red for deletion
+                deleteButton.style.backgroundColor = '#a72828';
                 deleteButton.style.color = '#fff';
                 deleteButton.style.cursor = 'pointer';
                 deleteButton.style.fontSize = '0.9em';
                 deleteButton.style.marginLeft = '10px';
                 deleteButton.addEventListener('click', async (event) => {
-                    event.stopPropagation(); // Prevent triggering the recipe info loading event
+                    event.stopPropagation();
                     await deleteRecipe(recipe.RecipeID);
-                    await loadRecipes(); // Reload after deletion
+                    await loadRecipes();
                 });
 
-                // Append the delete button to the button container
+               
                 buttonContainer.appendChild(deleteButton);
             } else {
                 infoContainer.style.width = '100%';
                 recipeElement.style.justifyContent = 'space-around';
             }
-            // Add click event to load detailed recipe info
+           
             recipeElement.addEventListener('click', () => {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
 
-                // Remove highlighting from the currently highlighted recipe if it exists
+               
                 const highlightedElement = document.querySelector('.recipe-highlighted');
                 const wallListHighLightedElement = document.querySelector('.wall-recipe-highlighted');
                 if (highlightedElement) {
@@ -208,19 +209,19 @@ async function loadRecipes() {
                     wallListHighLightedElement.classList.remove('wall-recipe-highlighted');
                 }
 
-                // Add highlight to the clicked recipe and update the reference
+               
                 recipeElement.classList.add('recipe-highlighted');
             });
 
-            // Append both the info container and button container to the main recipe element
+           
             recipeElement.appendChild(infoContainer);
             recipeElement.appendChild(buttonContainer);
 
-            // Add the main recipe element to the fragment
+           
             fragment.appendChild(recipeElement);
         }
 
-        // Append the fragment to the recipe list container
+       
         recipeListContainer.appendChild(fragment);
     } catch (error) {
         console.error('Failed to load recipes:', error);
@@ -231,19 +232,18 @@ async function loadRecipes() {
 
 let friendsSet = new Set();
 
-// Fetch all users and the initial friends list
 async function loadAllUsers() {
     try {
         let searchTerm = document.getElementById('all-users-search').value.trim().toLowerCase();
         searchTerm = sanitizeSearchTerm(searchTerm);
 
-        // Fetch users and friends list
+       
         const [users, friends] = await Promise.all([showAllUser(), showFriends()]);
         const usersListContainer = document.querySelector('.All-list');
         const currentUser = getUserIdFromCookie();
         usersListContainer.innerHTML = '';
 
-        // Initialize friends set for quick lookup
+       
         friendsSet = new Set(friends.map(friend => friend.UserID));
 
         let currentUserElement = null;
@@ -252,7 +252,7 @@ async function loadAllUsers() {
             const userName = `${user.FirstName} ${user.LastName}`.toLowerCase();
             if (searchTerm && !userName.includes(searchTerm)) continue;
 
-            // Create the user element
+           
             const userElement = document.createElement('div');
             userElement.className = 'user';
             userElement.style.display = "flex";
@@ -260,26 +260,26 @@ async function loadAllUsers() {
             userElement.style.alignItems = "center";
             userElement.style.padding = '10px';
 
-            // Check if this is the currently logged-in user
+           
             if (user.UserID == currentUser) {
-                userElement.style.backgroundColor = '#e0f7fa'; // Light blue background for "Me"
+                userElement.style.backgroundColor = '#e0f7fa';
                 const meLabel = document.createElement('span');
                 meLabel.textContent = "Me";
-                meLabel.style.color = '#00796b'; // Teal color for the "Me" label
+                meLabel.style.color = '#00796b';
                 meLabel.style.marginLeft = '10px';
                 userElement.appendChild(meLabel);
-                currentUserElement = userElement; // Store this element to prepend later
+                currentUserElement = userElement;
             } else {
-                // Create the user name text node for non-current users
+               
                 const userText = document.createTextNode(`${user.FirstName} ${user.LastName}`);
                 userElement.appendChild(userText);
             }
 
-            // Create a container for the buttons
+           
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
-            // Determine if the user is followed
+           
             const isCurrentlyFollowed = friendsSet.has(user.UserID);
             const followButton = createButton(
                 isCurrentlyFollowed ? 'Unfollow' : 'Follow',
@@ -295,19 +295,19 @@ async function loadAllUsers() {
                         if (success) {
                             followButton.textContent = 'Follow';
                             followButton.style.backgroundColor = 'green';
-                            friendsSet.delete(user.UserID); // Update friends set
+                            friendsSet.delete(user.UserID);
                         }
                     } else {
                         const success = await followUser(currentUser, user.UserID);
                         if (success) {
                             followButton.textContent = 'Unfollow';
                             followButton.style.backgroundColor = 'red';
-                            friendsSet.add(user.UserID); // Update friends set
+                            friendsSet.add(user.UserID);
                         }
                     }
 
-                    await loadWall(); // Optionally refresh the wall
-                    await loadFriends(); // Refresh the friends list
+                    await loadWall();
+                    await loadFriends();
 
                 } catch (error) {
                     console.error(`Error updating follow status: ${error.message}`);
@@ -316,26 +316,26 @@ async function loadAllUsers() {
                 }
             });
 
-            // Create the profile button
+           
             const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
                 window.location.href = `user.html?userID=${user.UserID}`;
             });
 
-            // Append buttons to the container
+           
             buttonContainer.appendChild(followButton);
             buttonContainer.appendChild(profileButton);
 
-            // Append the button container to the user element
+           
             userElement.appendChild(buttonContainer);
 
-            // Add the user element to the main list
+           
             if (user.UserID !== currentUser) {
                 usersListContainer.appendChild(userElement);
             }
         }
 
-        // Prepend the current user to the top of the user list
+       
         if (currentUserElement) {
             usersListContainer.prepend(currentUserElement);
         }
@@ -352,13 +352,13 @@ async function loadFriends() {
         let searchTerm = document.getElementById('friends-search').value.trim().toLowerCase();
         searchTerm = sanitizeSearchTerm(searchTerm);
 
-        // Fetch users and friends list
+       
         const [users, friends] = await Promise.all([showAllUser(), showFriends()]);
         const friendsListContainer = document.querySelector('.friend-list');
-        const currentUser = getUserIdFromCookie(); // Ensure this is correctly implemented
+        const currentUser = getUserIdFromCookie();
         friendsListContainer.innerHTML = '';
 
-        // Initialize friends set for quick lookup
+       
         friendsSet = new Set(friends.map(friend => friend.UserID));
 
         let currentUserElement = null;
@@ -367,42 +367,42 @@ async function loadFriends() {
             const friendName = `${friend.FirstName} ${friend.LastName}`.toLowerCase();
             if (searchTerm && !friendName.includes(searchTerm)) continue;
 
-            // Create the friend element
+           
             const friendElement = document.createElement('div');
             friendElement.className = 'friend';
             friendElement.style.display = "flex";
             friendElement.style.justifyContent = "space-between";
             friendElement.style.alignItems = "center";
-            //friendElement.style.padding = '10px';
+           
 
-            // Check if the current friend is the logged-in user and add the "Me" label
+           
             if (friend.UserID == currentUser) {
-                friendElement.style.backgroundColor = '#e0f7fa'; // Light blue background
+                friendElement.style.backgroundColor = '#e0f7fa';
                 const meLabel = document.createElement('span');
                 meLabel.textContent = "Me";
-                meLabel.style.color = '#00796b'; // Teal color
+                meLabel.style.color = '#00796b';
                 meLabel.style.marginLeft = '10px';
                 friendElement.appendChild(meLabel);
-                currentUserElement = friendElement; // Store this element to prepend later
+                currentUserElement = friendElement;
             } else {
-                // Add the friend's name if they are not the current user
+               
                 const friendText = document.createTextNode(`${friend.FirstName} ${friend.LastName}`);
                 friendElement.appendChild(friendText);
             }
 
-            // Create a container for the buttons
+           
             const buttonContainer = document.createElement('div');
             buttonContainer.style.display = 'flex';
 
-            // Create the "Unfollow" button
+           
             const deleteButton = createButton('Unfollow', 'red');
             deleteButton.addEventListener('click', async () => {
                 try {
                     const success = await unfollowUser(currentUser, friend.UserID);
                     if (success) {
-                        await loadFriends(); // Reload the friends list after unfollowing
+                        await loadFriends();
                         await loadWall();
-                        await loadAllUsers(); // Refresh all users
+                        await loadAllUsers();
                     } else {
                         deleteButton.textContent = 'Error';
                         deleteButton.style.backgroundColor = 'gray';
@@ -414,26 +414,26 @@ async function loadFriends() {
                 }
             });
 
-            // Create the "Profile" button
+           
             const profileButton = createButton('Profile', 'green');
             profileButton.addEventListener('click', () => {
                 window.location.href = `user.html?userID=${friend.UserID}`;
             });
 
-            // Append the buttons to the button container
+           
             buttonContainer.appendChild(deleteButton);
             buttonContainer.appendChild(profileButton);
 
-            // Append the button container to the friend element
+           
             friendElement.appendChild(buttonContainer);
 
-            // Add the friend element to the friends list container
+           
             if (friend.UserID !== currentUser) {
                 friendsListContainer.appendChild(friendElement);
             }
         }
 
-        // Prepend the current user to the top of the friends list
+       
         if (currentUserElement) {
             friendsListContainer.prepend(currentUserElement);
         }
@@ -459,7 +459,7 @@ function createButton(text, backgroundColor) {
 
 
 function sanitizeSearchTerm(term) {
-    // Remove all non-alphanumeric characters except spaces
+   
     return term.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
 }
 
@@ -471,21 +471,21 @@ async function loadRecipeInfo(recipeId) {
         const recipeInfoContainer = document.querySelector('.recipe-description');
         const reviewFormSection = document.querySelector('.review-form-section');
         const recipeAuthor = await getRecipeAuthor(recipeId);
-
-        // Clear out any existing content in the recipe info container
+        const likesData = await totalLikes(recipeId);
+       
         recipeInfoContainer.innerHTML = '';
 
-        // Assuming that recipeInfo will be null or undefined if no recipe is found
+       
         if (recipeInfo) {
             reviewFormSection.style.display = 'flex';
         }
 
-        // Create and append the recipe title
+       
         const recipeTitle = document.createElement('h3');
         recipeTitle.textContent = recipeInfo.Title;
         recipeInfoContainer.appendChild(recipeTitle);
 
-        // Add more elements for the rest of the recipe information like cook time, prep time, etc.
+       
 
         const steps = document.createElement('p');
         steps.textContent = `Steps: ${recipeInfo.Steps}`;
@@ -503,9 +503,9 @@ async function loadRecipeInfo(recipeId) {
         reviewCount.textContent = `Total Reviews: ${recipeInfo.ReviewCount}`;
         recipeInfoContainer.appendChild(reviewCount);
 
-        const ratingCount = document.createElement('p');
-        ratingCount.textContent = `Total Ratings: ${recipeInfo.RatingCount}`;
-        recipeInfoContainer.appendChild(ratingCount);
+        const likes = document.createElement('p');
+        likes.textContent = `Total Likes: ${likesData.totalLikes}`;
+        recipeInfoContainer.appendChild(likes);
 
         const avgRating = document.createElement('p');
         if(recipeInfo.AverageRating != null) {
@@ -532,19 +532,19 @@ async function loadRecipeInfo(recipeId) {
         uploadDate.textContent = `Uploaded on: ${date.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`;
         recipeInfoContainer.appendChild(uploadDate);
 
-        // Create and append 'Add to Custom List' button
+
         let isInList = await checkRecipeInList(recipeId);
         const addButton = document.createElement('button');
         addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
 
 
-        // Create container div for buttons
+       
         const buttonContainer = document.createElement('div');
-        buttonContainer.style.display = 'flex'; // Use flexbox to arrange buttons horizontally
-        buttonContainer.style.marginTop = '10px'; // Add some top margin to separate buttons from recipe info
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.marginTop = '10px';
         buttonContainer.id = 'laButtons';
 
-        // Set button color based on whether the recipe is in the user's list or not
+       
         addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
         addButton.id = 'addButton';
         addButton.addEventListener('click', async function() {
@@ -554,35 +554,36 @@ async function loadRecipeInfo(recipeId) {
                 await sendRecipeToCustomList(recipeId);
             }
 
-            // Update isInList and button text
+           
             isInList = await checkRecipeInList(recipeId);
             addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
 
-            // Update button color based on the updated isInList value
+           
             addButton.style.backgroundColor = isInList ? "#dc3545" : "#007bff";
         });
 
 
 
-        // Create and append 'Like' button
-        let isLiked = await checkIfRecipeIsLiked(recipeId); // This function needs to be defined to check the like status
+       
+        let isLiked = await checkIfRecipeIsLiked(recipeId);
         const likeButton = document.createElement('button');
         likeButton.textContent = isLiked ? "Unlike" : "Like";
-        likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff"; // Red for unlike, green for like
+        likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff";
         likeButton.style.color = 'white';
-        likeButton.style.marginTop = '10px'; // Extra styling to match the existing buttons
+        likeButton.style.marginTop = '10px';
 
         likeButton.addEventListener('click', async function() {
             if (isLiked) {
-                await unlikeRecipe(recipeId); // This function needs to be defined to handle unliking the recipe
+                await unlikeRecipe(recipeId);
             } else {
-                await likeRecipe(recipeId); // This function needs to be defined to handle liking the recipe
+                await likeRecipe(recipeId);
             }
-
-            // Toggle the like state and update the button text and color
+           
             isLiked = !isLiked;
             likeButton.textContent = isLiked ? "Unlike" : "Like";
             likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff";
+
+            await loadRecipeInfo(selectedRecipeId);
         });
 
         buttonContainer.appendChild(likeButton);
@@ -597,14 +598,14 @@ async function loadRecipeInfo(recipeId) {
         const reviewFormSection = document.querySelector('.review-form-section');
     }
 
-    // Fetch reviews for the recipe
+   
     await fetchAndDisplayReviews(recipeId);
 }
 
 async function sendRecipeToCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        await axios.post('https://ai-council-419503.wl.r.appspot.com/addToCustomList', { userId, recipeId });
+        await axios.post('https://cs-157a-project.wl.r.appspot.com/addToCustomList', { userId, recipeId });
     }
     catch (error) {
         console.error('Failed to add recipe to a custom list:', error);
@@ -614,7 +615,7 @@ async function sendRecipeToCustomList(recipeId) {
 async function removeFromCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete('https://ai-council-419503.wl.r.appspot.com/removeFromCustomList', { data: { userId, recipeId } });
+        const response = await axios.delete('https://cs-157a-project.wl.r.appspot.com/removeFromCustomList', { data: { userId, recipeId } });
 
         if (response.status === 200) {
         } else {
@@ -629,20 +630,20 @@ async function removeFromCustomList(recipeId) {
 
 async function checkRecipeInList(recipeId) {
     try {
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/isInCustomList`, {
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/isInCustomList`, {
             params: {
                 userId: getUserIdFromCookie(),
                 recipeId: recipeId
             }
         });
 
-        return response.status === 200; // If status is 200, return true. The recipe is in the list.
+        return response.status === 200;
     } catch (error) {
         console.error(`Error in checkRecipeInList: ${error.message}`);
         if (error.response && error.response.status === 404) {
             console.error('Endpoint not found. Check if server is running and endpoint URL is correct.');
         }
-        return false; // If the status is not 200 or an error occurred, return false. The recipe is not in the list.
+        return false;
     }
 }
 
@@ -651,18 +652,18 @@ async function fetchAndDisplayReviews(recipeId) {
     try {
         const currentUserId = getUserIdFromCookie();
         const reviewedByUser = await getReviewsByUser(currentUserId);
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/reviews/${recipeId}`);
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/reviews/${recipeId}`);
         const reviews = response.data;
 
         const reviewsList = document.querySelector('.reviews-list');
-        reviewsList.innerHTML = ''; // Clear existing reviews before displaying the latest ones
+        reviewsList.innerHTML = '';
 
         reviews.forEach(review => {
             // Convert and format the publish date
             const publishDate = new Date(review.PublishDate);
             const formattedDate = publishDate.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Create and append review items to the reviews list
+
             const reviewItem = document.createElement('div');
             const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
             let isFiveStars = review.Rating === 5;
@@ -740,7 +741,7 @@ async function loadWall() {
             reviewDate.className = 'review-date';
             reviewContainer.appendChild(reviewDate);
 
-            const reviewRating = document.createElement('div'); // Changed to div for better styling control
+            const reviewRating = document.createElement('div');
             reviewRating.textContent = `${review.Rating} Stars`;
             reviewRating.className = review.Rating === 5 ? 'gold-rating' : 'review-rating';
             reviewContainer.appendChild(reviewRating);
@@ -810,7 +811,7 @@ async function performAdvancedRecipeSearch() {
     const minCalories = document.getElementById('min-calories').value;
     const maxCalories = document.getElementById('max-calories').value;
 
-    const userID = getUserIdFromCookie(); // This function needs to be defined to get the user ID from the cookie
+    const userID = getUserIdFromCookie();
 
     await loadRecipesWithParams({
         searchTerm,
@@ -824,12 +825,12 @@ async function performAdvancedRecipeSearch() {
 
 
 document.getElementById('postReviewForm').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
 
-    // Get the form data
+   
     const reviewText = document.getElementById('reviewText').value;
     const reviewRating = document.getElementById('reviewRating').value;
-    const userID = getUserIdFromCookie(); // This function retrieves the current user's ID from a cookie
+    const userID = getUserIdFromCookie();
     const reviewFormSection = document.querySelector('.review-form-section');
 
     if (!selectedRecipeId) {
@@ -846,11 +847,11 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
             ReviewText: reviewText
         };
 
-        // POST the review data to the server
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/review/addReview', postData);
+       
+        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/review/addReview', postData);
 
         if (response.status === 201) {
-            // Append the new review to the list on the page
+           
             const newReview = response.data;
             await loadRecipeInfo(selectedRecipeId);
             console.log(lastSearchTerm);
@@ -859,7 +860,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
             await performAdvancedRecipeSearch(lastSearchTerm,lastFilter);
             //addReviewToPage(newReview);
 
-            // Clear the form fields
+           
             document.getElementById('reviewText').value = '';
             document.getElementById('reviewRating').value = '1';
             alert('Review successfully added.');
@@ -876,17 +877,16 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
 
 
 
-// Function to handle the upload form submission
 async function uploadRecipe(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
 
-    // Gather the form data
+   
     const title = document.getElementById('title').value;
     const ingredients = document.getElementById('ingredients').value;
     const totalCalories = document.getElementById('totalCalories').value;
     const cookingSteps = document.getElementById('cookingSteps').value;
 
-    // Put the form data into an object
+   
     const recipeData = {
         Title: title,
         Ingredients: ingredients,
@@ -894,14 +894,14 @@ async function uploadRecipe(event) {
         Steps: cookingSteps
     };
 
-    // Call the function from your controller to make the POST request
+   
     const newRecipe = await userUploadRecipe(recipeData);
 
-    // If the new recipe was created successfully
+   
     if (newRecipe) {
-        // Call a function to add the new recipe to the list of recipes in the DOM
-        //addRecipeToDom(newRecipe);
-        // Optionally clear the form
+       
+       
+       
         event.target.reset();
         if(lastFilter.length !== 0 || lastSearchTerm.length !== 0){
             console.log("this is loaded");
@@ -912,7 +912,7 @@ async function uploadRecipe(event) {
             await loadRecipes();
         }
     } else {
-        // Handle the error case
+       
         alert('Failed to upload recipe.');
     }
 }
@@ -920,17 +920,17 @@ async function uploadRecipe(event) {
 
 
 async function userUploadRecipe(recipeData) {
-    // Retrieve the User ID from the cookie
+   
     const uid = getUserIdFromCookie();
 
-    // Add the User ID to the recipe data
+   
     const fullRecipeData = { ...recipeData, uid };
 
     try {
-        // Send the POST request with the user ID included in the data
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipe/userUploadRecipe', fullRecipeData);
+       
+        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/recipe/userUploadRecipe', fullRecipeData);
 
-        // Return the created recipe object (or any other relevant response data)
+       
         return response.data;
     } catch (error) {
         console.error('There was a problem with your axios operation: user upload recipe', error);
@@ -944,7 +944,7 @@ async function showFriends() {
     const uid = getUserIdFromCookie();
 
     try {
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/users/friends', {
+        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/users/friends', {
             params: { uid }
         });
         return response.data;
@@ -954,15 +954,13 @@ async function showFriends() {
 }
 
 
-// Attach the event listener to the form
 document.getElementById('uploadRecipeForm').addEventListener('submit', uploadRecipe);
 
-// Function to add a recipe to the DOM
 function addRecipeToDom(recipe) {
     const recipeListContainer = document.querySelector('.recipe-list');
 
 
-    // Create the new recipe element
+   
     const recipeElement = document.createElement('div');
     recipeElement.className = 'recipe';
 
@@ -971,13 +969,13 @@ function addRecipeToDom(recipe) {
         <p>${recipe.Ingredients}</p>  <!-- You might want to format the ingredients differently -->
     `;
 
-    // // Add an event listener to load the recipe details when clicked
-    // recipeElement.addEventListener('click', function() {
-    //     selectedRecipeId = recipe.RecipeID;
-    //     loadRecipeInfo(selectedRecipeId);
-    // });
+   
+   
+   
+   
+   
 
-    // Append the new recipe to the list
+   
     recipeListContainer.appendChild(recipeElement);
 }
 
@@ -986,37 +984,37 @@ function addRecipeToDom(recipe) {
 async function checkIfRecipeIsLiked(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipes/liked`, {
+        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/recipes/liked`, {
             params: { userId, recipeId }
         });
-        return response.status === 200;  // Assumes 200 means it's liked, adjust based on your API
+        return response.status === 200; 
     } catch (error) {
         console.error(`Error in checkIfRecipeIsLiked: ${error.message}`);
-        return false; // Return false if there's an error or the recipe is not liked
+        return false;
     }
 }
 
 
 async function likeRecipe(recipeId) {
     try {
-        // Retrieve the userId from cookies and ensure it's a digit
+       
         let userId = getUserIdFromCookie();
-        // Convert both userId and recipeId to integers
+       
         userId = parseInt(userId, 10);
         recipeId = parseInt(recipeId, 10);
 
 
-        // Check if either conversion results in NaN, indicating invalid input
+       
         if (isNaN(userId) || isNaN(recipeId)) {
             console.error('User ID or Recipe ID is not a valid number');
             return false;
         }
 
-        const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/recipes/like', {
+        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/recipes/like', {
             userId, recipeId
         });
 
-        return response.status === 201; // Assuming 201 means created/successful
+        return response.status === 201;
     } catch (error) {
         console.error('Failed to like recipe:', error);
         return false;
@@ -1028,10 +1026,10 @@ async function likeRecipe(recipeId) {
 async function unlikeRecipe(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/recipes/unlike`, {
+        const response = await axios.delete(`https://cs-157a-project.wl.r.appspot.com/recipes/unlike`, {
             data: { userId, recipeId }
         });
-        return response.status === 200; // Assuming 200 means successful deletion
+        return response.status === 200;
     } catch (error) {
         console.error('Failed to unlike recipe:', error);
         return false;
@@ -1049,7 +1047,7 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
             return false;
         }
 
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/followed', {
+        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/followed', {
             params: { userId, friendId }
         });
 
@@ -1070,7 +1068,7 @@ document.getElementById('reviewRating').addEventListener('change', function() {
     const reviewRating = this;
     const reviewFormSection = document.querySelector('.review-form-section');
 
-    // Check if the selected rating is 5
+   
     if (reviewRating.value === '5') {
         reviewFormSection.classList.add('post-gold-rating');
     } else {
@@ -1081,14 +1079,14 @@ document.getElementById('reviewRating').addEventListener('change', function() {
 
 async function getAllRecipesWithAuthors() {
     try {
-        // Make an Axios GET request to the `/recipes-with-authors` endpoint
-        const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipes-with-authors');
+       
+        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipes-with-authors');
 
-        // Return the array of recipes with author information
+       
         return response.data;
     } catch (error) {
         console.error('Error fetching all recipes with authors:', error);
-        return []; // Return an empty array if there's an error
+        return [];
     }
 }
 
@@ -1096,26 +1094,27 @@ async function loadRecipesWithParams(params) {
     try {
         // Make an Axios GET request with the provided parameters
         const response = await axios.get('http://localhost:3002/recipes-with-authors/search', {
+
             params: params
         });
         const recipes = response.data;
 
-        // Get the current user's uploaded recipes
+       
         const currentUserId = params.userID;
         const userUploadedRecipes = await getRecipesByUser(currentUserId);
         const uploadedRecipesSet = new Set(userUploadedRecipes);
 
-        // Create a document fragment for efficient DOM updates
+       
         const recipeListContainer = document.querySelector('.recipe-list');
         recipeListContainer.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-        // Process the fetched recipes
+       
         for (const recipe of recipes) {
-            // Determine if the current user uploaded this recipe
+           
             const isUploadedByCurrentUser = uploadedRecipesSet.has(recipe.RecipeID);
 
-            // Create the main recipe element
+           
             const recipeElement = document.createElement('div');
             recipeElement.className = 'recipe';
             recipeElement.style.display = 'flex';
@@ -1127,7 +1126,7 @@ async function loadRecipesWithParams(params) {
             recipeElement.style.marginBottom = '10px';
             recipeElement.style.cursor = 'pointer';
 
-            // Create a container for the primary and extra info with flexbox layout
+           
             const infoContainer = document.createElement('div');
             infoContainer.className = 'info-container';
             infoContainer.style.display = 'flex';
@@ -1135,14 +1134,14 @@ async function loadRecipesWithParams(params) {
             infoContainer.style.justifyContent = 'space-between';
             infoContainer.style.flex = '0 0 75%';
 
-            // Create a sub-container for the title and ingredients specifically
+           
             const titleAndIngredientsContainer = document.createElement('div');
             titleAndIngredientsContainer.className = 'title-ingredients-container';
             titleAndIngredientsContainer.style.display = 'flex';
             titleAndIngredientsContainer.style.flexDirection = 'column';
             titleAndIngredientsContainer.style.gap = '4px';
 
-            // Add the primary recipe details (title and ingredients)
+           
             const recipeTitle = document.createElement('h3');
             recipeTitle.textContent = recipe.Title;
             recipeTitle.style.margin = '0';
@@ -1151,18 +1150,18 @@ async function loadRecipesWithParams(params) {
             recipeIngredients.textContent = recipe.Ingredients || '';
             recipeIngredients.style.margin = '0';
 
-            // Append the title and ingredients to their sub-container
+           
             titleAndIngredientsContainer.appendChild(recipeTitle);
             titleAndIngredientsContainer.appendChild(recipeIngredients);
 
-            // Create a container specifically for the extra details (author, ratings, reviews)
+           
             const detailsInfoContainer = document.createElement('div');
             detailsInfoContainer.className = 'details-info-container';
             detailsInfoContainer.style.display = 'flex';
             detailsInfoContainer.style.flexDirection = 'column';
             detailsInfoContainer.style.gap = '4px';
 
-            // Prepare the author and ratings information
+           
             const recipeAuthor = `Author: ${recipe.AuthorName || 'Unknown'}`;
             let avgRatingText = 'N/A';
             if (recipe.AvgRating > '0' && recipe.AvgRating < '5.01') {
@@ -1174,7 +1173,7 @@ async function loadRecipesWithParams(params) {
             const numReviews = `${recipe.NumReviews || 0}`;
             const uploadDate = `Uploaded on: ${new Date(recipe.UploadDate).toLocaleDateString()}`;
 
-            // Add these lines to paragraphs
+           
             const line1Element = document.createElement('p');
             line1Element.textContent = recipeAuthor;
             line1Element.style.margin = '0';
@@ -1191,36 +1190,36 @@ async function loadRecipesWithParams(params) {
             line4Element.textContent = uploadDate;
             line4Element.style.margin = '0';
 
-            // Append the lines to the extra details container
+
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
             detailsInfoContainer.appendChild(line4Element);
 
-            // Append both the title-ingredients and extra details containers to the main info container
+           
             infoContainer.appendChild(titleAndIngredientsContainer);
             infoContainer.appendChild(detailsInfoContainer);
 
-            // Create a container for the buttons to the right of both the main and extra info
+           
             const buttonContainer = document.createElement('div');
             buttonContainer.className = 'button-container';
             buttonContainer.style.display = 'flex';
             buttonContainer.style.gap = '8px';
 
-            // If uploaded by the current user, provide a delete button
+           
             if (isUploadedByCurrentUser) {
                 const deleteButton = document.createElement('button');
                 deleteButton.innerText = 'Delete';
                 deleteButton.style.padding = '8px 15px';
                 deleteButton.style.border = 'none';
                 deleteButton.style.borderRadius = '5px';
-                deleteButton.style.backgroundColor = '#a72828'; // Red for deletion
+                deleteButton.style.backgroundColor = '#a72828';
                 deleteButton.style.color = '#fff';
                 deleteButton.style.cursor = 'pointer';
                 deleteButton.style.fontSize = '0.9em';
                 deleteButton.style.marginLeft = '10px';
                 deleteButton.addEventListener('click', async (event) => {
-                    event.stopPropagation(); // Prevent triggering the recipe info loading event
+                    event.stopPropagation();
                     await deleteRecipe(recipe.RecipeID);
 
                     await loadRecipesWithParams(params);
@@ -1232,37 +1231,37 @@ async function loadRecipesWithParams(params) {
                     }
                 });
 
-                // Append the delete button to the button container
+               
                 buttonContainer.appendChild(deleteButton);
             } else {
                 infoContainer.style.width = '100%';
                 recipeElement.style.justifyContent = 'space-around';
             }
 
-            // Add click event to load detailed recipe info
+           
             recipeElement.addEventListener('click', () => {
                 selectedRecipeId = recipe.RecipeID;
                 loadRecipeInfo(selectedRecipeId);
 
-                // Remove highlighting from the currently highlighted recipe if it exists
+               
                 const highlightedElement = document.querySelector('.recipe-highlighted');
                 if (highlightedElement) {
                     highlightedElement.classList.remove('recipe-highlighted');
                 }
 
-                // Add highlight to the clicked recipe and update the reference
+               
                 recipeElement.classList.add('recipe-highlighted');
             });
 
-            // Append both the info container and button container to the main recipe element
+           
             recipeElement.appendChild(infoContainer);
             recipeElement.appendChild(buttonContainer);
 
-            // Add the main recipe element to the fragment
+           
             fragment.appendChild(recipeElement);
         }
 
-        // Append the fragment to the recipe list container
+       
         recipeListContainer.appendChild(fragment);
     } catch (error) {
         console.error('Failed to load recipes with parameters:', error);
