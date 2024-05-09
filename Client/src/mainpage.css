@@ -965,6 +965,10 @@ label:hover {
     border-color: black;
 }
 
+.wall-recipe-highlighted{
+    background-color: powderblue;
+}
+
 .post-gold-rating {
     background: linear-gradient(to right, #ffe066 10%, #ffd700 25%, #ffdf00 50%, #ffd700 75%, #ffe066 90%);
     background-size: 200% 100%;
