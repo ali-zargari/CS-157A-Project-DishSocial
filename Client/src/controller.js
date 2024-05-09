@@ -161,8 +161,8 @@ export async function getUserNameById(uID) {
 
 export async function getSelectedRecipeInfo(recipeID) {
     try {
-        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/recipe/${recipeID}`);
-        return response.data;
+        const response = await axios.get(`http://localhost:3002/recipe/${recipeID}`);
+        return response.data; // Returning the data for further use
     } catch (error) {
         console.error(`Failed to get selected recipe info: ${error}`);
     }

@@ -4,6 +4,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: 'development',
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin()],
+    },
 
     entry: {
         index: './src/index.js',

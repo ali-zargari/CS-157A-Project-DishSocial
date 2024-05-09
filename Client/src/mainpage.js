@@ -56,8 +56,8 @@ document.querySelector('.filter-button').addEventListener('click', async functio
 
 async function loadRecipes() {
     try {
-       
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipes-with-authors');
+        // Make an Axios GET request to fetch all recipes with authors
+        const response = await axios.get('http://localhost:3002/recipes-with-authors');
         const recipesWithAuthors = response.data;
 
        
@@ -133,6 +133,9 @@ async function loadRecipes() {
             const avgRating = `Average Rating: ${avgRatingText}`;
             const numRatings = `${recipe.NumRatings || 0}`;
             const numReviews = `${recipe.NumReviews || 0}`;
+            const date = new Date(recipe.UploadDate);
+            date.setHours(date.getHours() - 8);
+            const uploadDate = `Uploaded on: ${date.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`;
 
            
             const line1Element = document.createElement('p');
@@ -147,11 +150,15 @@ async function loadRecipes() {
             line3Element.textContent = `${numRatings} Ratings \n ${numReviews} Reviews`;
             line3Element.style.margin = '0';
 
+            const line4Element = document.createElement('p');
+            line4Element.textContent = uploadDate;
+            line4Element.style.margin = '0';
 
            
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
+            detailsInfoContainer.appendChild(line4Element);
 
            
             infoContainer.appendChild(titleAndIngredientsContainer);
@@ -194,8 +201,12 @@ async function loadRecipes() {
 
                
                 const highlightedElement = document.querySelector('.recipe-highlighted');
+                const wallListHighLightedElement = document.querySelector('.wall-recipe-highlighted');
                 if (highlightedElement) {
                     highlightedElement.classList.remove('recipe-highlighted');
+                }
+                if(wallListHighLightedElement){
+                    wallListHighLightedElement.classList.remove('wall-recipe-highlighted');
                 }
 
                
@@ -514,7 +525,14 @@ async function loadRecipeInfo(recipeId) {
         }
         recipeInfoContainer.appendChild(author);
 
-       
+        // Display the upload date
+        const uploadDate = document.createElement('p');
+        const date = new Date(recipeInfo.UploadDate);
+        date.setHours(date.getHours() - 8);
+        uploadDate.textContent = `Uploaded on: ${date.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' })}`;
+        recipeInfoContainer.appendChild(uploadDate);
+
+
         let isInList = await checkRecipeInList(recipeId);
         const addButton = document.createElement('button');
         addButton.textContent = isInList ? "Remove from MyList" : "Add to MyList";
@@ -641,19 +659,20 @@ async function fetchAndDisplayReviews(recipeId) {
         reviewsList.innerHTML = '';
 
         reviews.forEach(review => {
-           
+            // Convert and format the publish date
+            const publishDate = new Date(review.PublishDate);
+            const formattedDate = publishDate.toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: 'long', day: 'numeric' });
+
+
             const reviewItem = document.createElement('div');
             const isReviewedByCurrentUser = reviewedByUser.includes(review.ReviewID);
-            let isFiveStars = false;
-
-            if(review.Rating === 5){
-                isFiveStars = true;
-            }
+            let isFiveStars = review.Rating === 5;
             reviewItem.className = 'review-item';
             reviewItem.innerHTML = `
                 <p class="review-text">"${review.ReviewText}"</p>
                 <div class="review-details">
                     <span class="review-author">- ${review.FirstName} ${review.LastName}</span>
+                    <span class="review-date">Reviewed on: ${formattedDate}</span>
                     ${isFiveStars ? `
                         <span class="gold-rating">Rating: ${review.Rating} Stars</span>
                     ` : `<span class="review-rating">Rating: ${review.Rating} Stars</span>`}
@@ -684,6 +703,10 @@ async function fetchAndDisplayReviews(recipeId) {
 async function loadWall() {
     try {
         const reviews = await getUserFriendReviews(getUserIdFromCookie());
+
+        // Sort reviews by publish date in descending order (most recent first)
+        reviews.sort((a, b) => new Date(b.PublishDate) - new Date(a.PublishDate));
+
         const reviewWallContainer = document.querySelector('.wall-content');
         reviewWallContainer.innerHTML = '';
 
@@ -707,22 +730,36 @@ async function loadWall() {
             reviewContainer.appendChild(reviewText);
 
             const reviewDate = document.createElement('p');
-            reviewDate.textContent = `Date: ${review.PublishDate}`;
+            const dateObject = new Date(review.PublishDate);
+            const formattedDate = dateObject.toLocaleDateString('en-US', {
+                timeZone: 'America/Los_Angeles', // Set timezone to Pacific Standard Time
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            reviewDate.textContent = `Date: ${formattedDate}`;
             reviewDate.className = 'review-date';
             reviewContainer.appendChild(reviewDate);
 
             const reviewRating = document.createElement('div');
             reviewRating.textContent = `${review.Rating} Stars`;
-            if (review.Rating === 5) {
-                reviewRating.className = 'gold-rating';
-            }
-            else{
-                reviewRating.className = 'review-rating';
-            }
+            reviewRating.className = review.Rating === 5 ? 'gold-rating' : 'review-rating';
             reviewContainer.appendChild(reviewRating);
 
             reviewContainer.addEventListener('click', function() {
                 loadRecipeInfo(review.RecipeID);
+                // Remove highlighting from the currently highlighted recipe if it exists
+                const highlightedElement = document.querySelector('.wall-recipe-highlighted');
+                const recipeListHighlightedElement = document.querySelector('.recipe-highlighted');
+                if (highlightedElement) {
+                    highlightedElement.classList.remove('wall-recipe-highlighted');
+                }
+                if(recipeListHighlightedElement){
+                    recipeListHighlightedElement.classList.remove('recipe-highlighted');
+                }
+
+                // Add highlight to the clicked recipe and update the reference
+                reviewContainer.classList.add('wall-recipe-highlighted');
             });
 
             reviewWallContainer.appendChild(reviewContainer);
@@ -731,6 +768,7 @@ async function loadWall() {
         console.error('Failed to load wall:', error);
     }
 }
+
 
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -815,8 +853,12 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         if (response.status === 201) {
            
             const newReview = response.data;
-            await loadRecipeInfo(selectedRecipeId)
-           
+            await loadRecipeInfo(selectedRecipeId);
+            console.log(lastSearchTerm);
+            console.log(lastFilter);
+
+            await performAdvancedRecipeSearch(lastSearchTerm,lastFilter);
+            //addReviewToPage(newReview);
 
            
             document.getElementById('reviewText').value = '';
@@ -1050,8 +1092,9 @@ async function getAllRecipesWithAuthors() {
 
 async function loadRecipesWithParams(params) {
     try {
-       
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipes-with-authors/search', {
+        // Make an Axios GET request with the provided parameters
+        const response = await axios.get('http://localhost:3002/recipes-with-authors/search', {
+
             params: params
         });
         const recipes = response.data;
@@ -1128,6 +1171,7 @@ async function loadRecipesWithParams(params) {
             const avgRating = `Average Rating: ${avgRatingText}`;
             const numRatings = `${recipe.NumRatings || 0}`;
             const numReviews = `${recipe.NumReviews || 0}`;
+            const uploadDate = `Uploaded on: ${new Date(recipe.UploadDate).toLocaleDateString()}`;
 
            
             const line1Element = document.createElement('p');
@@ -1142,10 +1186,15 @@ async function loadRecipesWithParams(params) {
             line3Element.textContent = `${numRatings} Ratings \n ${numReviews} Reviews`;
             line3Element.style.margin = '0';
 
-           
+            const line4Element = document.createElement('p');
+            line4Element.textContent = uploadDate;
+            line4Element.style.margin = '0';
+
+
             detailsInfoContainer.appendChild(line1Element);
             detailsInfoContainer.appendChild(line2Element);
             detailsInfoContainer.appendChild(line3Element);
+            detailsInfoContainer.appendChild(line4Element);
 
            
             infoContainer.appendChild(titleAndIngredientsContainer);
