@@ -237,3 +237,45 @@ Here are steps for both the above scnarions:
 #
 # 3. Division of Work
 
+## Ali Zargari
+- Proposal
+- EER Diagram
+- Creating and hosting the database
+- Set up project environments and divide the different layers.
+- Create the client layer infrastructure and prepare for front end development
+- Create the middle layer infrastructure and prepare for endpoint development.
+- Helped develop end points, queries, and front end functions. 
+- Deployment of the different layers
+- Writing the report
+
+## Jun Kit Wong
+- Developed a majority of the core endpoints and the functions like logging in, loggin out, etc
+- Developed controller functions, and a variety of other front-end funcions
+- Writing the report
+
+
+## Omar Jamjoum
+- Proposal
+- EER diagram
+- Creating the database
+- Generated the data
+- Helped fix and create the triggers/constraints for table definitions
+- Created the main page and the login page and their components.
+- Helped with general front-end functionality
+- Writing the report
+
+
+## Charlie Nguyen
+- Proposal 
+- EER
+- In charge of testing and reporting/fixing bugs
+- Helped set up back-end and front-end environments
+- Writing the report
+
+
+## Nathan Nguyen
+- Proposal
+- EER
+- In charge of testing and reporting/fixing bugs
+- Helped set up back-end and front-end environments
+- Writing the report
