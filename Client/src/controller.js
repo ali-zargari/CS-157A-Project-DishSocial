@@ -3,7 +3,7 @@ import axios from 'axios';
 export async function getUserById(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}`);
-        return response.data; // Returning the data for further use
+        return response.data;
     } catch (error) {
         console.error('There was a problem fetching the user data:', error);
     }
@@ -47,20 +47,20 @@ export async function totalLikes(recipeId) {
 
 
 export async function loginUser(email, password) {
-    // Retrieve the User ID from the cookie
+   
     const uid = getUserIdFromCookie();
 
     try {
-        // Pass the UID in the request payload along with email and password
+       
         const response = await axios.post('https://ai-council-419503.wl.r.appspot.com/login', {
             email,
             password,
-            uid // Include the UID here
+            uid
         });
 
-        // Process the server response to determine login status
+       
         if (response.data.status === 'Logged in') {
-            document.cookie = `userID=${response.data.userID}; path=/`; // Update or set the userID in a cookie
+            document.cookie = `userID=${response.data.userID}; path=/`;
             return response.data.userID;
         } else {
             return null;
@@ -108,7 +108,7 @@ export async function updateUserById(userId, userData) {
     try {
         const response = await axios.put(`https://ai-council-419503.wl.r.appspot.com/users/${userId}`, userData);
 
-        // Check if the request was successful
+       
         if(response.status === 200){
             return response.data;
         } else {
@@ -127,7 +127,7 @@ export function getUserIdFromCookie() {
         let cookiePair = cookieArray[i].split('=');
 
         if(cookiePair[0] === 'userID'){
-            // Return the value of 'userID' cookie
+           
             return cookiePair[1];
         }
     }
@@ -162,7 +162,7 @@ export async function getUserNameById(uID) {
 export async function getSelectedRecipeInfo(recipeID) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/recipe/${recipeID}`);
-        return response.data; // Returning the data for further use
+        return response.data;
     } catch (error) {
         console.error(`Failed to get selected recipe info: ${error}`);
     }
@@ -171,7 +171,7 @@ export async function getSelectedRecipeInfo(recipeID) {
 export async function getRecipeAuthor(recipeID) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/getRecipeAuthor/${recipeID}`);
-        return response.data; // Returning the data for further use
+        return response.data;
     } catch (error) {
         console.error(`Failed to get selected recipe author: ${error}`);
     }
@@ -180,17 +180,16 @@ export async function getRecipeAuthor(recipeID) {
 export async function getUserFriendReviews(userID) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/user/friendReviews/${userID}`);
-        return response.data; // Returning the data for further use
+        return response.data;
     } catch (error) {
         console.error(`Failed to get user friend reviews: ${error}`);
     }
 }
 
-// give me function to get all recipes
 export async function getAllRecipes() {
     try {
         const response = await axios.get('https://ai-council-419503.wl.r.appspot.com/recipe');
-        return response.data; // Returning the data for further use
+        return response.data;
     } catch (error) {
         console.error('Failed to get all recipes:', error);
     }
@@ -200,7 +199,7 @@ export async function getAllRecipes() {
 export async function getRecipesByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/userRecipes/${userId}`);
-        return response.data; // Returning the array of RecipeIDs for further use
+        return response.data;
     } catch (error) {
         console.error('There was a problem fetching the user upload data:', error);
     }
@@ -210,7 +209,7 @@ export async function getRecipesByUser(userId) {
 export async function getAllReviewsByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/reviews`);
-        return response.data; // Return the data for further use
+        return response.data;
     } catch (error) {
         console.error('Failed to fetch reviews by user:', error);
     }
@@ -220,7 +219,7 @@ export async function getAllReviewsByUser(userId) {
 export async function getAllRecipesUploadedByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/recipes`);
-        return response.data; // Return the data for further use
+        return response.data;
     } catch (error) {
         console.error('Failed to fetch recipes uploaded by user:', error);
     }
@@ -238,7 +237,6 @@ export async function getUserInfoById(userId) {
 }
 
 
-// Function to get the list of users following a specific user
 export async function getFollowers(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/followers`);
@@ -249,7 +247,6 @@ export async function getFollowers(userId) {
     }
 }
 
-// Function to get the list of users a specific user is following
 export async function getFollowing(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/users/${userId}/following`);
@@ -279,11 +276,11 @@ export async function followUser(userId, followedUserId) {
 
 export async function unfollowUser(userId, friendId) {
     try {
-        // Convert both userId and friendId to integers
+       
         userId = parseInt(userId, 10);
         friendId = parseInt(friendId, 10);
 
-        // Check if either conversion results in NaN, indicating invalid input
+       
         if (isNaN(userId) || isNaN(friendId)) {
 
             console.error('User ID or Friend ID is not a valid number');
@@ -304,7 +301,7 @@ export async function unfollowUser(userId, friendId) {
 export async function getReviewsByUser(userId) {
     try {
         const response = await axios.get(`https://ai-council-419503.wl.r.appspot.com/userReviews/${userId}`);
-        return response.data; // Returning the array of ReviewIDs for further use
+        return response.data;
     } catch (error) {
         console.error('There was a problem fetching the user reviewIds:', error);
     }

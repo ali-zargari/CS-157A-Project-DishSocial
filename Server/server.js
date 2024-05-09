@@ -20,19 +20,19 @@ app.use((req, res, next) => {
 app.use(cors());
 
 app.use(cookieParser());
-app.use(bodyParser.json()) // parse JSON payloads
+app.use(bodyParser.json())
 
 const pool = mysql.createPool({
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',
     user: 'avnadmin',
-    // Specify the database (schema) name here
+   
     database: 'CS_157A_Project',
     password: 'AVNS_KPqKJ44iZGhPb5xCUgA',
     port: 19243,
     ssl: {
-        // Do not reject when not authorized, set to true in production
+       
         rejectUnauthorized: true,
-        // The path to your CA certificate
+       
         ca: readFileSync('./ca.crt'),
     }
 });
@@ -42,7 +42,7 @@ const pool = mysql.createPool({
 app.get('/', (req, res) => res.send('Hello World!'));
 app.use(express.json());
 
-app.get('/test', async (req, res) => { // You can now use async function
+app.get('/test', async (req, res) => {
     try {
         const connection = await pool.getConnection();
         const [rows] = await connection.execute(
@@ -56,7 +56,6 @@ app.get('/test', async (req, res) => { // You can now use async function
     }
 });
 
-//get user info
 app.get('/users', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -72,26 +71,25 @@ app.get('/users', async (req, res) => {
 });
 
 
-// Get list of friends using `uid` from the query parameters
 app.get('/users/friends', async (req, res) => {
-    // Retrieve the User ID (uid) from the query parameters
+   
     const userID = req.query.uid;
 
     try {
         const connection = await pool.getConnection();
 
-        // Query to get the friend IDs from the Follows table
+       
         const [friendResult] = await connection.execute(
             'SELECT UserID2 FROM Follows WHERE UserID1 = ?',
             [userID]
         );
 
-        // Extracting user IDs from the friendResult
+       
         const friendIds = friendResult.map(friend => friend.UserID2);
 
-        // Check if there are friend IDs to query
+       
         if (friendIds.length > 0) {
-            // Query to get details of friends
+           
             const friendIdsPlaceHolders = friendIds.map(() => '?').join(',');
 
             const [rows] = await connection.execute(
@@ -99,13 +97,13 @@ app.get('/users/friends', async (req, res) => {
                 friendIds
             );
 
-            // Return the user details
+           
             res.send(rows);
         } else {
-            res.send([]); // No friends found
+            res.send([]);
         }
 
-        // Release the connection back to the pool
+       
         connection.release();
     } catch (error) {
         console.error("Failed to retrieve friends: ", error);
@@ -114,7 +112,6 @@ app.get('/users/friends', async (req, res) => {
 });
 
 
-//delete user
 app.delete('/users/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
@@ -131,7 +128,6 @@ app.delete('/users/:userId', async (req, res) => {
     }
 });
 
-//add user
 app.post('/users', async (req, res) => {
     const {FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Password} = req.body;
     try {
@@ -143,14 +139,13 @@ app.post('/users', async (req, res) => {
         connection.release();
 
         res.send({status: "success"});
-        //res.send(`User ${FirstName} has been added`);
+       
     } catch (error) {
         console.error(error);
         res.status(500).send(error);
     }
 });
 
-//delete recipe
 app.delete('/recipe/:recipeID', async (req, res) => {
     const recipeId = req.params.recipeID;
     try {
@@ -167,7 +162,6 @@ app.delete('/recipe/:recipeID', async (req, res) => {
     }
 });
 
-//add recipe
 app.post('/recipe', async (req, res) => {
     const {Title, CookTime, PrepTime, Steps, TotalCalories, Ingredients} = req.body;
     try {
@@ -185,26 +179,25 @@ app.post('/recipe', async (req, res) => {
     }
 });
 
-// add recipe by user upload
 app.post('/recipe/userUploadRecipe', async (req, res) => {
     const { Title, Steps, TotalCalories, Ingredients, uid } = req.body;
     try {
         const connection = await pool.getConnection();
-        // Insert the new recipe and get the insertId
+       
         const [recipeResult] = await connection.execute(
             'INSERT INTO Recipe (Title, Steps, TotalCalories, Ingredients) VALUES (?, ?, ?, ?)',
             [Title, Steps, TotalCalories, Ingredients]
         );
         const newRecipeId = recipeResult.insertId;
 
-        const currentDate = new Date().toISOString().slice(0, 10); // Format as 'YYYY-MM-DD'
-        // Insert into User_Uploads_Recipe table
+        const currentDate = new Date().toISOString().slice(0, 10);
+       
         await connection.execute(
             'INSERT INTO User_Uploads_Recipe (UserID, RecipeID, UploadDate) VALUES (?, ?, ?)',
             [uid, newRecipeId, currentDate]
         );
 
-        // Retrieve the full information of the newly added recipe
+       
         const [fullRecipeDetails] = await connection.execute(
             'SELECT * FROM Recipe WHERE RecipeID = ?',
             [newRecipeId]
@@ -212,7 +205,7 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
 
         connection.release();
 
-        // If the array is not empty, send the first element (the recipe data)
+       
         if (fullRecipeDetails.length > 0) {
             res.status(201).json(fullRecipeDetails[0]);
         } else {
@@ -227,11 +220,10 @@ app.post('/recipe/userUploadRecipe', async (req, res) => {
 
 
 
-// Get recipe details
 app.get('/recipe', async (req, res) => {
     try {
         const connection = await pool.getConnection();
-        // Replace 'SELECT * FROM Recipes' with your query
+       
         const [rows] = await connection.execute('SELECT * FROM Recipe');
         connection.release();
 
@@ -241,26 +233,25 @@ app.get('/recipe', async (req, res) => {
     }
 });
 
-// Get recipe info with review statistics including total reviews, total ratings, and average rating
 app.get('/recipe/:recipeID', async (req, res) => {
     try {
         const { recipeID } = req.params;
         const connection = await pool.getConnection();
 
-        // Query to get recipe details
+       
         const [recipeDetails] = await connection.execute(
             'SELECT * FROM Recipe WHERE RecipeID = ?',
             [recipeID]
         );
 
-        // Query to get total review count
+       
         const [reviewStats] = await connection.execute(
             `SELECT COUNT(*) AS ReviewCount FROM Recipe_Has_Review
              WHERE RecipeID = ?`,
             [recipeID]
         );
 
-        // Query to get ratings count and average rating
+       
         const [ratingStats] = await connection.execute(
             `SELECT COUNT(Rating) AS RatingCount, AVG(Rating) AS AverageRating FROM Review
              JOIN Recipe_Has_Review ON Review.ReviewID = Recipe_Has_Review.ReviewID
@@ -287,7 +278,6 @@ app.get('/recipe/:recipeID', async (req, res) => {
 });
 
 
-// Get friend reviews for a user
 app.get('/user/friendReviews/:userID', async (req, res) => {
     try {
         const { userID } = req.params;
@@ -327,8 +317,6 @@ app.get('/user/friendReviews/:userID', async (req, res) => {
 });
 
 
-// log in user.
-// log in user.
 app.post('/login', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -338,10 +326,10 @@ app.post('/login', async (req, res) => {
         );
 
         if (rows.length > 0) {
-            // Direct comparison of passwords
+           
             if(req.body.password === rows[0].Password){
                 res.cookie('userID', rows[0].UserID, { maxAge: 900000});
-                res.send({ status: "Logged in", userID: rows[0].UserID }); // Include userID in the response
+                res.send({ status: "Logged in", userID: rows[0].UserID });
             }  else {
                 res.send({ status: "Incorrect email or password"});
             }
@@ -356,7 +344,6 @@ app.post('/login', async (req, res) => {
 });
 
 
-//logs out the user
 app.post('/logout', async (req, res) => {
     try {
         res.clearCookie('userID');
@@ -368,27 +355,25 @@ app.post('/logout', async (req, res) => {
     }
 });
 
-//add review
-// POST endpoint to submit a review
 app.post('/review/addReview', async (req, res) => {
     const {UserID, RecipeID, Rating, ReviewText} = req.body;
-    const PublishDate = new Date().toISOString().slice(0, 10); // Format to YYYY-MM-DD
+    const PublishDate = new Date().toISOString().slice(0, 10);
     try {
         const connection = await pool.getConnection();
 
-        // First, insert the review into the Review table
+       
         const [reviewResult] = await connection.execute(
             'INSERT INTO Review (PublishDate, Rating, ReviewText) VALUES (?, ?, ?)',
             [PublishDate, Rating, ReviewText]
         );
 
-        // Then, link the review with the user who left it
+       
         await connection.execute(
             'INSERT INTO User_Leaves_Review (UserID, ReviewID) VALUES (?, ?)',
             [UserID, reviewResult.insertId]
         );
 
-        // Link the review with the recipe
+       
         await connection.execute(
             'INSERT INTO Recipe_Has_Review (RecipeID, ReviewID) VALUES (?, ?)',
             [RecipeID, reviewResult.insertId]
@@ -396,7 +381,7 @@ app.post('/review/addReview', async (req, res) => {
 
         connection.release();
 
-        // Send back the ID of the new review
+       
         res.status(201).json({
             ReviewID: reviewResult.insertId,
             PublishDate,
@@ -412,9 +397,7 @@ app.post('/review/addReview', async (req, res) => {
 });
 
 
-//
 
-//delete review
 app.delete('/review/:reviewID', async (req, res) => {
     const reviewID = req.params.reviewID;
     try {
@@ -432,13 +415,12 @@ app.delete('/review/:reviewID', async (req, res) => {
 });
 
 
-//reviews of a recipe
 app.get('/reviews/:recipeID', async (req, res) => {
     try {
         const { recipeID } = req.params;
         const connection = await pool.getConnection();
 
-        // Join the Review, Recipe_Has_Review, and Users tables to get all reviews for a specific recipe
+       
         const [reviews] = await connection.execute(`
             SELECT r.ReviewID, r.PublishDate, r.Rating, r.ReviewText,
                    u.UserID, u.FirstName, u.LastName
@@ -461,35 +443,33 @@ app.get('/reviews/:recipeID', async (req, res) => {
 });
 
 
-//get user info
 app.get('/users/:userID', async (req, res) => {
-    const { userID } = req.params; // Extracting userID from the request URL
+    const { userID } = req.params;
 
     try {
-        const connection = await pool.getConnection(); // Assuming 'pool' is your MySQL connection pool
+        const connection = await pool.getConnection();
 
-        // SQL query to fetch user data
+       
         const [rows] = await connection.execute(
             'SELECT UserID, FirstName, LastName, Gender, Email, Birthplace, DateOfBirth, Age FROM Users WHERE UserID = ?',
             [userID]
         );
 
-        connection.release(); // Release the connection back to the pool
+        connection.release();
 
         if (rows.length > 0) {
-            res.json(rows[0]); // Send the first row of the results as JSON
+            res.json(rows[0]);
         } else {
-            res.status(404).send('User not found'); // Send a 404 response if no user is found
+            res.status(404).send('User not found');
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
-        res.status(500).send('Internal Server Error'); // Send a 500 response on error
+        res.status(500).send('Internal Server Error');
     }
 });
 
 
 
-// give me all recipes
 app.get('/recipes', async (req, res) => {
     try {
         const connection = await pool.getConnection();
@@ -506,7 +486,6 @@ app.get('/recipes', async (req, res) => {
 
 
 
-// Endpoint to search and filter recipes
 app.get('/recipes/search', async (req, res) => {
     const { searchTerm, filter, userID, minCalories, maxCalories } = req.query;
 
@@ -514,13 +493,13 @@ app.get('/recipes/search', async (req, res) => {
     let whereConditions = [];
     let parameters = [];
 
-    // Search term conditions
+   
     if (searchTerm) {
         whereConditions.push(`(Recipe.Title LIKE CONCAT('%', ?, '%') OR Recipe.Ingredients LIKE CONCAT('%', ?, '%'))`);
         parameters.push(searchTerm, searchTerm);
     }
 
-    // Apply filter logic based on the `filter` value
+   
     switch (filter) {
         case 'reviewedByMe':
             baseQuery += `INNER JOIN Recipe_Has_Review ON Recipe.RecipeID = Recipe_Has_Review.RecipeID 
@@ -566,7 +545,7 @@ app.get('/recipes/search', async (req, res) => {
             break;
     }
 
-    // Add minimum and maximum calorie filters
+   
     if (minCalories) {
         whereConditions.push('Recipe.TotalCalories >= ?');
         parameters.push(Number(minCalories));
@@ -576,7 +555,7 @@ app.get('/recipes/search', async (req, res) => {
         parameters.push(Number(maxCalories));
     }
 
-    // Combine all conditions to form the final query
+   
     if (whereConditions.length > 0) {
         baseQuery += ` WHERE ${whereConditions.join(' AND ')}`;
     }
@@ -605,14 +584,14 @@ app.post('/addToCustomList', async (req, res) => {
             });
         }
 
-        // Execute an INSERT query
+       
         const [result] = await connection.execute(
             'INSERT INTO Custom_List_Recipes (UserID, RecipeID) VALUES (?, ?)',
             [userId, recipeId]
         );
 
         if (result.affectedRows === 1) {
-            res.sendStatus(201); // Send 201 "Created" status code
+            res.sendStatus(201);
         } else {
             throw new Error('Insert operation failed');
         }
@@ -639,14 +618,14 @@ app.delete('/removeFromCustomList', async (req, res) => {
             });
         }
 
-        // Execute a DELETE query
+       
         const [result] = await connection.execute(
             'DELETE FROM Custom_List_Recipes WHERE UserID = ? AND RecipeID = ?',
             [userId, recipeId]
         );
 
         if (result.affectedRows === 1) {
-            res.sendStatus(200); // Send 200 "OK" status code
+            res.sendStatus(200);
         } else {
             throw new Error('Delete operation failed');
         }
@@ -680,9 +659,9 @@ app.get('/isInCustomList', async (req, res) => {
         );
 
         if (rows.length > 0) {
-            res.sendStatus(200); // Send 200 "OK" status code
+            res.sendStatus(200);
         } else {
-            res.sendStatus(204); // Send 204 "No Content" status code
+            res.sendStatus(204);
         }
 
     } catch (error) {
@@ -752,7 +731,7 @@ app.get('/users/:userID/recipes', async (req, res) => {
 });
 
 app.get('/users/:userID/reviews', async (req, res) => {
-    const { userID } = req.params; // Extract the userID from the request parameters
+    const { userID } = req.params;
     try {
         const connection = await pool.getConnection();
         const [reviews] = await connection.execute(`
@@ -805,8 +784,6 @@ app.get('/users/:userID/followers', async (req, res) => {
     }
 });
 
-// check if liked by user
-// check if liked by user
 app.get('/recipes/liked', async (req, res) => {
     const { userId, recipeId } = req.query;
 
@@ -838,7 +815,7 @@ app.get('/totalLikes/:recipeId', async (req, res) => {
         `, [recipeId]);
         connection.release();
 
-        // Extract the total likes from the result
+       
         const totalLikes = result[0].totalLikes;
 
         res.status(200).json({ totalLikes });
@@ -877,7 +854,6 @@ app.get('/users/customListRecipes/:userId', async (req, res) => {
 
 
 
-// like a recipe
 app.post('/recipes/like', async (req, res) => {
     const { userId, recipeId } = req.body;
 
@@ -903,9 +879,8 @@ app.post('/recipes/like', async (req, res) => {
 });
 
 
-// unlike a recipe
 app.delete('/recipes/unlike', async (req, res) => {
-    const { userId, recipeId } = req.body; // Assuming these are passed as JSON payload
+    const { userId, recipeId } = req.body;
 
     try {
         const connection = await pool.getConnection();
@@ -924,7 +899,7 @@ app.delete('/recipes/unlike', async (req, res) => {
 app.get('/followed', async (req, res) => {
     const { userId, friendId } = req.query;
 
-    // Check if userId and friendId are provided
+   
     if (!userId || !friendId) {
         res.status(400).send('User ID and Friend ID are required');
         return;
@@ -955,24 +930,24 @@ app.post('/users/follow', async (req, res) => {
     try {
         const connection = await pool.getConnection();
 
-        // Check if the follow relationship already exists
+       
         const [existingFollow] = await connection.execute(`
             SELECT 1 FROM Follows WHERE UserID1 = ? AND UserID2 = ?
         `, [userId, followedUserId]);
 
         if (existingFollow.length > 0) {
-            // If the follow relationship already exists, return a message indicating it
+           
             res.status(400).json({ message: "Already following this user." });
         } else {
-            // If the follow relationship does not exist, create it
+           
             await connection.execute(`INSERT INTO Follows (UserID1, UserID2) VALUES (?, ?)`,
                 [userId, followedUserId]);
 
-            // Return a success message
+           
             res.status(201).json({ message: "Successfully followed user." });
         }
 
-        // Release the connection back to the pool
+       
         connection.release();
     } catch (error) {
         console.error("Failed to follow user:", error);
@@ -1014,12 +989,11 @@ app.get('/userReviews/:userId', async (req, res) => {
     res.send(reviewIds);
 });
 
-//get recipe author
 app.get('/getRecipeAuthor/:recipeId', async (req, res) => {
     try {
         const recipeID  = req.params.recipeId;
         const connection = await pool.getConnection();
-        // Use this SQL query to return the recipe details for a given recipeID.
+       
         const [rows] = await connection.execute(
             'SELECT UserID FROM User_Uploads_Recipe WHERE RecipeID = ?',
             [recipeID]
@@ -1040,10 +1014,10 @@ app.get('/getRecipeAuthor/:recipeId', async (req, res) => {
 
 app.get('/recipes-with-authors', async (req, res) => {
     try {
-        // Establish a database connection
+       
         const connection = await pool.getConnection();
 
-        // SQL query to join recipes with their authors' information
+       
         const query = `
             SELECT 
                 r.RecipeID,
@@ -1069,13 +1043,13 @@ app.get('/recipes-with-authors', async (req, res) => {
                 r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients, u.FirstName, u.LastName
         `;
 
-        // Execute the query
+       
         const [rows] = await connection.execute(query);
 
-        // Release the database connection
+       
         connection.release();
 
-        // Send the results back to the client
+       
         res.status(200).json(rows);
     } catch (error) {
         console.error('Failed to fetch recipes with authors:', error);
@@ -1088,7 +1062,7 @@ app.get('/recipes-with-authors', async (req, res) => {
 app.get('/recipes-with-authors/search', async (req, res) => {
     const { searchTerm, filter, userID, minCalories, maxCalories } = req.query;
 
-    // Base SQL query with JOINs to include author and review information
+   
     let baseQuery = `
         SELECT 
             r.RecipeID,
@@ -1123,13 +1097,13 @@ app.get('/recipes-with-authors/search', async (req, res) => {
     let whereConditions = [];
     let parameters = [];
 
-    // Search term conditions
+   
     if (searchTerm) {
         whereConditions.push(`(r.Title LIKE CONCAT('%', ?, '%') OR r.Ingredients LIKE CONCAT('%', ?, '%'))`);
         parameters.push(searchTerm, searchTerm);
     }
 
-    // Apply filter logic based on the `filter` value
+   
     switch (filter) {
         case 'reviewedByMe':
             baseQuery += `
@@ -1179,7 +1153,7 @@ app.get('/recipes-with-authors/search', async (req, res) => {
             break;
     }
 
-    // Add minimum and maximum calorie filters
+   
     if (minCalories) {
         whereConditions.push('r.TotalCalories >= ?');
         parameters.push(Number(minCalories));
@@ -1189,12 +1163,12 @@ app.get('/recipes-with-authors/search', async (req, res) => {
         parameters.push(Number(maxCalories));
     }
 
-    // Combine all conditions to form the final query
+   
     if (whereConditions.length > 0) {
         baseQuery += ` WHERE ${whereConditions.join(' AND ')}`;
     }
 
-    // Add grouping by RecipeID to aggregate the reviews
+   
     baseQuery += `
         GROUP BY r.RecipeID, r.Title, r.Steps, r.TotalCalories, r.Ingredients, u.FirstName, u.LastName
     `;

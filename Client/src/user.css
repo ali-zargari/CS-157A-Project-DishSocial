@@ -1,4 +1,3 @@
-/* Base page styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -6,7 +5,6 @@ body {
     background-color: #f0f0f0;
 }
 
-/* Header styles */
 header {
     background-color: #333;
     color: white;
@@ -24,7 +22,6 @@ header h1 {
     font-size: 27px;
 }
 
-/* Header buttons styling */
 .header-buttons {
     display: flex;
     gap: 10px;
@@ -58,13 +55,11 @@ header button:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Main content area below header */
 .content {
-    padding-top: 60px;  /* Extra padding to account for fixed header */
+    padding-top: 60px;
     margin: 20px;
 }
 
-/* Section styles for user details and connections */
 #user-details, #connections, .recipes, .reviews, .my-list-recipes {
     background-color: white;
     border-radius: 5px;
@@ -73,7 +68,6 @@ header button:active {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Heading styles within sections */
 h2 {
     color: #333;
     font-size: 20px;
@@ -82,7 +76,6 @@ h2 {
     margin-bottom: 10px;
 }
 
-/* Styles for all lists and their items */
 .friend-list, .recipe-list, .reviews-list, .my-list-recipes-list {
     max-height: 400px;
     overflow-y: auto;
@@ -98,7 +91,6 @@ h2 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Text styles within items */
 .recipe-item h3, .review-item h3, .custom-recipe-item h3 {
     color: #333;
 }
@@ -109,35 +101,35 @@ h2 {
     margin: 5px 0;
 }
 
-/* Section styles for user details and connections */
 #connections {
     display: flex;
-    justify-content: center; /* This will center the child elements horizontally */
-    align-items: center;     /* This will center the child elements vertically */
-    gap: 20px;               /* Adds space between the followers and following sections */
-    margin-top: 20px;        /* Optional: adds some space above the section for visual separation */
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-top: 20px;
+    padding: 20px;
+    gap: 20px;
 }
 
 #following, #followers {
-    flex: 1;                  /* Each section takes equal width */
+    flex: 1;
     background-color: white;
     border-radius: 5px;
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     display: flex;
-    flex-direction: column;  /* Aligns items in a vertical stack */
-    align-items: center;     /* Centers the items horizontally in the flex container */
+    flex-direction: column;
+    align-items: center;
+    max-width: 50%;
 }
 
-/* Styles for the user list within following and followers */
 .user-list {
-    width: 100%;             /* Takes the full width of its container */
+    width: 100%;
     padding-top: 20px;
-    max-height: 400px;       /* Limits height and enables scrolling */
+    max-height: 400px;
     overflow-y: auto;
     display: flex;
-    flex-direction: column;  /* Ensures the list items stack vertically */
-    align-items: center;     /* Centers list items within the user list */
+    flex-direction: column;
+    align-items: center;
 }
 
 .user-list div {
@@ -145,13 +137,13 @@ h2 {
     border-bottom: 1px solid #eee;
     background-color: #f8f8f8;
     border-radius: 4px;
-    width: 90%;              /* Each list item takes 90% of the user-list width, centering it */
-    margin-bottom: 8px;      /* Adds space between items */
+    width: 90%;             
+    margin-bottom: 8px;     
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .user-list div:last-child {
-    border-bottom: none;     /* Removes the border from the last item */
+    border-bottom: none;    
 }
 
 .user-item {
@@ -160,6 +152,11 @@ h2 {
 }
 
 .user-item:hover {
-    background-color: #f0f0f0; /* Light background on hover for better interaction feedback */
+    background-color: #f0f0f0;
 }
 
+.interactions-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
