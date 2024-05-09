@@ -26,7 +26,7 @@ const pool = mysql.createPool({
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',
     user: 'avnadmin',
    
-    database: 'CS_157A_Project', //database name
+    database: '157Test', //database name
     password: 'AVNS_KPqKJ44iZGhPb5xCUgA',
     port: 19243,
     ssl: {

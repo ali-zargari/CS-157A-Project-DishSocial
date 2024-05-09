@@ -605,7 +605,7 @@ async function loadRecipeInfo(recipeId) {
 async function sendRecipeToCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        await axios.post('https://cs-157a-project.wl.r.appspot.com/addToCustomList', { userId, recipeId });
+        await axios.post('http://localhost:3002/addToCustomList', { userId, recipeId });
     }
     catch (error) {
         console.error('Failed to add recipe to a custom list:', error);
@@ -615,7 +615,7 @@ async function sendRecipeToCustomList(recipeId) {
 async function removeFromCustomList(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete('https://cs-157a-project.wl.r.appspot.com/removeFromCustomList', { data: { userId, recipeId } });
+        const response = await axios.delete('http://localhost:3002/removeFromCustomList', { data: { userId, recipeId } });
 
         if (response.status === 200) {
         } else {
@@ -630,7 +630,7 @@ async function removeFromCustomList(recipeId) {
 
 async function checkRecipeInList(recipeId) {
     try {
-        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/isInCustomList`, {
+        const response = await axios.get(`http://localhost:3002/isInCustomList`, {
             params: {
                 userId: getUserIdFromCookie(),
                 recipeId: recipeId
@@ -652,7 +652,7 @@ async function fetchAndDisplayReviews(recipeId) {
     try {
         const currentUserId = getUserIdFromCookie();
         const reviewedByUser = await getReviewsByUser(currentUserId);
-        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/reviews/${recipeId}`);
+        const response = await axios.get(`http://localhost:3002/reviews/${recipeId}`);
         const reviews = response.data;
 
         const reviewsList = document.querySelector('.reviews-list');
@@ -848,7 +848,7 @@ document.getElementById('postReviewForm').addEventListener('submit', async funct
         };
 
        
-        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/review/addReview', postData);
+        const response = await axios.post('http://localhost:3002/review/addReview', postData);
 
         if (response.status === 201) {
            
@@ -928,7 +928,7 @@ async function userUploadRecipe(recipeData) {
 
     try {
        
-        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/recipe/userUploadRecipe', fullRecipeData);
+        const response = await axios.post('http://localhost:3002/recipe/userUploadRecipe', fullRecipeData);
 
        
         return response.data;
@@ -944,7 +944,7 @@ async function showFriends() {
     const uid = getUserIdFromCookie();
 
     try {
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/users/friends', {
+        const response = await axios.get('http://localhost:3002/users/friends', {
             params: { uid }
         });
         return response.data;
@@ -984,7 +984,7 @@ function addRecipeToDom(recipe) {
 async function checkIfRecipeIsLiked(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.get(`https://cs-157a-project.wl.r.appspot.com/recipes/liked`, {
+        const response = await axios.get(`http://localhost:3002/recipes/liked`, {
             params: { userId, recipeId }
         });
         return response.status === 200; 
@@ -1010,7 +1010,7 @@ async function likeRecipe(recipeId) {
             return false;
         }
 
-        const response = await axios.post('https://cs-157a-project.wl.r.appspot.com/recipes/like', {
+        const response = await axios.post('http://localhost:3002/recipes/like', {
             userId, recipeId
         });
 
@@ -1026,7 +1026,7 @@ async function likeRecipe(recipeId) {
 async function unlikeRecipe(recipeId) {
     try {
         const userId = getUserIdFromCookie();
-        const response = await axios.delete(`https://cs-157a-project.wl.r.appspot.com/recipes/unlike`, {
+        const response = await axios.delete(`http://localhost:3002/recipes/unlike`, {
             data: { userId, recipeId }
         });
         return response.status === 200;
@@ -1047,7 +1047,7 @@ async function checkIfFriend(userId, friendId, retries = 3, delay = 500) {
             return false;
         }
 
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/followed', {
+        const response = await axios.get('http://localhost:3002/followed', {
             params: { userId, friendId }
         });
 
@@ -1080,7 +1080,7 @@ document.getElementById('reviewRating').addEventListener('change', function() {
 async function getAllRecipesWithAuthors() {
     try {
        
-        const response = await axios.get('https://cs-157a-project.wl.r.appspot.com/recipes-with-authors');
+        const response = await axios.get('http://localhost:3002/recipes-with-authors');
 
        
         return response.data;

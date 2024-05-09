@@ -4,10 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: 'development',
-    optimization: {
-        minimize: true,
-        minimizer: [new TerserPlugin()],
-    },
 
     entry: {
         index: './src/index.js',
@@ -18,6 +14,12 @@ module.exports = {
     devServer: {
         static: './dist',
         port: 8080,
+        open: {
+            app: {
+                name: 'chrome',
+                arguments: ['http://localhost:8080/index.html'],
+            }
+        },
     },
     plugins: [
 
