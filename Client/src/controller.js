@@ -9,9 +9,9 @@ export async function getUserById(userId) {
     }
 }
 
-export async function app(useridToDelete) {
+export async function deleteUser(useridToDelete) {
     try {
-        const response = await axios.delete(`https://ai-council-419503.wl.r.appspot.com/users/${useridToDelete}`);
+        const response = await axios.delete(`http://localhost:3002/users/${useridToDelete}`);
 
     } catch (error) {
         console.error('There was a problem trying to delete a user', error);
