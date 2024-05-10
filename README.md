@@ -53,7 +53,7 @@
    node -v
    ```
    - If Node.js is installed, the version will be displayed. 
-![img_1.png](img_1.png)
+![img_1.png](readme_images/img_1.png)
 
 
 ## Step 2: Install the back-end
@@ -144,7 +144,7 @@
    npm run start
 - This is a custom command that is set in 'package.json'.
 - If successful, the following output will be displayed:
-![img.png](img.png)
+![img.png](readme_images/img.png)
 
 
 
@@ -156,10 +156,11 @@
    npm run start:webpack
 - This is a custom command that is set in 'package.json'.
 - If successful, the following output will be displayed, and the front-end page should open on the browser:
-![img_2.png](img_2.png)
+![img_2.png](readme_images/img_2.png)
 - If the app opens on Edge, Chrome, or Safari then it is good to go.
 - If the app does not open on one of the 3 mentioned browsers (or at all), copy the URL that was displayed when running 'npm run start:webpack'
-![img_3.png](img_3.png)npm run start:webpack
+- 
+![img_3.png](readme_images/img_3.png)npm run start:webpack
 - Open either Edge, Chrome, or Safari and visit that URL.
 
 ##
@@ -168,22 +169,24 @@
 # 2. Database Connection
 
 ## Connecting to the Database
-- #### Important: The database for DishSocial is hosted online. 
-In order to test the insert commands, there are 2 options:
-  1. **To recreate our database locally and insert**.
-  2. **To connect to our online database**
+- ### Important: The database for DishSocial is hosted online. 
+##
+### In order to test the insert commands, there are 2 options:
+  1. ### To recreate our database locally and insert.
+  2. ### To connect to our online database and insert.
 ####
-Here are steps for both the above scnarions:
+##
+### Here are steps for both the above scnarions:
 
 ### 1. Recreating the database Locally:
   1. Navigate to the Server directory
   2. Open server.js:
      1. go to line 25, and find the following code fragment:
-     2. ![img_4.png](img_4.png)
+     2. ![img_4.png](readme_images/img_4.png)
      3. Change host, user, database, password, and port numbers accordingly to your own database' credentials. 
         1. If not using SSL, remove the ssl parameter all-together. 
         2. In other words, remove lines 32-37 in the image
-        ![img_5.png](img_5.png)
+        ![img_5.png](readme_images/img_5.png)
   3. **RE-RUN server.js:  Ctrl-C out of it if the server is still running, then retype 'npm run start' in the Server folder**
   4. Dish Social is now connected to your own local database.
 
@@ -205,7 +208,7 @@ Here are steps for both the above scnarions:
 
 - There is a chance that you might be required to enable SSL mode, and include a 'ca.crt' certificate file
 - In that case, the 'ca.crt' is located in the Database folder.
-- Alternatively, here is the content of cs.crt that you can copy:
+- Alternatively, here is the content of ca.crt that you can copy:
 
    ```bash
    -----BEGIN CERTIFICATE-----
@@ -249,8 +252,12 @@ Here are steps for both the above scnarions:
 - Writing the report
 
 ## Jun Kit Wong
-- Developed a majority of the core endpoints and the functions like logging in, loggin out, etc
-- Developed controller functions, and a variety of other front-end funcions
+- Proposal
+- EER Diagram
+- Developed a majority of the core endpoints with their queries 
+- Major functions like logging in, loggin out, etc
+- Developed controller functions, and a variety of other front-end functions
+- Assistance in all the crucial aspects of the project
 - Writing the report
 
 
@@ -270,7 +277,7 @@ Here are steps for both the above scnarions:
 - EER
 - In charge of testing and reporting/fixing bugs
 - Helped set up back-end and front-end environments
-- Writing the report
+- Helped with the report
 
 
 ## Nathan Nguyen
@@ -278,4 +285,4 @@ Here are steps for both the above scnarions:
 - EER
 - In charge of testing and reporting/fixing bugs
 - Helped set up back-end and front-end environments
-- Writing the report
+- Helped with the report
