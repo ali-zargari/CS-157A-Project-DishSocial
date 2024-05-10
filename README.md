@@ -6,10 +6,15 @@
 - #### https://ali-zargari.github.io/CS-157A-Project-DishSocial/
 
 
+### Important notes:
+- The SQL file with insert statements are located in the Database folder.
+- Please read ALL instructions very carefully.
+
+##
 
 ## Table of Contents
 ### 1. Local Set-up Guide
-### 2. Database Connection and Credentials
+### 2. Database Connection/Insertion-Test and Credentials
 ### 3. Division of Work
 
 ##
@@ -168,6 +173,9 @@
 
 # 2. Database Connection and Credentials
 
+## IMPORTANT: 
+- ### The test insertion SQL file is in the Database folder. The file is named 'createdb-with-indexing.sql'
+
 ## Connecting to the Database
 - ### Important: The database for DishSocial is hosted online.
 ##
@@ -186,7 +194,7 @@
 
     host: 'mysql-206af299-sjsu-b628.a.aivencloud.com',
     user: 'avnadmin',
-    database: 'CS_157A_Project', //database name
+    database: '157Test', //database name
     password: 'AVNS_KPqKJ44iZGhPb5xCUgA',
     port: 19243,
     ssl: {
@@ -196,9 +204,9 @@
         ca: readFileSync('./ca.crt'),
     }
 
-- There is a chance that you might be required to enable SSL mode, and include a 'ca.crt' certificate file
-- In that case, the 'ca.crt' is located in the Database folder.
-- Alternatively, here is the content of ca.crt that you can copy:
+- #### There is a chance that you might be required to enable SSL mode, and include a 'ca.crt' certificate file
+- #### In that case, the 'ca.crt' is located in the Database folder.
+- #### Alternatively, here is the content of ca.crt that you can copy:
 
    ```bash
    -----BEGIN CERTIFICATE-----
@@ -235,7 +243,7 @@
     1. go to line 25, and find the following code fragment:
     2. ![img_4.png](readme_img/img_4.png)
     3. Change host, user, database, password, and port numbers accordingly to your own database' credentials.
-        1. If not using SSL, remove the ssl parameter all-together.
+        1. If not using SSL, remove the SSL parameter all-together.
         2. In other words, remove lines 32-37 in the image
            ![img_5.png](readme_img/img_5.png)
 3. **RE-RUN server.js:  Ctrl-C out of it if the server is still running, then retype 'npm run start' in the Server folder**
