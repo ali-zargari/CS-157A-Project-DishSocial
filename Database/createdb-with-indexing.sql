@@ -14,6 +14,9 @@ DROP TRIGGER IF EXISTS After_User_Follows_Likes;
 DROP TABLE IF EXISTS Reviewed_By_Friends_Recipes;
 DROP TABLE IF EXISTS Uploaded_By_Friends_Recipes;
 DROP TABLE IF EXISTS Liked_By_Friends_Recipes;
+DROP TABLE IF EXISTS Liked_By_Me;
+DROP TABLE IF EXISTS Posted_By_Me;
+DROP TABLE IF EXISTS Uploaded_By_Me;
 DROP TABLE IF EXISTS Custom_List_Recipes;
 DROP TABLE IF EXISTS Recipe_Has_Review;
 DROP TABLE IF EXISTS Wall_Displays_Review;
@@ -148,11 +151,11 @@ CREATE TABLE Recipe_Has_Review
 
 
 CREATE TABLE Custom_List_Recipes (
-    UserID INT,
-    RecipeID INT,
-    PRIMARY KEY (UserID, RecipeID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
+                                     UserID INT,
+                                     RecipeID INT,
+                                     PRIMARY KEY (UserID, RecipeID),
+                                     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+                                     FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Liked_By_Friends_Recipes
@@ -186,6 +189,36 @@ CREATE TABLE Reviewed_By_Friends_Recipes
     FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE Liked_By_Me
+(
+    UserID INT,
+    RecipeID INT,
+    PRIMARY KEY (UserID, RecipeID),
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
+
+
+);
+
+CREATE TABLE Posted_By_Me
+(
+    UserID INT,
+    ReviewID INT,
+    PRIMARY KEY (UserID, ReviewID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (ReviewID) REFERENCES Review(ReviewID) ON DELETE CASCADE ON UPDATE CASCADE
+
+);
+
+CREATE TABLE Uploaded_By_Me
+(
+    UserID INT,
+    RecipeID INT,
+    PRIMARY KEY (UserID, RecipeID),
+    FOREIGN KEY (RecipeID) REFERENCES Recipe(RecipeID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
+
+);
 
 -- Triggers
 
@@ -279,7 +312,7 @@ BEGIN
         INSERT INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
         SELECT rhr.RecipeID, NEW.ReviewID, fw.UserID2
         FROM Follows fw
-        JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
+                 JOIN Recipe_Has_Review rhr ON rhr.ReviewID = NEW.ReviewID
         WHERE fw.UserID1 = NEW.UserID OR fw.UserID2 = NEW.UserID;
     END IF;
 END //
@@ -350,7 +383,7 @@ BEGIN
     INSERT IGNORE INTO Reviewed_By_Friends_Recipes (RecipeID, ReviewID, FriendID)
     SELECT rhr.RecipeID, ulr.ReviewID, NEW.UserID1
     FROM Recipe_Has_Review rhr
-    JOIN User_Leaves_Review ulr ON ulr.ReviewID = rhr.ReviewID
+             JOIN User_Leaves_Review ulr ON ulr.ReviewID = rhr.ReviewID
     WHERE ulr.UserID = NEW.UserID2;
 END //
 
@@ -367,7 +400,98 @@ END //
 
 
 
+DELIMITER //
+
+CREATE TRIGGER After_Liking_Recipe
+    AFTER INSERT ON User_Likes_Recipe
+    FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (
+        SELECT * FROM Liked_By_Me
+        WHERE UserID = NEW.UserID AND RecipeID = NEW.RecipeID
+    ) THEN
+        INSERT INTO Liked_By_Me (UserID, RecipeID)
+        VALUES (NEW.UserID, NEW.RecipeID);
+    END IF;
+END //
+
 DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER After_Unliking_Recipe
+    AFTER DELETE ON User_Likes_Recipe
+    FOR EACH ROW
+BEGIN
+    DELETE FROM Liked_By_Me
+    WHERE UserID = OLD.UserID AND RecipeID = OLD.RecipeID;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+
+CREATE TRIGGER After_Review_Added_To_Posted_By_Me
+    AFTER INSERT ON User_Leaves_Review
+    FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (
+        SELECT * FROM Posted_By_Me
+        WHERE UserID = NEW.UserID AND ReviewID = NEW.ReviewID
+    ) THEN
+        INSERT INTO Posted_By_Me (UserID, ReviewID)
+        VALUES (NEW.UserID, NEW.ReviewID);
+    END IF;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER After_Review_Removed_From_Posted_By_Me
+    AFTER DELETE ON User_Leaves_Review
+    FOR EACH ROW
+BEGIN
+    DELETE FROM Posted_By_Me
+    WHERE UserID = OLD.UserID AND ReviewID = OLD.ReviewID;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER After_Upload_Added_To_Uploaded_By_Me
+    AFTER INSERT ON User_Uploads_Recipe
+    FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (
+        SELECT * FROM Uploaded_By_Me
+        WHERE UserID = NEW.UserID AND RecipeID = NEW.RecipeID
+    ) THEN
+        INSERT INTO Uploaded_By_Me (UserID, RecipeID)
+        VALUES (NEW.UserID, NEW.RecipeID);
+    END IF;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER After_Upload_Removed_From_Uploaded_By_Me
+    AFTER DELETE ON User_Uploads_Recipe
+    FOR EACH ROW
+BEGIN
+    DELETE FROM Uploaded_By_Me
+    WHERE UserID = OLD.UserID AND RecipeID = OLD.RecipeID;
+END //
+
+DELIMITER ;
+
+
+
 CREATE INDEX UsersIndex USING BTREE ON Users (UserID);
 CREATE INDEX RecipeIndex USING BTREE ON Recipe (RecipeID);
 CREATE INDEX ReviewIndex USING BTREE ON Review (ReviewID);
