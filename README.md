@@ -143,6 +143,10 @@
     - Look for a `node_modules` folder in the "Client" directory to confirm that the dependencies have been installed.
 
 
+## IMPORTANT: Both of the next commands need to run concurrently in 2 different command prompts or terminals.
+## After runing Step 4, DO NOT close the command line or terminal Let it keep running.
+
+
 ## Step 4: Run the back-end
 
 - Using the Command Prompt (windows) or Terminal(mac), navigate to the **Server** folder
@@ -156,6 +160,7 @@
 
 
 ## Step 5: Run the front-end
+- #### Important: Open a new command line or terminal for this step, DO NOT CLOSE THE PREVIOUS ONE FROM STEP 4.
 - #### Important: This app is best displayed on Edge, Chrome, or Safari. It has **'NOT'** been tested on other browsers.
 - Using the Command Prompt (windows) or Terminal(mac), navigate to the **Client** folder
 - Type the following command and press enter:
