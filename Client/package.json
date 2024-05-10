@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "build:webpack": "webpack",
     "watch:webpack": "webpack --watch",
-    "start:webpack": "webpack serve --open"
+    "start:webpack": "webpack serve --open & npx open-cli http://localhost:8080/index.html"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "css-loader": "^7.1.1",
+    "open-cli": "^8.0.0",
     "style-loader": "^4.0.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4"
