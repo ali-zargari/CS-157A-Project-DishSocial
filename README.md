@@ -6,10 +6,11 @@
 - #### https://ali-zargari.github.io/CS-157A-Project-DishSocial/
 
 
-### Important notes:
-- The SQL file with insert statements are located in the Database folder.
-- Please read ALL instructions very carefully.
-
+## Important notes:
+- ### The SQL file with insert statements are located in the Database folder.
+- ### Please **CLONE THE REPOSITORY** and then read ALL instructions very carefully.
+- ### Make sure that you are logged into GitHub for things to go smoothly.
+  - When logging in to GitHub through the Command Line, it will open a window to sign in.
 ##
 
 ## Table of Contents
@@ -49,6 +50,7 @@
 4. **Run the Installer**  
    Locate and open the downloaded installer file.
     - **Windows:** Check "Add to PATH" and follow the wizard.
+    - ![image_6.png](readme_img/image_6.png)
     - **macOS:** Drag and drop the Node.js icon into the Applications folder.
     - **Linux:** Refer to the Node.js installation guide [here](https://nodejs.org/en/download/package-manager/) for platform-specific steps.
 
@@ -110,8 +112,8 @@
     - Press `Win + R`, type `cmd`, and press `Enter`.
 
 2. **Navigate to the Folder**
-    - Use the `cd` (Change Directory) command to navigate to the "Server" folder.
-    - If the "Server" folder is located at `C:\...\CS_157A_Project\Client`, type:
+    - Use the `cd` (Change Directory) command to navigate to the "Client" folder.
+    - If the "Client" folder is located at `C:\...\CS_157A_Project\Client`, type:
       `cd C:\...\CS_157A_Project\Client`
 
 3. **Run the `npm install` Command**
@@ -120,7 +122,7 @@
    npm install
 
 4. **Verify Installation**
-    - Look for a `node_modules` folder in the "Server" directory to confirm that the dependencies have been installed.
+    - Look for a `node_modules` folder in the "Client" directory to confirm that the dependencies have been installed.
 
 ### For macOS:
 
@@ -128,8 +130,8 @@
     - Press `Command + Space`, type `Terminal`, and press `Enter`.
 
 2. **Navigate to the Folder**
-    - Use the `cd` (Change Directory) command to navigate to the "Server" folder.
-    - If the "Server" folder is located at `/Users/your-username/Projects/CS_157A_Project/Client`, type:
+    - Use the `cd` (Change Directory) command to navigate to the "Client" folder.
+    - If the "Client" folder is located at `/Users/your-username/Projects/CS_157A_Project/Client`, type:
       `cd /Users/your-username/Projects/CS_157A_Project/Client`
 
 3. **Run the `npm install` Command**
@@ -138,7 +140,7 @@
    npm install
 
 4. **Verify Installation**
-    - Look for a `node_modules` folder in the "Server" directory to confirm that the dependencies have been installed.
+    - Look for a `node_modules` folder in the "Client" directory to confirm that the dependencies have been installed.
 
 
 ## Step 4: Run the back-end
@@ -155,7 +157,7 @@
 
 ## Step 5: Run the front-end
 - #### Important: This app is best displayed on Edge, Chrome, or Safari. It has **'NOT'** been tested on other browsers.
-- Using the Command Prompt (windows) or Terminal(mac), navigate to the **Server** folder
+- Using the Command Prompt (windows) or Terminal(mac), navigate to the **Client** folder
 - Type the following command and press enter:
    ```bash
    npm run start:webpack
