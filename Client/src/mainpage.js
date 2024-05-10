@@ -550,8 +550,10 @@ async function loadRecipeInfo(recipeId) {
         addButton.addEventListener('click', async function() {
             if(isInList) {
                 await removeFromCustomList(recipeId);
+                await performAdvancedRecipeSearch(lastSearchTerm,lastFilter);
             } else {
                 await sendRecipeToCustomList(recipeId);
+                await performAdvancedRecipeSearch(lastSearchTerm,lastFilter);
             }
 
            
@@ -584,6 +586,7 @@ async function loadRecipeInfo(recipeId) {
             likeButton.style.backgroundColor = isLiked ? "#dc3545" : "#007bff";
 
             await loadRecipeInfo(selectedRecipeId);
+            await performAdvancedRecipeSearch(lastSearchTerm,lastFilter);
         });
 
         buttonContainer.appendChild(likeButton);

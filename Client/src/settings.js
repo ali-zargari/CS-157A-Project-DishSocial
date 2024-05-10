@@ -11,14 +11,13 @@ function getUserIDFromQuery() {
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = getUserIDFromQuery();
     const messageBox = document.getElementById('messageBox');
-
+    const userData = await getUserById(userId);
     try {
-        const userData = await getUserById(userId);
         if (userData) {
             document.getElementById('firstName').value = userData.FirstName;
             document.getElementById('lastName').value = userData.LastName;
             document.getElementById('gender').value = userData.Gender;
-            document.getElementById('email').value = userData.Email;
+            //document.getElementById('email').value = userData.Email;
             document.getElementById('birthplace').value = userData.Birthplace;
             document.getElementById('birthdate').value = userData.DateOfBirth.slice(0, 10);
 
@@ -27,6 +26,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             Object.keys(userData).forEach(key => {
                 const para = document.createElement('p');
+
+                if (key === 'DateOfBirth') {
+                    const dob = formatDate(userData.DateOfBirth.slice(0, 10));
+                    para.textContent = `${key}: ${dob}`;
+                    userInfoWrapper.appendChild(para);
+                    return;
+                }
+
                 para.textContent = `${key}: ${userData[key]}`;
                 userInfoWrapper.appendChild(para);
             });
@@ -67,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             FirstName: document.getElementById('firstName').value,
             LastName: document.getElementById('lastName').value,
             Gender: document.getElementById('gender').value,
-            Email: document.getElementById('email').value,
+            Email: userData.Email,
             Birthplace: document.getElementById('birthplace').value,
             DateOfBirth: document.getElementById('birthdate').value
         };
@@ -123,3 +130,10 @@ dashbordButton.addEventListener('click', function () {
         console.error('There was an error:', error);
     }
 });
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/
+                          ${(date.getDate() + 1).toString().padStart(2, '0')}/
+                          ${date.getFullYear().toString()}`;
+};
