@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+<script defer src="mainpage.bundle.js"></script></head>
+<body>
+<header class="sticky-header">
+    <div class="header-content">
+        <h1 id="app-name">Dish Social</h1>
+        <h1 id="greeting" style="font-size: 1.5em; text-align: center;">Welcome, John Doe!</h1>
+
+        <!-- Buttons grouped together -->
+        <div class="header-buttons">
+            <button id="logoutButton">Log out</button>
+            <button id="profileButton">Settings</button>
+        </div>
+    </div>
+</header>
+
+<div class="content">
+    <!-- Friends list section -->
+    <div id="social">
+        <input type="radio" name="tabs" id="all-users-tab" checked />
+        <label for="all-users-tab">All Users</label>
+
+        <input type="radio" name="tabs" id="friends-tab" />
+        <label for="friends-tab">Friends</label>
+
+        <div id="all-users">
+            <h2>All Users</h2>
+            <div class="options">
+                <input id="all-users-search" type="text" placeholder="Search All...">
+                <button >Filter</button>
+            </div>
+            <div class="All-list">
+                <!-- all Users will be loaded here -->
+            </div>
+        </div>
+
+        <div id="friends">
+
+            <h2>Friends</h2>
+            <div class="options">
+                <input id="friends-search"  type="text" placeholder="Search friends...">
+                <button id="friends-filter-btn">Filter</button>
+            </div>
+            <div class="friend-list">
+                <!-- Friends will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipes list -->
+    <div class="recipes">
+        <h2>Recipe Panel</h2>
+
+        <div id="search-criteria">
+            <h3>Search for any key-word:</h3>
+            <br>
+            <!-- Recipe Search -->
+            <input id="general-search" type="text" placeholder="Search recipes..." class="search-input">
+
+            <div class="top-row">
+                <input type="number" id="min-calories" placeholder="Min Calories" class="input">
+                <input type="number" id="max-calories" placeholder="Max Calories" class="input">
+            </div>
+            <div class="bottom-row">
+                <select id="recipeFilter" class="recipe-dropdown">
+                    <option value="all">All Recipes</option>
+                    <option value="reviewedByMe">Reviewed by Me</option>
+                    <option value="likedByMe">Liked by Me</option>
+                    <option value="uploadedByMe">Uploaded by Me</option>
+                    <option value="reviewedByFriends">Reviewed by Friends</option>
+                    <option value="likedByFriends">Liked by Friends</option>
+                    <option value="uploadedByFriends">Uploaded by Friends</option>
+                    <option value="myList">My List</option>
+                </select>
+
+                <button id="filterButton" class="button filter-button">Filter</button>
+            </div>
+        </div>
+
+        <h2>
+            Recipes:
+        </h2>
+
+
+        <div class="recipe-search">
+
+            <div class="recipe-list">
+                <h3>
+                    Loading All Recipes...
+                </h3>
+            </div>
+        </div>
+
+        <h2>
+            Upload Recipes:
+        </h2>
+
+
+        <!-- Recipe Upload -->
+
+        <form id="uploadRecipeForm">
+            <input type="text" id="title" placeholder="Title" required>
+            <input type="text" id="ingredients" placeholder="Ingredients" required>
+            <input type="number" id="totalCalories" placeholder="Total Calories" required>
+            <textarea id="cookingSteps" placeholder="Cooking Steps" required></textarea>
+            <button type="submit" id="uploadButton">Upload</button>
+        </form>
+
+    </div>
+
+
+    <!-- Friends' reviews section -->
+    <!-- Recipe Info Section -->
+    <div class="recipe-info">
+        <h2>Recipe Info</h2>
+
+        <!-- Recipe Description and Details -->
+        <div class="recipe-description">
+            <!-- Existing recipe info like title, prep time, etc. -->
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews-section">
+            <h3>Reviews</h3>
+            <div class="reviews-list">
+
+            </div>
+        </div>
+
+
+        <!-- Review Form Section -->
+        <div class="review-form-section">
+            <h3>Post Your Review</h3>
+            <form id="postReviewForm">
+                <textarea id="reviewText" placeholder="Write your review..."></textarea>
+                <select id="reviewRating">
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                    <!-- Add options for more stars as needed -->
+                </select>
+                <button type="submit" id="submitReviewButton">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Extra Info Section with Tabs -->
+    <div class="wall">
+        <h2>Wall</h2>
+        <div class="wall-content">
+            <!-- Wall entries go here -->
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

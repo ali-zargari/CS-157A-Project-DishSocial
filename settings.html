@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Settings</title>
+
+<script defer src="settings.bundle.js"></script></head>
+<body>
+<header>
+    <h1>DishSocial</h1>
+    <div class="navigation">
+        <button id="dashbordButton" onclick="window.location.href='/mainpage'">Main Page</button>
+        <button id='logoutButton' onclick="window.location.href='/logout'">Logout</button>
+    </div>
+</header>
+<h1>User Settings</h1>
+<div class="form-container">
+    <form id="settingsForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" autocomplete="off" required>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" autocomplete="off" required>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" autocomplete="off" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+
+<!--        <label for="email" style="display: none;">Email:</label>-->
+<!--        <input type="email" id="email" name="email" autocomplete="off" required style="display: none;">-->
+
+        <label for="birthplace">Birthplace:</label>
+        <input type="text" id="birthplace" name="birthplace" autocomplete="off" required>
+
+        <label for="birthdate">Birthdate:</label>
+        <input type="date" id="birthdate" name="birthdate" autocomplete="off" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" autocomplete="off" required>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <div id="right">
+        <div class="user-info" id="user-info-wrapper">
+            <h2>User Information</h2>
+            <!-- User information will be dynamically populated here -->
+        </div>
+        <div id="messageBox" class="message-box"></div>
+    </div>
+
+
+
+</div>
+</body>
+</html>
